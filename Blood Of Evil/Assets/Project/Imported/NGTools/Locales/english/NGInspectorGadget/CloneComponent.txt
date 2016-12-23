@@ -1,0 +1,2 @@
+﻿CloneComponent_Error_Title=Clone Component
+CloneComponent_Error_Message=Clone failed. Might be due to component's requirements.

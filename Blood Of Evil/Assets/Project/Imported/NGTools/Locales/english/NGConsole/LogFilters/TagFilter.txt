@@ -1,0 +1,4 @@
+TagFilter=By tag
+ByTag=By tag
+FilterByTag=Filter by this GameObject's Tag
+Tag=Game Object with tag

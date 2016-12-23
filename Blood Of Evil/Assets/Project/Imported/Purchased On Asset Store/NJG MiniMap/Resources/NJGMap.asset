@@ -1,0 +1,317 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e7e2c8ab3136a0489fd953b887453f6, type: 3}
+  m_Name: NJGMap
+  m_EditorClassIdentifier: 
+  miniMap: {fileID: 0}
+  worldMap: {fileID: 0}
+  fow:
+    fowSystem: 0
+    trailEffect: 0
+    textureBlendTime: 0.01
+    updateFrequency: 0.1
+    fogColor: {r: 0, g: 0, b: 0, a: 1}
+    revealDistance: 4
+    textureSize: 200
+    debug: 1
+    blurIterations: 3
+  showBounds: 1
+  zoneColor: {r: 1, g: 1, b: 1, a: 1}
+  mapItems:
+  - enableInteraction: 1
+    type: None
+    icon: {fileID: 0}
+    border: {fileID: 0}
+    arrow: {fileID: 0}
+    useCustomSize: 0
+    useCustomBorderSize: 0
+    size: 32
+    borderSize: 32
+    color: {r: 1, g: 1, b: 1, a: 1}
+    alwaysVisible: 0
+    animateOnVisible: 1
+    showOnAction: 0
+    loopAnimation: 0
+    fadeOutAfterDelay: 0
+    rotate: 1
+    updatePosition: 1
+    smoothPosition: 0
+    haveArrow: 0
+    folded: 1
+    depth: 0
+    deleteRequest: 0
+    arrowOffset: 20
+    arrowRotate: 1
+    arrowAlwaysVisible: 0
+  - enableInteraction: 1
+    type: Waypoint
+    icon: {fileID: 21300000, guid: 197d69d1f4d2c2e49a4af6ce7298f763, type: 3}
+    border: {fileID: 0}
+    arrow: {fileID: 21300000, guid: 603194f46dbd07546b76a702428818c9, type: 3}
+    useCustomSize: 1
+    useCustomBorderSize: 0
+    size: 32
+    borderSize: 32
+    color: {r: 1, g: 1, b: 1, a: 1}
+    alwaysVisible: 0
+    animateOnVisible: 1
+    showOnAction: 0
+    loopAnimation: 0
+    fadeOutAfterDelay: 0
+    rotate: 1
+    updatePosition: 1
+    smoothPosition: 0
+    haveArrow: 1
+    folded: 1
+    depth: 0
+    deleteRequest: 0
+    arrowOffset: 20
+    arrowRotate: 1
+    arrowAlwaysVisible: 0
+  - enableInteraction: 1
+    type: Player
+    icon: {fileID: 21300000, guid: 603194f46dbd07546b76a702428818c9, type: 3}
+    border: {fileID: 0}
+    arrow: {fileID: 0}
+    useCustomSize: 0
+    useCustomBorderSize: 0
+    size: 32
+    borderSize: 32
+    color: {r: 0.116782, g: 0.883919, b: 0.99264705, a: 1}
+    alwaysVisible: 0
+    animateOnVisible: 1
+    showOnAction: 0
+    loopAnimation: 0
+    fadeOutAfterDelay: 0
+    rotate: 1
+    updatePosition: 1
+    smoothPosition: 1
+    haveArrow: 0
+    folded: 1
+    depth: 0
+    deleteRequest: 0
+    arrowOffset: 20
+    arrowRotate: 1
+    arrowAlwaysVisible: 0
+  - enableInteraction: 1
+    type: Enemy
+    icon: {fileID: 21300000, guid: 0a4c3aae63c7a6b4e8c8281eff08d412, type: 3}
+    border: {fileID: 21300000, guid: eb7be6c9e08e65f4090db00ccfec1708, type: 3}
+    arrow: {fileID: 21300000, guid: 603194f46dbd07546b76a702428818c9, type: 3}
+    useCustomSize: 0
+    useCustomBorderSize: 0
+    size: 32
+    borderSize: 32
+    color: {r: 1, g: 0, b: 0, a: 1}
+    alwaysVisible: 0
+    animateOnVisible: 1
+    showOnAction: 0
+    loopAnimation: 0
+    fadeOutAfterDelay: 0
+    rotate: 1
+    updatePosition: 1
+    smoothPosition: 0
+    haveArrow: 1
+    folded: 1
+    depth: 0
+    deleteRequest: 0
+    arrowOffset: 20
+    arrowRotate: 1
+    arrowAlwaysVisible: 0
+  - enableInteraction: 1
+    type: Boss
+    icon: {fileID: 21300000, guid: 5f4614f04e929e44894be3dce30e642a, type: 3}
+    border: {fileID: 0}
+    arrow: {fileID: 21300000, guid: 5f4614f04e929e44894be3dce30e642a, type: 3}
+    useCustomSize: 0
+    useCustomBorderSize: 0
+    size: 32
+    borderSize: 32
+    color: {r: 1, g: 1, b: 1, a: 1}
+    alwaysVisible: 0
+    animateOnVisible: 1
+    showOnAction: 0
+    loopAnimation: 0
+    fadeOutAfterDelay: 0
+    rotate: 0
+    updatePosition: 1
+    smoothPosition: 0
+    haveArrow: 1
+    folded: 1
+    depth: 0
+    deleteRequest: 0
+    arrowOffset: 20
+    arrowRotate: 1
+    arrowAlwaysVisible: 0
+  - enableInteraction: 1
+    type: NPC Quest
+    icon: {fileID: 21300000, guid: 37d9f33216357204f9144c44336a187b, type: 3}
+    border: {fileID: 0}
+    arrow: {fileID: 21300000, guid: 37d9f33216357204f9144c44336a187b, type: 3}
+    useCustomSize: 0
+    useCustomBorderSize: 0
+    size: 32
+    borderSize: 32
+    color: {r: 1, g: 0.88965523, b: 0, a: 1}
+    alwaysVisible: 0
+    animateOnVisible: 1
+    showOnAction: 0
+    loopAnimation: 0
+    fadeOutAfterDelay: 0
+    rotate: 0
+    updatePosition: 1
+    smoothPosition: 0
+    haveArrow: 1
+    folded: 1
+    depth: 0
+    deleteRequest: 0
+    arrowOffset: 20
+    arrowRotate: 1
+    arrowAlwaysVisible: 1
+  - enableInteraction: 1
+    type: Ally
+    icon: {fileID: 21300000, guid: 87af60e074035fe4c9a3c9cc9ada53ee, type: 3}
+    border: {fileID: 0}
+    arrow: {fileID: 21300000, guid: 603194f46dbd07546b76a702428818c9, type: 3}
+    useCustomSize: 0
+    useCustomBorderSize: 0
+    size: 32
+    borderSize: 32
+    color: {r: 0.11724126, g: 1, b: 0, a: 1}
+    alwaysVisible: 0
+    animateOnVisible: 1
+    showOnAction: 0
+    loopAnimation: 0
+    fadeOutAfterDelay: 0
+    rotate: 1
+    updatePosition: 1
+    smoothPosition: 0
+    haveArrow: 1
+    folded: 1
+    depth: 0
+    deleteRequest: 0
+    arrowOffset: 20
+    arrowRotate: 1
+    arrowAlwaysVisible: 0
+  - enableInteraction: 1
+    type: Blue Portal
+    icon: {fileID: 21300000, guid: d94ea7aee28f09a42a1dae5f6e681e40, type: 3}
+    border: {fileID: 0}
+    arrow: {fileID: 21300000, guid: 87af60e074035fe4c9a3c9cc9ada53ee, type: 3}
+    useCustomSize: 0
+    useCustomBorderSize: 0
+    size: 32
+    borderSize: 32
+    color: {r: 1, g: 1, b: 1, a: 1}
+    alwaysVisible: 0
+    animateOnVisible: 1
+    showOnAction: 0
+    loopAnimation: 0
+    fadeOutAfterDelay: 0
+    rotate: 1
+    updatePosition: 1
+    smoothPosition: 1
+    haveArrow: 1
+    folded: 1
+    depth: 0
+    deleteRequest: 0
+    arrowOffset: 20
+    arrowRotate: 1
+    arrowAlwaysVisible: 0
+  levels:
+  - level: Hell Plain
+    zones:
+    - type: 4e6f726d616c
+      color: {r: 0.36551726, g: 1, b: 0, a: 1}
+      fadeOutAfterDelay: 3
+      folded: 1
+      depth: 0
+      deleteRequest: 0
+    - type: 486f7374696c65
+      color: {r: 1, g: 0, b: 0, a: 1}
+      fadeOutAfterDelay: 3
+      folded: 1
+      depth: 0
+      deleteRequest: 0
+    - type: 4e65757472616c
+      color: {r: 1, g: 0.76551723, b: 0, a: 1}
+      fadeOutAfterDelay: 3
+      folded: 1
+      depth: 0
+      deleteRequest: 0
+    - type: 536163726564
+      color: {r: 0.8206897, g: 0, b: 1, a: 1}
+      fadeOutAfterDelay: 3
+      folded: 1
+      depth: 0
+      deleteRequest: 0
+    - type: 486f6d65
+      color: {r: 0, g: 0.5862069, b: 1, a: 1}
+      fadeOutAfterDelay: 3
+      folded: 1
+      depth: 0
+      deleteRequest: 0
+    - type: 416e6f7468657220486f757365
+      color: {r: 0, g: 0.58431375, b: 1, a: 1}
+      fadeOutAfterDelay: 3
+      folded: 1
+      depth: 0
+      deleteRequest: 0
+    folded: 1
+    itemsFolded: 1
+    deleteRequest: 0
+  keysInUse: 00000000000000000d0100000e010000
+  renderMode: 2
+  persistOnLevelLoad: 0
+  renderOnLevelLoad: 0
+  dontDestroy: 0
+  mapResolution: 0
+  dynamicRenderTime: 1
+  orientation: 0
+  screen: 1
+  renderLayers:
+    serializedVersion: 2
+    m_Bits: 24608
+  boundLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  iconSize: 18
+  borderSize: 18
+  arrowSize: 18
+  updateFrequency: 0.01
+  setBoundsManually: 0
+  customBounds: {x: 10, y: 10, z: 10}
+  customBoundsCenter: {x: 0, y: 0, z: 0}
+  bounds:
+    m_Center: {x: 77.96037, y: 48.12605, z: 0}
+    m_Extent: {x: 330.79037, y: 50.05605, z: 250}
+  typesFolded: 0
+  zonesFolded: 0
+  mapTexture: {fileID: 0}
+  userMapTexture: {fileID: 0}
+  generateMapTexture: 1
+  generateAtStart: 1
+  cameraFrustum: {fileID: 0}
+  cameraFrustumColor: {r: 255, g: 255, b: 255, a: 50}
+  useTextureGenerated: 0
+  mapFilterMode: 2
+  mapWrapMode: 1
+  textureFormat: 5
+  cameraClearFlags: 3
+  cameraBackgroundColor: {r: 0.5661765, g: 0.5661765, b: 0.5661765, a: 1}
+  transparentTexture: 0
+  compressQuality: 0
+  optimize: 0
+  generateMipmaps: 0
+  boundsOffset: 0
+  layer: 0
+  mCam: {fileID: 0}
+  mWorldName: Hell Plain

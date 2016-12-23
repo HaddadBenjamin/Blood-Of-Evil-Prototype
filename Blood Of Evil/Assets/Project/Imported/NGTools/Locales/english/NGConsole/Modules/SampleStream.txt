@@ -1,0 +1,3 @@
+SampleStream_RequirePlayMode=Require Play mode to record.
+SampleStream_StartMode=Start condition
+SampleStream_EndMode=End condition

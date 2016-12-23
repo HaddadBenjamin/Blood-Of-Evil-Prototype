@@ -1,0 +1,8 @@
+NGNavSelection_EnableDescription=If active, selections from Hierarchy and Project windows are saved. Buttons "Previous" and "Next" on your mouse allow you to switch the current selection.
+NGNavSelection_MaxHistoric=Max Historic
+NGNavSelection_MaxHistoricDescription=Defines how many selections are saved.
+NGNavSelection_MaxDisplayHierarchy=Max Display Hierarchy
+NGNavSelection_MaxDisplayHierarchyDescription=Defines how many parents will be displayed.
+NGNavSelection_LastSelectionShortKey=Last Selection Short Key
+NGNavSelection_LastSelectionShortKeyDescription=Opens Last Selection window.
+NGNavSelection_OpenWindowsVirtualKeyCodes=Open Windows Virtual Key Codes

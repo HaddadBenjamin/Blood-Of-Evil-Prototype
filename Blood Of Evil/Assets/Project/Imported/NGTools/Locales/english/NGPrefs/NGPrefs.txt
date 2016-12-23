@@ -1,0 +1,13 @@
+NGPrefs_Refresh=Refresh
+NGPrefs_ClearAll=Clear All
+NGPrefs_ClearAllConfirm=All preferences are going to be erased. Do you confirm?
+NGPrefs_ClearList=Clear List
+NGPrefs_ClearListConfirm=The preferences below are going to be erased. Do you confirm?
+NGPrefs_DeletePref=Delete Preference
+NGPrefs_DeletePrefConfirm=Key "{0}" will be erased. Do you confirm?
+NGPrefs_Reset=Reset
+NGPrefs_Apply=Apply
+NGPrefs_Add=Add
+NGPrefs_Type=Type
+NGPrefs_Key=Key
+NGPrefs_Value=Value

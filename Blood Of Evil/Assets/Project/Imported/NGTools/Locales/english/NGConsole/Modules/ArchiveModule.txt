@@ -1,0 +1,3 @@
+ArchiveModule_ChangeName=Change name
+ArchiveModule_SetNote=Set note
+ArchiveModule_ExportArchives=Export archives

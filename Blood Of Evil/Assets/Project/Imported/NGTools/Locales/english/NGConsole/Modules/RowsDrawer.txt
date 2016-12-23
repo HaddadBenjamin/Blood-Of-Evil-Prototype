@@ -1,0 +1,5 @@
+CopyLine=Copy line
+CopyLog=Copy log
+CopyStackTrace=Copy stack trace
+CopyCurrentError=Copy current error
+CopyAllErrors=Copy all errors

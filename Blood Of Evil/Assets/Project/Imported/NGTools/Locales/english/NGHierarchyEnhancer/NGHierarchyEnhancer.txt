@@ -1,0 +1,5 @@
+NGHierarchyEnhancer_EnableDescription=If active, allows Hierachy Enhancer to display your custom menus in Hierarchy window.
+NGHierarchyEnhancer_Margin=Margin
+NGHierarchyEnhancer_MarginDescription=Margin on the right of the toggle button in Hierarchy Window.
+NGHierarchyEnhancer_HoldModifiers=Hold Modifiers
+NGHierarchyEnhancer_HoldModifiersDescription=Set a mask of modifiers to allow holding a GameObject in the Hierarchy window.

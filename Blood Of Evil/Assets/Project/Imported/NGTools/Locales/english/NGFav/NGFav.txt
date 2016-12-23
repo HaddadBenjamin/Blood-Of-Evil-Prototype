@@ -1,0 +1,11 @@
+NGFav_ChangeSelection=Change Selection
+NGFav_ChangeSelectionDescription=Rule to replace the current selection when interacting with the favourites.
+NGFav_SelectModifiers=Select Modifiers
+NGFav_SelectModifiersDescription=Modifiers required to change the selection on click.
+NGFav_DeleteModifiers=Delete Modifiers
+NGFav_DeleteModifiersDescription=Modifiers required to delete a reference from the favorite on a click.
+NGFav_EraseSave=Erase save
+NGFav_EraseSaveQuestion=Confirm erase "{0}".
+NGFav_ClearSave=Clear save
+NGFav_ClearSaveQuestion=Delete all favorites inside "{0}".
+NGFav_ShortcutTooltip=Press Shift + F{0}.

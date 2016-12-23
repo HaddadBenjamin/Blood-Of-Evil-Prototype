@@ -1,0 +1,10 @@
+ContactFormWizard_Title=Formulaire de contact
+ContactFormWizard_ContactName=Nom de contact
+ContactFormWizard_ContactEMail=E-Mail de contact
+ContactFormWizard_UnityInformation=Information sur Unity
+ContactFormWizard_OSInformation=Information sur l'OS
+ContactFormWizard_HardwareInformation=Information du matériel
+ContactFormWizard_ValidEMailRequired=Un E-Mail valide est requis.
+ContactFormWizard_BugReportRecommendation=Ajouter les informations d'Unity, de l'OS et du matériel pour une rapport de bug est hautement recommendé.
+ContactFormWizard_PrepareTheEMail=Préparer l'E-Mail
+ContactFormWizard_SupportLanguagesWarning=Attention! Support en anglais/français uniquement!

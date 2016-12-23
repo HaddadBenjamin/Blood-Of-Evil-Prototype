@@ -1,0 +1,11 @@
+Les namespaces que j'utilise :
+- Utilities/Serialization : les classes de sérialization générique. 
+- Les répertoires Scene, Player, Entities, Ennemies : ils peuvent être composés de répertoire Modules et Services. 
+- Les répertoires Modules et Services : ils peuvent être composés des répertoires UI, Serialization, Configuration et Content. 
+- Le répertoire Entitites contient les scripts utilisés par le joueur dont hérite le joueur et les enemis.
+- Le répertoire Object In Scene contient tous les abstractions, interfaces et autres classes réutilisable par tous objet (joueur, portail, etc...).
+
+
+Exemples de namespaces :
+- Player / modules / Attributes / Configuration :
+     - Bonne pratique pour l'inclure : namespace BloodOfEvil.Player.Modules.Attributes.Configuration { }

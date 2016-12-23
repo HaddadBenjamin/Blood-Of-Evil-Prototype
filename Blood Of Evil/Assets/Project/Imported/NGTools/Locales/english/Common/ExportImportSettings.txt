@@ -1,0 +1,9 @@
+ExportSettings_Export=Export
+ExportSettings_ExportSuccess=Export is sucessful.
+ExportSettings_ExportFailed=Export has failed.
+ImportSettings_Import=Import
+ImportSettings_CantOverwriteInstance=Can not overwrite instance.
+ImportSettings_ImportCompleted=Importing settings completed.
+ImportSettings_ImportFailed=Import settings has failed.
+ImportSettings_TypeIsUnknown=Type "{0}" is unknown.
+ImportSettings_NoInstanceOfTypeFound=No instance of type "{0}" found.

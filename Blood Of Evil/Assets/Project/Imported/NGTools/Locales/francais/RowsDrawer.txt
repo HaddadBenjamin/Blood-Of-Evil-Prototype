@@ -1,0 +1,3 @@
+CopyLine=Copier la ligne
+CopyLog=Copier le log
+CopyStackTrace=Copier le tracé d'appels

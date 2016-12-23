@@ -1,0 +1,8 @@
+ContentFilter=By content
+FilterByThisContent=Filter by this content
+SearchMode=Search mode
+Keyword=Keyword
+CaseInsensitive=Case Insensitive
+CaseSensitive=Case Sensitive
+WholeMatch=Whole Match
+RegularExpressions=Regular Expressions

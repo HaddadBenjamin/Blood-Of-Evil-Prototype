@@ -1,0 +1,1 @@
+ScriptableObjectCreator_EnterAssetName=Enter the asset name

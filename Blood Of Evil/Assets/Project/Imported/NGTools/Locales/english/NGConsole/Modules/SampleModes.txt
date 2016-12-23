@@ -1,0 +1,4 @@
+Time=Time
+Text=Text
+MaxSamples=Max samples
+TimeStartMode_Time=Time (secs since start)

@@ -1,0 +1,6 @@
+HierarchyFilter=Par hiérarchie
+ParentObject="Object" parent
+IncludeChildren=Enfants inclus
+LastParent=Dernier parent:
+FilterByThisObject=Filtrer par cet "Object"
+ByHierarchy=Par hiérarchie

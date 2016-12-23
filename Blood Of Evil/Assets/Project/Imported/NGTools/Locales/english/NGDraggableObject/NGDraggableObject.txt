@@ -1,0 +1,1 @@
+NGDraggableObject_EnableDescription=If active, the PropertyDrawer for any Unity Object in inspector will be overriden.

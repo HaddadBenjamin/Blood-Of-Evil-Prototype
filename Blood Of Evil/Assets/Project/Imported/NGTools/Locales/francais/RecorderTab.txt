@@ -1,0 +1,3 @@
+NoSampleCreated=Aucun échantillon créé.
+ChangeName=Changer nom
+ExportSamples=Exporter échantillons

@@ -1,0 +1,2 @@
+DataSeparator=Séparateur de données
+LogSeparator=Séparateur de logs

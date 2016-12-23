@@ -1,0 +1,4 @@
+NameHierarchyFilter=By name
+GameObjectWithName=Game Object with name
+FilterByThisObjectName=Filter by this Object's name
+ByName=By name

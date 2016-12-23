@@ -1,0 +1,4 @@
+Console_IssueEncoutered=NG Console has encountered a problem.
+Console_ExportSettings=Export settings
+Console_ImportSettings=Import settings
+Console_AssetNotFound=Asset was not found, can not open it.

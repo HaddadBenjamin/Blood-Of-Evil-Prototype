@@ -1,0 +1,7 @@
+RemoteModule_Address=Address
+RemoteModule_Port=Port
+RemoteModule_Connect=Connect
+RemoteModule_Disconnect=Disconnect
+RemoteModule_ExportStream=Export logs
+RemoteModule_CLIUnavailable=No commands available. CLI is disabled.
+RemoteModule_ClientDisconnected=Client disconnected.

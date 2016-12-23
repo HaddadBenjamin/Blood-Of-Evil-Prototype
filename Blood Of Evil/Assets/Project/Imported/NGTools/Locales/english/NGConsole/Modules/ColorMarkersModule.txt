@@ -1,0 +1,3 @@
+ColorMarkers=Color Markers
+NGSettings_ColorMarkersModule_NestedMenu=Put every menu items in a sub menu.
+NGSettings_ColorMarkersModule_ColorBackgrounds=Defines all available colors for logs.

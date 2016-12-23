@@ -1,0 +1,6 @@
+NGSettings_MainModule_AlertOnWarning=Blinks Compiler stream even if there is only warnings. Otherwise will only blinks on errors.
+MainModule_ChangeName=Change name
+MainModule_ExportStream=Export logs
+MainModule_ToggleCategory=Is category
+NGSettings_MainModule_WarningColor=Color of compile warning identifier.
+NGSettings_MainModule_ErrorColor=Color of compile error identifier.

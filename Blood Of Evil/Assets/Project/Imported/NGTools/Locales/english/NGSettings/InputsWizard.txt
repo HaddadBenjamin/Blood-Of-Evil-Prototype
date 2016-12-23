@@ -1,0 +1,2 @@
+InputsWizard_Title=Inputs manager
+InputsWizard_PressAnythingToEditCommand=Press any key to edit the input.

@@ -1,0 +1,1 @@
+StreamLog_ConsumeLogTooltip=Consume incoming log.

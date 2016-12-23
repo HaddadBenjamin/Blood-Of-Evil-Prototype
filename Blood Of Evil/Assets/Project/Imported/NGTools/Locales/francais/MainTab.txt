@@ -1,0 +1,3 @@
+ChangeName=Changer nom
+Delete=Supprimer
+ExportStream=Exporter logs

@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 76c3cedc7b060e149b123f3745277d69
+timeCreated: 1472216451
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Exocet
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 32fa6a4898220be4181febc5b0b94717, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
