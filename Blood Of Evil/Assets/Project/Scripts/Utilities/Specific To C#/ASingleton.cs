@@ -6,10 +6,12 @@ namespace BloodOfEvil.Utilities
     /// <summary>
     /// Gère les singletons qui ne sont pas des MonoBehaviour.
     /// </summary>
-    public class ASingleton<TSingletonType> where TSingletonType : class, new() 
+    public class ASingleton<TSingletonType> 
+        where TSingletonType : ASingleton<TSingletonType>, new()
     {
         #region Fields
         private static TSingletonType instance;
+        private static bool haveBeenInitialized;
         #endregion
 
         #region Properties
@@ -18,7 +20,10 @@ namespace BloodOfEvil.Utilities
             get
             {
                 if (null == instance)
-                    instance = new TSingletonType();
+                {
+                    instance = new TSingletonType ();
+                    instance.Initialize ();
+                }
 
                 return instance;
             }
@@ -30,7 +35,21 @@ namespace BloodOfEvil.Utilities
         {
             if (null != instance)
                 Debug.LogErrorFormat("[ASingleton] : le singleton de type {0} éxiste en plusieurs éxemplaires ce qui n'est pas logique.",
-                                            typeof(TSingletonType).Name);
+                    typeof(TSingletonType).Name);
+        }
+        #endregion
+
+        #region Virtual Behaviour
+        /// <summary>
+        /// La méthode d'initialisation de notre singleton.
+        /// </summary>
+        public virtual void Initialize()
+        {
+            if (haveBeenInitialized)
+                Debug.LogErrorFormat("[ASingletonMonoBehaviour] : le singleton de type {0} a une instance déjà initialisée.",
+                    typeof(TSingletonType).Name);
+
+            haveBeenInitialized = true;
         }
         #endregion
     }
