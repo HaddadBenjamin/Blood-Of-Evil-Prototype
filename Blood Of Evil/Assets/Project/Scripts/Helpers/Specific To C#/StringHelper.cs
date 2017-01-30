@@ -40,7 +40,7 @@ namespace BloodOfEvil.Helpers
             string separator = ":",
             int numberLength = 2)
         {
-            TimeSpan timeSpan = new TimeSpan(0, 0, 0, (int)(Mathf.Ceil(timeInSeconds)), (int)(timeInSeconds / 100.0f));
+            TimeSpan timeSpan = TimeSpan.FromSeconds(timeInSeconds);
             string timeString = "";
 
             if (showDays)
@@ -60,7 +60,10 @@ namespace BloodOfEvil.Helpers
                               (BooleanHelper.ContainsOneTrue(showMilliSeconds) ? separator : "");
 
             if (showMilliSeconds)
-                timeString += FillIntByZeros(timeSpan.Milliseconds, 2);
+            {
+                timeString += FillIntByZeros(timeSpan.Milliseconds - (timeSpan.Milliseconds % 10), 2);
+                timeString = timeString.Substring(0, timeString.Length - 1);
+            }
 
             return timeString;
         }
@@ -71,15 +74,23 @@ namespace BloodOfEvil.Helpers
         /// </summary>
         public static string FillIntByZeros(int integer, int integerLength = 2)
         {
-            //string text = "";
+            string text = "";
 
-            return (integer < 10 ? integer.ToString() : ("0" + integer.ToString()));
-            //
-            // Manque l'algo ici.
+            if (integer < 0)
+                text += "-";
 
-            //text += integer.ToString();
+            integer = Mathf.Abs(integer);
 
-            //return text;
+            for (; integerLength >= 2; integerLength--)
+            {
+                if (integer < (int)Mathf.Pow(10, integerLength - 1))
+                    text += "0";
+            }
+
+            if (integer != 0)
+                text += integer.ToString();
+
+            return text;
         }
 
         /// <summary>
