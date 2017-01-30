@@ -11,39 +11,45 @@ namespace BloodOfEvil.Helpers
     {
         #region Json Serializer
         /// <summary>
-        /// Charge le contenu d'un fichier json "jsonData" encrypté dans "dataToLoad".
+        /// Charge le contenu d'un fichier json "jsonData" puis le décrypte puis renvoit sa conversion dans une classe de données sérializable.
         /// </summary>
-        public static void JsonDeserializeLoadWithEncryption<TypeToDeserialize>(
+        public static void JsonSafeDeserializeLoadWithEncryption<TypeToDeserialize>(
             TypeToDeserialize dataToLoad,
             string jsonData)
-            where TypeToDeserialize : class
+            where TypeToDeserialize : class, new()
         {
             dataToLoad = JsonUtility.FromJson<TypeToDeserialize>(
-                            EncryptionHelper.Decrypt(jsonData));
+                EncryptionHelper.Decrypt(jsonData));
+
+            if (null == dataToLoad)
+                dataToLoad = new TypeToDeserialize();
         }
 
         /// <summary>
-        /// Charge le fichier json "jsonFilePath" puis le décrypte dans "dataToLoad".
+        /// Charge le fichier json correspondant au chenmin "jsonFilePath" puis le décrypte puis renvoit sa conversion dans une classe de données sérializable.
         /// </summary>
-        public static TypeToDeserialize JsonDeserializeLoadWithEncryption<TypeToDeserialize>(string jsonFilePath)
+        public static TypeToDeserialize JsonSafeDeserializeLoadWithEncryption<TypeToDeserialize>(string jsonFilePath) where TypeToDeserialize : new()
         {
-            return JsonUtility.FromJson<TypeToDeserialize>(
-                    EncryptionHelper.Decrypt(FileSystemHelper.SafeGetFileContent(GetCompleteSavePath(jsonFilePath, ".json"))));
+            TypeToDeserialize dataToLoad =  JsonUtility.FromJson<TypeToDeserialize>(
+                EncryptionHelper.Decrypt(FileSystemHelper.SafeGetFileContent(jsonFilePath)));
+
+            if (null == dataToLoad)
+                dataToLoad = new TypeToDeserialize();
+
+            return dataToLoad;
         }
 
         /// <summary>
-        /// Sauvegarde "dataToSave" en json puis l'encrypte dans "jsonFilePath".
+        /// Sauvegarde "dataToSave" en json puis l'encrypte dans le fichier correspondant au chemin "jsonFilePath".
         /// </summary>
         public static void JsonSerializeSaveWithEncryption<TypeToSerialize>(
             TypeToSerialize dataToSave,
             string jsonFilePath)
             where TypeToSerialize : class
         {
-            string savePath = GetCompleteSavePath(jsonFilePath, ".json");
+            FileSystemHelper.CreateFileDirectoryIfDontExists(jsonFilePath);
 
-            FileSystemHelper.CreateFileDirectoryIfDontExists(savePath);
-
-            using (StreamWriter streamWriter = File.CreateText(savePath))
+            using (StreamWriter streamWriter = File.CreateText(jsonFilePath))
             {
                 streamWriter.Write(
                     EncryptionHelper.Encrypt(
@@ -52,22 +58,30 @@ namespace BloodOfEvil.Helpers
         }
 
         /// <summary>
-        /// Charge le contenu d'un fichier xml "xmlData" dans "dataToLoad".
+        /// Charge le contenu d'un fichier json "jsonData" et le convertie dans la classe de données passé en paramètre "dataToLoad".
         /// </summary>
-        public static void JsonDeserializeLoad<TypeToDeserialize>(
+        public static void JsonSafeDeserializeLoad<TypeToDeserialize>(
             TypeToDeserialize dataToLoad,
-            string xmlData)
-            where TypeToDeserialize : class
+            string jsonData)
+            where TypeToDeserialize : class, new()
         {
-            dataToLoad = JsonUtility.FromJson<TypeToDeserialize>(xmlData);
+            dataToLoad = JsonUtility.FromJson<TypeToDeserialize>(jsonData);
+
+            if (dataToLoad == null)
+                dataToLoad = new TypeToDeserialize();
         }
 
         /// <summary>
-        /// Charge le fichier xml "jsonFilePath" dans "dataToLoad".
+        /// Charge le fichier json au "jsonFilePath" dans "dataToLoad".
         /// </summary>
-        public static TypeToDeserialize JsonDeserializeLoad<TypeToDeserialize>(string jsonFilePath)
+        public static TypeToDeserialize JsonSafeDeserializeLoad<TypeToDeserialize>(string jsonFilePath) where TypeToDeserialize : new()
         {
-            return JsonUtility.FromJson<TypeToDeserialize>(FileSystemHelper.SafeGetFileContent(GetCompleteSavePath(jsonFilePath, ".json")));
+            TypeToDeserialize dataLoaded = JsonUtility.FromJson<TypeToDeserialize>(FileSystemHelper.SafeGetFileContent(jsonFilePath));
+
+            if (null == dataLoaded)
+                dataLoaded = new TypeToDeserialize();
+
+            return dataLoaded;
         }
 
         /// <summary>
@@ -78,11 +92,9 @@ namespace BloodOfEvil.Helpers
             string jsonFilePath)
             where TypeToSerialize : class
         {
-            string savePath = GetCompleteSavePath(jsonFilePath, ".json");
+            FileSystemHelper.CreateFileDirectoryIfDontExists(jsonFilePath);
 
-            FileSystemHelper.CreateFileDirectoryIfDontExists(savePath);
-
-            using (StreamWriter streamWriter = File.CreateText(savePath))
+            using (StreamWriter streamWriter = File.CreateText(jsonFilePath))
             {
                 streamWriter.Write(JsonUtility.ToJson(dataToSave));
             }
