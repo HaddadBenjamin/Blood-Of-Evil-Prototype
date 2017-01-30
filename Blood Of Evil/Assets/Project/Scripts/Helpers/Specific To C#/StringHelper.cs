@@ -27,16 +27,59 @@ namespace BloodOfEvil.Helpers
         }
 
         /// <summary>
-        /// Créer puis renvoie une chaîne formatée d'un TimeSpan.
+        /// Formate un temps en secondes en chaîne de caractères avec la possibilité de choisir le séparateur et ce que l'on doit afficher.
+        /// Exemple de base : TimeToString(312.366f) -> MM:SS:ll -> 05:12:36.
         /// </summary>
-        public static string TimeToString(float time)
+        public static string TimeToString(
+            float timeInSeconds,
+            bool showMilliSeconds = true,
+            bool showSeconds = true,
+            bool showMinutes = true,
+            bool showHours = false,
+            bool showDays = false,
+            string separator = ":",
+            int numberLength = 2)
         {
-            System.TimeSpan timespan = System.TimeSpan.FromSeconds(time);
+            TimeSpan timeSpan = new TimeSpan(0, 0, 0, (int)(Mathf.Ceil(timeInSeconds)), (int)(timeInSeconds / 100.0f));
+            string timeString = "";
 
-            return
-                timespan.Hours > 0 ? string.Format("{0}h {1:D2}m", timespan.Hours, timespan.Minutes) :
-                timespan.Minutes > 0 ? string.Format("{0}m {1:D2}s", timespan.Minutes, timespan.Seconds) :
-                                        string.Format("{0}s", timespan.Seconds);
+            if (showDays)
+                timeString += FillIntByZeros(timeSpan.Days, 2) +
+                              (BooleanHelper.ContainsOneTrue(showHours, showMinutes, showSeconds, showMilliSeconds) ? separator : "");
+
+            if (showHours)
+                timeString += FillIntByZeros(timeSpan.Hours, 2) +
+                              (BooleanHelper.ContainsOneTrue(showMinutes, showSeconds, showMilliSeconds) ? separator : "");
+
+            if (showMinutes)
+                timeString += FillIntByZeros(timeSpan.Minutes, 2) +
+                              (BooleanHelper.ContainsOneTrue(showSeconds, showMilliSeconds) ? separator : "");
+
+            if (showSeconds)
+                timeString += FillIntByZeros(timeSpan.Seconds, 2) +
+                              (BooleanHelper.ContainsOneTrue(showMilliSeconds) ? separator : "");
+
+            if (showMilliSeconds)
+                timeString += FillIntByZeros(timeSpan.Milliseconds, 2);
+
+            return timeString;
+        }
+
+        /// <summary>
+        /// Convertit un entier chaîne de caractères en le remplissant de zéro en fonction de sa taille.
+        /// Exemple : FillIntByZeros(123, 5) -> 00123.
+        /// </summary>
+        public static string FillIntByZeros(int integer, int integerLength = 2)
+        {
+            //string text = "";
+
+            return (integer < 10 ? integer.ToString() : ("0" + integer.ToString()));
+            //
+            // Manque l'algo ici.
+
+            //text += integer.ToString();
+
+            //return text;
         }
 
         /// <summary>
