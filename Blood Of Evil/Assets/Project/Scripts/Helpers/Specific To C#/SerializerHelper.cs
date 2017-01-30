@@ -28,7 +28,7 @@ namespace BloodOfEvil.Helpers
         public static TypeToDeserialize JsonDeserializeLoadWithEncryption<TypeToDeserialize>(string jsonFilePath)
         {
             return JsonUtility.FromJson<TypeToDeserialize>(
-                    EncryptionHelper.Decrypt(System.IO.File.ReadAllText(GetCompleteSavePath(jsonFilePath, ".json"))));
+                    EncryptionHelper.Decrypt(FileSystemHelper.SafeGetFileContent(GetCompleteSavePath(jsonFilePath, ".json"))));
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace BloodOfEvil.Helpers
         /// </summary>
         public static TypeToDeserialize JsonDeserializeLoad<TypeToDeserialize>(string jsonFilePath)
         {
-            return JsonUtility.FromJson<TypeToDeserialize>(System.IO.File.ReadAllText(GetCompleteSavePath(jsonFilePath, ".json")));
+            return JsonUtility.FromJson<TypeToDeserialize>(FileSystemHelper.SafeGetFileContent(GetCompleteSavePath(jsonFilePath, ".json")));
         }
 
         /// <summary>
