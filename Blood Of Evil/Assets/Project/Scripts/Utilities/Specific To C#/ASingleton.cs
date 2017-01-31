@@ -51,6 +51,15 @@ namespace BloodOfEvil.Utilities
 
             haveBeenInitialized = true;
         }
+            
+        /// <summary>
+        /// Cette méthode est appelé lorsque l'on relance l'application.
+        /// Les enfants de cette classe devront l'override et réinitialiser tout leurs évênements (= null).
+        /// </summary>
+        public virtual void Reinitialize()
+        {
+            haveBeenInitialized = false;
+        }
         #endregion
     }
 }
