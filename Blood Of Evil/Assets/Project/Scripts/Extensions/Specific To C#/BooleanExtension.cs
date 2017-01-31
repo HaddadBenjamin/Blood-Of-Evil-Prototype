@@ -6,7 +6,7 @@ namespace BloodOfEvil.Extensions
     public static class BooleanExtension
     {
       /// <summary>
-      /// Inverse la valeur duCe s boolean.
+      /// Inverse la valeur de ce boolean.
       /// </summary>
       public static void Inverse(this bool boolean)
       {
