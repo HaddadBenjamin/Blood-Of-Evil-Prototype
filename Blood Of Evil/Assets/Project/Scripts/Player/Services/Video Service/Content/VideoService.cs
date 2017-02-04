@@ -238,6 +238,7 @@ namespace BloodOfEvil.Player.Services.Video
 
         private void UpdateResolution()
         {
+            Debug.Log(resolution);
             int indexOfX = this.Resolution.IndexOf('x');
             int width = int.Parse(this.Resolution.Substring(0, indexOfX));
             int height = int.Parse(this.Resolution.Substring(indexOfX + 1, this.Resolution.Length - indexOfX - 1));
