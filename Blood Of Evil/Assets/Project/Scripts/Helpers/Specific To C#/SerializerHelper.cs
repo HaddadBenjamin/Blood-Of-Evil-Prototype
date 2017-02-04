@@ -1,14 +1,84 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Xml.Serialization;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
+using BloodOfEvil.Scene.Services.Serializer;
+
 namespace BloodOfEvil.Helpers
 {
+
     public static class SerializerHelper
     {
+        public static void Load<TTypeToSave>(
+       string path,
+       bool adaptThePath = true,
+       bool isReplicatedNextTheBuild = false,
+       bool isEncrypted = false,
+       EFileExtension fileExtension = EFileExtension.Json,
+       Action<TTypeToSave> onLoadSuccess = null, // Action(TTypeLoaded loadedData) => { this.data = loadedData; }
+       Action onAfterLoadSuccess = null, // action 
+       Action onLoadError = null) where TTypeToSave : class, new()
+        {
+            SerializerService.Instance.CallSafeAndCrossPlatformLoadFileContent<TTypeToSave>(
+                path,
+                adaptThePath: adaptThePath,
+                isReplicatedNextTheBuild: isReplicatedNextTheBuild,
+                isEncrypted: isEncrypted,
+                fileExtension: fileExtension,
+                onLoadSuccess: onLoadSuccess,
+                onAfterLoadSuccess: onAfterLoadSuccess,
+                onLoadError: onLoadError);
+        }
+
+        /// <summary>
+        /// Créé le chemin si il n'éxiste pas puis lui rajoute le contenu.
+        /// </summary>
+        public static void Save<TTypeToSave>(
+            string path,
+            TTypeToSave dataToSave,
+            bool adaptThePath = true,
+            bool isReplicatedNextTheBuild = false,
+            bool isEncrypted = false,
+            EFileExtension fileExtension = EFileExtension.Json) where TTypeToSave : class, new()
+        {
+            if (adaptThePath)
+                path = UnityFileSystemHelper.GetCrossPlatformAndAdaptativePath(path, isReplicatedNextTheBuild, fileExtension);
+
+            string fileContent = "";
+
+            if (EFileExtension.Json == fileExtension)
+                fileContent = JsonUtility.ToJson(dataToSave);
+            // Il fuadrait que je test pour le xml et le binaire, mais autrement la partie en json fonctionne.
+            else if (EFileExtension.Xml == fileExtension)
+            {
+                FileStream fileStream = new FileStream(path, FileMode.Create);
+                new XmlSerializer(typeof(TTypeToSave)).Serialize(fileStream, dataToSave);
+                fileStream.Close();
+
+                fileContent = FileSystemHelper.SafeGetFileContent(path);
+            }
+            else if (EFileExtension.Bin == fileExtension)
+            {
+                FileStream fileStream = new FileStream(path, FileMode.Create);
+                new BinaryFormatter().Serialize(fileStream, dataToSave);
+                fileStream.Close();
+
+                fileContent = FileSystemHelper.SafeGetFileContent(path);
+            }
+            if (isEncrypted)
+                fileContent = EncryptionHelper.Encrypt(fileContent);
+
+            FileSystemHelper.SafeWriteAllText(path, fileContent);
+        }
+
+
+
+
+
         #region Json Serializer
         /// <summary>
         /// Charge le contenu d'un fichier json "jsonData" puis le décrypte puis renvoit sa conversion dans une classe de données sérializable.

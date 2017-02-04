@@ -3,9 +3,12 @@ using System.Collections;
 
 namespace BloodOfEvil.Utilities
 {
+    using UnityEngine;
+    using System.Collections;
+    using System;
+
     /// <summary>
     /// Gère les singletons de type MonoBehaviour et leurs différentes érreurs potentielles.
-    /// Malheuresement il est impossible de mettre la donnée dont destroy on load ici en serializefield et l'utiliser ici.
     /// </summary>
     public class ASingletonMonoBehaviour<TSingletonType> : MonoBehaviour
         where TSingletonType : ASingletonMonoBehaviour<TSingletonType>
@@ -33,8 +36,12 @@ namespace BloodOfEvil.Utilities
                     }
 
                     else if (instance == null)
-                        Debug.LogErrorFormat("[ASingletonMonoBehaviour] : le singleton de type {0} a une instance de valeur null.",
+                    {
+                        Debug.LogWarningFormat("[ASingletonMonoBehaviour] : le singleton de type {0} a une instance de valeur null.",
                             typeof(TSingletonType).Name);
+
+                        return null;
+                    }
 
                     else
                         instance.Initialize();
@@ -59,12 +66,32 @@ namespace BloodOfEvil.Utilities
         }
 
         /// <summary>
+        /// Désinscrit les évênements du singleton.
+        /// </summary>
+        public virtual void UnsubcribeEvents() { }
+        #endregion
+
+        #region Public Behaviour
+        /// <summary>
+        /// Cette méthode détruit proprement le singleton.
+        /// </summary>
+        public static void Destroy()
+        {
+            if (null != instance)
+            {
+                instance.Reinitialize();
+                Destroy(instance.gameObject);
+            }
+        }
+
+        /// <summary>
         /// Cette méthode est appelé lorsque l'on relance l'application.
         /// Les enfants de cette classe devront l'override et réinitialiser tout leurs évênements (= null).
         /// </summary>
-        public virtual void Reinitialize()
+        public void Reinitialize()
         {
             haveBeenInitialized = false;
+            this.UnsubcribeEvents();
         }
         #endregion
     }
