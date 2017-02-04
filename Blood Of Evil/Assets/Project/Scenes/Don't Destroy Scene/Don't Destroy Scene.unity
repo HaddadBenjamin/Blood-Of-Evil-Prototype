@@ -12511,6 +12511,7 @@ GameObject:
   - 114: {fileID: 768083053}
   - 114: {fileID: 768083050}
   - 114: {fileID: 768083054}
+  - 114: {fileID: 768083049}
   m_Layer: 0
   m_Name: SCENE SERVICE CONTAINER
   m_TagString: Untagged
@@ -12621,6 +12622,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+--- !u!114 &768083049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 768083042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0e94fd36cc2a214ca7f8004b3d56683, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &768083050
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26956,7 +26968,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 646849899}
   m_HandleRect: {fileID: 646849898}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
