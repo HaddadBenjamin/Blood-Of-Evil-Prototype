@@ -33,14 +33,6 @@ namespace BloodOfEvil.Helpers
 	    }
 
 	    /// <summary>
-	    /// Détermine si le "path" est un répertoire.
-	    /// </summary>
-	    public static bool IsDirectory(string path)
-	    {
-		return (File.GetAttributes(@path) & FileAttributes.Directory) == FileAttributes.Directory;
-	    }
-
-	    /// <summary>
 	    /// Renvoit si le fichier ou le répertoire éxiste.
 	    /// </summary>
 	    public static bool DoesPathExists(string path)
@@ -56,55 +48,80 @@ namespace BloodOfEvil.Helpers
 		string path,
 		string[] extensions)
 	    {
-		return Array.Exists(extensions, extension => extension.Equals(Path.GetExtension(@path)));
+		    return Array.Exists(extensions, extension => extension.Equals(Path.GetExtension(@path)));
 	    }
 
-	    /// <summary>
-	    /// Créé un fichier vide au chemin "path".
-	    /// </summary>
-	    public static void CreateEmptyFile(string path)
-	    {
-		FileStream fileStream = File.Create(@path);
+        /// <summary>
+        /// Créé un fichier vide au chemin "path".
+        /// </summary>
+        public static void SafeCreatePath(string path)
+        {
+            try
+            {
+                string pathDirectory = Path.GetDirectoryName(@path);
 
-		fileStream.Close();
-	    }
+                if (!string.IsNullOrEmpty(@pathDirectory) &&
+                    !Directory.Exists(@pathDirectory))
+                    Directory.CreateDirectory(@pathDirectory);
 
-	    /// <summary>
-	    /// Permet de créer un fichier de manière sécurisée en créant le répertoire parent du fichier si il n'éxiste pas encore.
-	    /// Permet donc de s'assurer qu'un chemin éxiste.
-	    /// </summary>
-	    public static void SafeCreatePathIfDontExists(string path)
-	    {
-		if (!string.IsNullOrEmpty(@path))
-		{
-		    // Si on interprète le chemin comme un fichier.
-		    if (DoesPathIsAFileOrADirectory(@path))
-		    {
-			string pathDirectory = Path.GetDirectoryName(@path);
 
-			// Crée le répertoire parent de "path" si il n'éxiste pas.
-			if (!string.IsNullOrEmpty(pathDirectory) &&
-			    !Directory.Exists(pathDirectory))
-			    Directory.CreateDirectory(pathDirectory);
+                if (!string.IsNullOrEmpty(@path) &&
+                    //!IsDirectory(@path) &&
+                    !File.Exists(@path))
+                {
+                    System.IO.FileStream fileStream = System.IO.File.Create(@path);
+                    fileStream.Close();
+                }
+            }
+            catch (Exception exception)
+            {
+                UnityEngine.Debug.LogFormat("Exception lancé durant la création d'un chemin : {0} au chemin {1}",
+                    exception.Message,
+                    path);
 
-			// Crée le fichier si il n'éxiste pas.
-			if (!File.Exists(@path))
-			    CreateEmptyFile(path);
-		    }
-		    // Si on interprète le chemin comme un répertoire.
-		    else
-		    {
-			// Crée le répertoire si il n'éxiste pas.
-			if (!Directory.Exists(@path))
-			    Directory.CreateDirectory(@path);
-		    }
-		}
-	    }
+                throw;
+            }
+        }
 
-	    /// <summary>
-	    /// Combine 2 chemins.
-	    /// </summary>
-	    public static string CombinePath(string path, string subPath)
+        /// <summary>
+        /// Permet de créer un fichier de manière sécurisée en créant le répertoire parent du fichier si il n'éxiste pas encore.
+        /// Permet donc de s'assurer qu'un chemin éxiste.
+        /// </summary>
+        public static void SafeCreatePathIfDontExists(string path)
+        {
+            if (!DoesPathExists(@path))
+                SafeCreatePath(@path);
+
+            //if (!string.IsNullOrEmpty(@path))
+            //{
+            //    // Si on interprète le chemin comme un fichier.
+            //    if (DoesPathIsAFileOrADirectory(@path))
+            //    {
+            //        string pathDirectory = Path.GetDirectoryName(@path);
+
+            //        // Crée le répertoire parent de "path" si il n'éxiste pas.
+            //        if (!string.IsNullOrEmpty(pathDirectory) &&
+            //            !Directory.Exists(pathDirectory))
+            //            Directory.CreateDirectory(pathDirectory);
+
+            //        // Crée le fichier si il n'éxiste pas.
+            //        if (!File.Exists(@path))
+            //            SafeCreateEmptyFile(path);
+            //    }
+            //    // Si on interprète le chemin comme un répertoire.
+            //    else
+            //    {
+            //        // Crée le répertoire si il n'éxiste pas.
+            //        if (!Directory.Exists(@path))
+            //            Directory.CreateDirectory(@path);
+            //    }
+            //}
+        }
+
+        /// <summary>
+        /// Combine 2 chemins.
+        /// </summary>
+        public static string CombinePath(string path, string subPath)
 	    {
 		///Devrait utilise "params string subPath".
 		return Path.Combine(@path, @subPath);
@@ -219,14 +236,16 @@ namespace BloodOfEvil.Helpers
 		return new FileInfo(path).IsReadOnly;
 	    }
 
-	    /// <summary>
-	    /// Créé le chemin si il n'éxiste pas puis lui rajoute le contenu.
-	    /// </summary>
-	    public static void SafeWriteAllText(string path, string content)
-	    {
-		SafeCreatePathIfDontExists(path);
+        /// <summary>
+        /// Créé le chemin si il n'éxiste pas puis lui rajoute le contenu.
+        /// </summary>
+        public static void SafeWriteAllText(string path, string content)
+        {
+            SafeCreatePathIfDontExists(path);
 
-		File.WriteAllText(path, content);
-	    }
-	}
+            File.WriteAllText(@path, content);
+            //using (StreamWriter outputFile = new StreamWriter(@path))
+            //    outputFile.Write(content);
+        }
+    }
 }

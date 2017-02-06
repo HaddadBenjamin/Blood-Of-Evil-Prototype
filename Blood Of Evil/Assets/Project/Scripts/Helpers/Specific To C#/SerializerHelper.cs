@@ -23,7 +23,7 @@ namespace BloodOfEvil.Helpers
        Action onAfterLoadSuccess = null, // action 
        Action onLoadError = null) where TTypeToSave : class, new()
         {
-            SerializerService.Instance.CallSafeAndCrossPlatformLoadFileContent<TTypeToSave>(
+            SerializationService.Instance.CallSafeAndCrossPlatformLoadFileContent<TTypeToSave>(
                 path,
                 adaptThePath: adaptThePath,
                 isReplicatedNextTheBuild: isReplicatedNextTheBuild,
@@ -73,6 +73,10 @@ namespace BloodOfEvil.Helpers
                 fileContent = EncryptionHelper.Encrypt(fileContent);
 
             FileSystemHelper.SafeWriteAllText(path, fileContent);
+
+            Debug.LogFormat("Save at {0} with {1}",
+                path,
+                fileContent);
         }
 
 

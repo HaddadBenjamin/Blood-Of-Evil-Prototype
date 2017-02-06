@@ -12,7 +12,7 @@ namespace BloodOfEvil.Helpers
     using Scene.Services.Serializer;
     using Extensions;
 
-    public class SerializerService : ASingletonMonoBehaviour<SerializerService>
+    public class SerializationService : ASingletonMonoBehaviour<SerializationService>
     {
         /// <summary>
         /// Récupère le contenu d'un fichier de manière multiplateformes et adapdative.
@@ -35,14 +35,14 @@ namespace BloodOfEvil.Helpers
         {
             StartCoroutine(this.SafeAndCrossPlatformLoadtFileContent<TTypeToSave>(new object[]
             {
-                path,
-                adaptThePath,
-                isReplicatedNextTheBuild,
-                isEncrypted,
-                fileExtension,
-                onLoadSuccess,
-                onAfterLoadSuccess,
-                onLoadError
+            path,
+            adaptThePath,
+            isReplicatedNextTheBuild,
+            isEncrypted,
+            fileExtension,
+            onLoadSuccess,
+            onAfterLoadSuccess,
+            onLoadError
             }));
         }
 
@@ -63,24 +63,50 @@ namespace BloodOfEvil.Helpers
 
             string fileContent = "";
 
-    #if UNITY_ANDROID
-                WWW www = new WWW(path);
+            #if UNITY_ANDROID
+                // Sur Android il faut ouvrir les fichiers de façon différente en fonction de si l'on les place près de la build ou non.
+                // Dans le cas où l'on la place près de la build on utilise un WWW et autrement un streamWriter.
+                if (isReplicatedNextTheBuild)
+                {
+                    WWW www = new WWW(@path);
 
-                yield return www;
+                    yield return www;
 
-                if (string.IsNullOrEmpty(www.error))
-                    fileContent = www.text;
-    #else
-            fileContent = FileSystemHelper.SafeGetFileContent(path);
-    #endif
+                    if (string.IsNullOrEmpty(www.error))
+                        fileContent = www.text;
+                    else
+                        Debug.LogErrorFormat("Erreur dans le chargement d'un fichier sur mobile et utilisation d'un WWW : {0}", www.error);
+                }
+                else
+                {
+                    try
+                    {
+                        using (StreamReader sr = new StreamReader(@path))
+                        {
+                            string line;
+
+                            while ((line = sr.ReadLine()) != null)
+                            {
+                                fileContent += line;
+                            }
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        Debug.LogErrorFormat("Erreur dans le chargement d'un fichier sur mobile et utilisation d'un WWW : {0}", exception.Message);
+                    }
+                }
+            #else
+                fileContent = FileSystemHelper.SafeGetFileContent(path);
+            #endif
 
             yield return null;
 
             if (isEncrypted)
                 fileContent = EncryptionHelper.Decrypt(fileContent);
 
-            //Debug.LogFormat("path : {0}", path);
-            //Debug.Log(fileContent);
+            Debug.LogFormat("path : {0}", @path);
+            Debug.Log(fileContent);
 
             if (!string.IsNullOrEmpty(fileContent))
             {
@@ -98,13 +124,18 @@ namespace BloodOfEvil.Helpers
                 {
                     using (TextReader textReader = new StringReader(fileContent))
                     {
-                        onLoadSuccess.SafeCall(new BinaryFormatter().Deserialize(((StreamReader)textReader).BaseStream) as TTypeToSave);
+                        onLoadSuccess.SafeCall(
+                            new BinaryFormatter().Deserialize(((StreamReader)textReader).BaseStream) as TTypeToSave);
                     }
                 }
                 onAfterLoadSuccess.SafeCall();
             }
             else
+            {
+                Debug.LogErrorFormat("Impossible de charger le fichier {0} de type <color=red>[{1}]</color>", path, typeof(TTypeToSave).Name);
+
                 onLoadError.SafeCall();
+            }
         }
     }
 }
