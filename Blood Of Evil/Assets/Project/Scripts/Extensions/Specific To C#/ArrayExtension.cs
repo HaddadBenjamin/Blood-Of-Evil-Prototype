@@ -1,13 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-/// <summary>
-/// Cette classe vient de Manzalab.
-/// </summary>
 namespace BloodOfEvil.Extensions
 {
     public static class ArrayExension
     {
+        /// <summary>
+        /// Retourne un index du tableau choisi de façon aléatoire.
+        /// </summary>
+        public static TArrayType SafeGetARandomElement<TArrayType>(TArrayType[] array)
+                where TArrayType : class
+        {
+            return (null == array || 0 == array.Length) ?
+                    null :
+                    array[Random.Range(0, array.Length)];
+        }
+        
+        
+        
+        
+        /// <summary>
+        /// Seulement les méthodes ci-dessous viennent de Manzalab.
+        /// </summary>
+        
+      
         public static T[] Add<T>(T[] array, T element)
         {
             List<T> newList = new List<T>();
