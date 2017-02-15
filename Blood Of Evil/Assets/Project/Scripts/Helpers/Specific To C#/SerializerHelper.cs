@@ -10,27 +10,22 @@ using BloodOfEvil.Scene.Services.Serializer;
 
 namespace BloodOfEvil.Helpers
 {
-
     public static class SerializerHelper
     {
         public static void Load<TTypeToSave>(
-       string path,
-       bool adaptThePath = true,
-       bool isReplicatedNextTheBuild = false,
-       bool isEncrypted = false,
-       EFileExtension fileExtension = EFileExtension.Json,
-       Action<TTypeToSave> onLoadSuccess = null, // Action(TTypeLoaded loadedData) => { this.data = loadedData; }
-       Action onAfterLoadSuccess = null, // action 
-       Action onLoadError = null) where TTypeToSave : class, new()
+           string path,
+           bool isReplicatedNextTheBuild = false,
+           bool isEncrypted = false,
+           EFileExtension fileExtension = EFileExtension.Json,
+           Action<TTypeToSave> onLoadSuccess = null, // Action(TTypeLoaded loadedData) => { this.data = loadedData; }
+           Action onLoadError = null) where TTypeToSave : class, new()
         {
             SerializationService.Instance.CallSafeAndCrossPlatformLoadFileContent<TTypeToSave>(
                 path,
-                adaptThePath: adaptThePath,
                 isReplicatedNextTheBuild: isReplicatedNextTheBuild,
                 isEncrypted: isEncrypted,
                 fileExtension: fileExtension,
                 onLoadSuccess: onLoadSuccess,
-                onAfterLoadSuccess: onAfterLoadSuccess,
                 onLoadError: onLoadError);
         }
 
@@ -40,35 +35,33 @@ namespace BloodOfEvil.Helpers
         public static void Save<TTypeToSave>(
             string path,
             TTypeToSave dataToSave,
-            bool adaptThePath = true,
             bool isReplicatedNextTheBuild = false,
             bool isEncrypted = false,
             EFileExtension fileExtension = EFileExtension.Json) where TTypeToSave : class, new()
         {
-            if (adaptThePath)
-                path = UnityFileSystemHelper.GetCrossPlatformAndAdaptativePath(path, isReplicatedNextTheBuild, fileExtension);
+            path = UnityFileSystemHelper.GetCrossPlatformAndAdaptativePath(path, isReplicatedNextTheBuild, fileExtension);
 
             string fileContent = "";
 
             if (EFileExtension.Json == fileExtension)
                 fileContent = JsonUtility.ToJson(dataToSave);
             // Il fuadrait que je test pour le xml et le binaire, mais autrement la partie en json fonctionne.
-            else if (EFileExtension.Xml == fileExtension)
-            {
-                FileStream fileStream = new FileStream(path, FileMode.Create);
-                new XmlSerializer(typeof(TTypeToSave)).Serialize(fileStream, dataToSave);
-                fileStream.Close();
+            //else if (EFileExtension.Xml == fileExtension)
+            //{
+            //    FileStream fileStream = new FileStream(path, FileMode.Create);
+            //    new XmlSerializer(typeof(TTypeToSave)).Serialize(fileStream, dataToSave);
+            //    fileStream.Close();
 
-                fileContent = FileSystemHelper.SafeGetFileContent(path);
-            }
-            else if (EFileExtension.Bin == fileExtension)
-            {
-                FileStream fileStream = new FileStream(path, FileMode.Create);
-                new BinaryFormatter().Serialize(fileStream, dataToSave);
-                fileStream.Close();
+            //    fileContent = FileSystemHelper.SafeGetFileContent(path);
+            //}
+            //else if (EFileExtension.Bin == fileExtension)
+            //{
+            //    FileStream fileStream = new FileStream(path, FileMode.Create);
+            //    new BinaryFormatter().Serialize(fileStream, dataToSave);
+            //    fileStream.Close();
 
-                fileContent = FileSystemHelper.SafeGetFileContent(path);
-            }
+            //    fileContent = FileSystemHelper.SafeGetFileContent(path);
+            //}
             if (isEncrypted)
                 fileContent = EncryptionHelper.Encrypt(fileContent);
 
