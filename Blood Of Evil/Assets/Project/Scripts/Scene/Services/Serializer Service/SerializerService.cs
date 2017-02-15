@@ -106,21 +106,21 @@ namespace BloodOfEvil.Helpers
                 if (EFileExtension.Json == fileExtension)
                     onLoadSuccess.SafeCall(JsonUtility.FromJson<TTypeToSave>(fileContent));
                 // Il faudrait que je test pour le XML et le binaire mais la méthode en json fonctionne du feu de dieu.
-                else if (EFileExtension.Xml == fileExtension)
-                {
-                    using (Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(fileContent)))
-                    {
-                        onLoadSuccess.SafeCall((new XmlSerializer(typeof(TTypeToSave)).Deserialize(stream)) as TTypeToSave);
-                    }
-                }
-                else if (EFileExtension.Bin == fileExtension)
-                {
-                    using (TextReader textReader = new StringReader(fileContent))
-                    {
-                        onLoadSuccess.SafeCall(
-                            new BinaryFormatter().Deserialize(((StreamReader)textReader).BaseStream) as TTypeToSave);
-                    }
-                }
+                //else if (EFileExtension.Xml == fileExtension)
+                //{
+                //    using (Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(fileContent)))
+                //    {
+                //        onLoadSuccess.SafeCall((new XmlSerializer(typeof(TTypeToSave)).Deserialize(stream)) as TTypeToSave);
+                //    }
+                //}
+                //else if (EFileExtension.Bin == fileExtension)
+                //{
+                //    using (TextReader textReader = new StringReader(fileContent))
+                //    {
+                //        onLoadSuccess.SafeCall(
+                //            new BinaryFormatter().Deserialize(((StreamReader)textReader).BaseStream) as TTypeToSave);
+                //    }
+                //}
             }
             else
             {
