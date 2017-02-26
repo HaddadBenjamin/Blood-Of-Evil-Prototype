@@ -7,6 +7,14 @@ namespace BloodOfEvil.Extensions
     public static class ColorExtension
     {
         /// <summary>
+        /// Convertie une couleur en chaîne héxadécimale, permet principalement de spécifier la couleur d'un rich text dans l'inspecteur.
+        /// </summary>
+        public static string ColorToHex(Color32 color)
+        {
+            return "#" + color.r.ToString("X2") + color.g.ToString("X2") + color.b.ToString("X2");
+        }
+        
+        /// <summary>
         /// Change la composante rouge d'une couleur.
         /// </summary>
         public static Color R(this Color color, float red)

@@ -24,25 +24,21 @@ namespace BloodOfEvil.Helpers
         /// </summary>
         public void CallSafeAndCrossPlatformLoadFileContent<TTypeToSave>(
             string path,
-            bool adaptThePath = false,
             bool isReplicatedNextTheBuild = false,
             bool isEncrypted = false,
             EFileExtension fileExtension = EFileExtension.Json,
             Action<TTypeToSave> onLoadSuccess = null,
-            Action onAfterLoadSuccess = null,
             Action onLoadError = null)
             where TTypeToSave : class, new()
         {
             StartCoroutine(this.SafeAndCrossPlatformLoadtFileContent<TTypeToSave>(new object[]
             {
-            path,
-            adaptThePath,
-            isReplicatedNextTheBuild,
-            isEncrypted,
-            fileExtension,
-            onLoadSuccess,
-            onAfterLoadSuccess,
-            onLoadError
+                path,
+                isReplicatedNextTheBuild,
+                isEncrypted,
+                fileExtension,
+                onLoadSuccess,
+                onLoadError
             }));
         }
 
@@ -50,55 +46,52 @@ namespace BloodOfEvil.Helpers
                 where TTypeToSave : class, new()
         {
             string path = (string)parameters[0];
-            bool adaptThePath = (bool)parameters[1];
-            bool isReplicatedNextTheBuild = (bool)parameters[2];
-            bool isEncrypted = (bool)parameters[3];
-            EFileExtension fileExtension = (EFileExtension)parameters[4];
-            Action<TTypeToSave> onLoadSuccess = (Action<TTypeToSave>)parameters[5];
-            Action onAfterLoadSuccess = (Action)parameters[6];
-            Action onLoadError = (Action)parameters[7];
+            bool isReplicatedNextTheBuild = (bool)parameters[1];
+            bool isEncrypted = (bool)parameters[2];
+            EFileExtension fileExtension = (EFileExtension)parameters[3];
+            Action<TTypeToSave> onLoadSuccess = (Action<TTypeToSave>)parameters[4];
+            Action onLoadError = (Action)parameters[5];
 
-            if (adaptThePath)
-                path = UnityFileSystemHelper.GetCrossPlatformAndAdaptativePath(path, isReplicatedNextTheBuild, fileExtension);
+            path = UnityFileSystemHelper.GetCrossPlatformAndAdaptativePath(path, isReplicatedNextTheBuild, fileExtension);
 
             string fileContent = "";
 
-            #if UNITY_ANDROID
-                // Sur Android il faut ouvrir les fichiers de façon différente en fonction de si l'on les place près de la build ou non.
-                // Dans le cas où l'on la place près de la build on utilise un WWW et autrement un streamWriter.
-                if (isReplicatedNextTheBuild)
-                {
-                    WWW www = new WWW(@path);
+    #if UNITY_ANDROID
+            // Sur Android il faut ouvrir les fichiers de façon différente en fonction de si l'on les place près de la build ou non.
+            // Dans le cas où l'on la place près de la build on utilise un WWW et autrement un streamWriter.
+            if (isReplicatedNextTheBuild)
+            {
+                WWW www = new WWW(@path);
 
-                    yield return www;
+                yield return www;
 
-                    if (string.IsNullOrEmpty(www.error))
-                        fileContent = www.text;
-                    else
-                        Debug.LogErrorFormat("Erreur dans le chargement d'un fichier sur mobile et utilisation d'un WWW : {0}", www.error);
-                }
+                if (string.IsNullOrEmpty(www.error))
+                    fileContent = www.text;
                 else
+                    Debug.LogErrorFormat("Erreur dans le chargement d'un fichier sur mobile et utilisation d'un WWW : {0}", www.error);
+            }
+            else
+            {
+                try
                 {
-                    try
+                    using (StreamReader sr = new StreamReader(@path))
                     {
-                        using (StreamReader sr = new StreamReader(@path))
-                        {
-                            string line;
+                        string line;
 
-                            while ((line = sr.ReadLine()) != null)
-                            {
-                                fileContent += line;
-                            }
+                        while ((line = sr.ReadLine()) != null)
+                        {
+                            fileContent += line;
                         }
                     }
-                    catch (Exception exception)
-                    {
-                        Debug.LogErrorFormat("Erreur dans le chargement d'un fichier sur mobile et utilisation d'un WWW : {0}", exception.Message);
-                    }
                 }
-            #else
+                catch (Exception exception)
+                {
+                    Debug.LogErrorFormat("Erreur dans le chargement d'un fichier sur mobile et utilisation d'un WWW : {0}", exception.Message);
+                }
+            }
+    #else
                 fileContent = FileSystemHelper.SafeGetFileContent(path);
-            #endif
+    #endif
 
             yield return null;
 
@@ -113,29 +106,33 @@ namespace BloodOfEvil.Helpers
                 if (EFileExtension.Json == fileExtension)
                     onLoadSuccess.SafeCall(JsonUtility.FromJson<TTypeToSave>(fileContent));
                 // Il faudrait que je test pour le XML et le binaire mais la méthode en json fonctionne du feu de dieu.
-                else if (EFileExtension.Xml == fileExtension)
-                {
-                    using (Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(fileContent)))
-                    {
-                        onLoadSuccess.SafeCall((new XmlSerializer(typeof(TTypeToSave)).Deserialize(stream)) as TTypeToSave);
-                    }
-                }
-                else if (EFileExtension.Bin == fileExtension)
-                {
-                    using (TextReader textReader = new StringReader(fileContent))
-                    {
-                        onLoadSuccess.SafeCall(
-                            new BinaryFormatter().Deserialize(((StreamReader)textReader).BaseStream) as TTypeToSave);
-                    }
-                }
-                onAfterLoadSuccess.SafeCall();
+                //else if (EFileExtension.Xml == fileExtension)
+                //{
+                //    using (Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(fileContent)))
+                //    {
+                //        onLoadSuccess.SafeCall((new XmlSerializer(typeof(TTypeToSave)).Deserialize(stream)) as TTypeToSave);
+                //    }
+                //}
+                //else if (EFileExtension.Bin == fileExtension)
+                //{
+                //    using (TextReader textReader = new StringReader(fileContent))
+                //    {
+                //        onLoadSuccess.SafeCall(
+                //            new BinaryFormatter().Deserialize(((StreamReader)textReader).BaseStream) as TTypeToSave);
+                //    }
+                //}
             }
             else
             {
-                Debug.LogErrorFormat("Impossible de charger le fichier {0} de type <color=red>[{1}]</color>", path, typeof(TTypeToSave).Name);
+                if (null == onLoadError)
+                    Debug.LogErrorFormat("Impossible de charger le fichier {0} de type <color=red>[{1}]</color>", path, typeof(TTypeToSave).Name);
+                else
+                    Debug.LogWarningFormat("Impossible de charger le fichier {0} de type <color=red>[{1}]</color>", path, typeof(TTypeToSave).Name);
 
                 onLoadError.SafeCall();
             }
+
+            //onAfterLoadSuccess.SafeCall();
         }
     }
 }

@@ -23,6 +23,16 @@ namespace BloodOfEvil.Helpers
         {
             return new Color(r / 255.0f, g / 255.0f, b / 255.0f, a);
         }
+        
+        /// Convertie une châine de charactères héxadécimale en couleur.
+        public static Color HexToColor(string hex)
+        {
+            return new Color32(
+                byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber),
+                byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber),
+                byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber),
+                255);
+        }
         #endregion
     }
 }
