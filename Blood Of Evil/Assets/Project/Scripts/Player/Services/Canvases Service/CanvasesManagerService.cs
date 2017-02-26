@@ -76,13 +76,13 @@ namespace BloodOfEvil.Player.Services.Canvases
             Array.ForEach(base.references, obj => DontDestroyOnLoad(obj));
             Array.ForEach(base.references, obj =>
             {
-                UnityEngine.UI.Shadow shadow = obj.transform.Find("Panel").gameObject.AddComponent<UnityEngine.UI.Shadow>();
+                UnityEngine.UI.Shadow shadow = obj.transform.Find("Anchor Responsive/Panel").gameObject.AddComponent<UnityEngine.UI.Shadow>();
 
                 shadow.effectDistance = this.shadowEffectDistance;
                 shadow.effectColor = this.shadowColor;
                 shadow.useGraphicAlpha = true;
             });
-            Array.ForEach(base.references, obj => obj.transform.Find("Panel").gameObject.AddComponent<PanelDraggable>());
+            Array.ForEach(base.references, obj => obj.transform.Find("Anchor Responsive/Panel").gameObject.AddComponent<PanelDraggable>());
             Array.ForEach(this.fadeInFadeOutCanvases, fadeInFadeOutCanvas => fadeInFadeOutCanvas.Initalize());
             Array.ForEach(this.canvasesScaler, canvasScaler => canvasScaler.referenceResolution = this.GetCanvasResolutionReference());
             Array.ForEach(this.canvasesScalerSimpleUI, canvasScaler => canvasScaler.referenceResolution = this.GetCanvasResolutionReference());

@@ -81,43 +81,43 @@ Material:
       second: 0.75
     - first:
         name: _Particles1OffsetX
-      second: 1.3148682
+      second: 18.320124
     - first:
         name: _Particles1OffsetY
-      second: 0.8943764
+      second: 9.344272
     - first:
         name: _Particles1Tiling
       second: 1
     - first:
         name: _Particles2OffsetX
-      second: 1.3148682
+      second: 18.320124
     - first:
         name: _Particles2OffsetY
-      second: 0.8943764
+      second: 9.344272
     - first:
         name: _Particles2Tiling
       second: 0.5
     - first:
         name: _Smoke1OffsetX
-      second: 0.5545215
+      second: 5.202921
     - first:
         name: _Smoke1OffsetY
-      second: 0.7647672
+      second: 9.690852
     - first:
         name: _Smoke1Tiling
       second: 0.8
     - first:
         name: _Smoke2OffsetX
-      second: 0.512798
+      second: 9.199013
     - first:
         name: _Smoke2OffsetY
-      second: 0.512798
+      second: 9.199013
     - first:
         name: _Smoke2Tiling
       second: 0.75
     - first:
         name: _SurfaceOffsetX
-      second: 0.7237933
+      second: 9.328353
     m_Colors:
     - first:
         name: _BaseColor
