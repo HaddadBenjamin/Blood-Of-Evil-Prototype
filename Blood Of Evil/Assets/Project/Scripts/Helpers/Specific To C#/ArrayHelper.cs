@@ -1,8 +1,12 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace BloodOfEvil.Helpers
 {
+    using Utilities;
+    using Helpers;
+
     public static class ArrayHelper
     {
         /// <summary>
@@ -26,7 +30,7 @@ namespace BloodOfEvil.Helpers
             if (null == array || 0 == array.Length)
                 return;
 
-            List<int> shuffleIndexes = RandomHelper.GetAShuffleIntList(array.Length);
+            List<int> shuffleIndexes = ListHelper.GetAShuffleIntList(array.Length);
 
             for (int arrayIndex = 0; arrayIndex < array.Length; arrayIndex++)
                 Utilities.Swap(ref array[shuffleIndexes[arrayIndex]], ref array[arrayIndex]);

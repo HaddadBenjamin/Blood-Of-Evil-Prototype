@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using BloodOfEvil.Utilities;
 
 public class ImagesService : ASingletonMonoBehaviour<ImagesService>
 {

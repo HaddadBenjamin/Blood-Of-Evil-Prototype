@@ -1,16 +1,20 @@
 using UnityEngine;
 using System.Collections;
 
-public static class Utilities
+namespace BloodOfEvil.Utilities
 {
-    /// <summary>
-    /// Échange la valeur de 2 objets.
-    /// </summary>
-    public static void Swap<TSwapType>(ref TSwapType leftValue, ref TSwapType rightValue)
+    public static class Utilities
     {
-        TSwapType tempValue = leftValue;
+        /// <summary>
+        /// Échange la valeur de 2 objets.
+        /// </summary>
+        public static void Swap<TSwapType>(ref TSwapType leftValue,
+            ref TSwapType rightValue)
+        {
+            TSwapType tempValue = leftValue;
 
-        leftValue = rightValue;
-        rightValue = tempValue;
+            leftValue = rightValue;
+            rightValue = tempValue;
+        }
     }
 }

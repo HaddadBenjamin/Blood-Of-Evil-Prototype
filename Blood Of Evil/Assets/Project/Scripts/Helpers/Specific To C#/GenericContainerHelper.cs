@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 namespace BloodOfEvil.Helpers
 {
+    using Utilities;
+
     public static class GenericContainerHelper
     {
         /// <summary>
@@ -30,7 +32,7 @@ namespace BloodOfEvil.Helpers
             if (null == containerType || 0 == (containerType as ICollection).Count)
                 return;
 
-            List<int> shuffleIndexes = RandomHelper.GetAShuffleIntList((containerType as ICollection).Count);
+            List<int> shuffleIndexes = ListHelper.GetAShuffleIntList((containerType as ICollection).Count);
 
             for (int arrayIndex = 0; arrayIndex < (containerType as ICollection).Count; arrayIndex++)
             {
