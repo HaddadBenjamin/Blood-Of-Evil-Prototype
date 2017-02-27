@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
 	[Exportable(ExportableAttribute.ArrayOptions.Add)]
 	public class StreamLog : ISettingExportable
 	{
+		private static string	PacMan = "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";
+
 		/// <summary>Called whenever a filter's setting is altered, enabled or disabled.</summary>
 		[NonSerialized]
 		public Action	FilterAltered;
@@ -106,7 +107,10 @@ namespace NGToolsEditor
 			this.warningContent = new GUIContent(Utility.GetConsoleIcon("console.warnicon.sml"));
 			this.errorContent = new GUIContent(Utility.GetConsoleIcon("console.erroricon.sml"));
 			this.exceptionContent = new GUIContent(this.errorContent.image);
-			this.consumeLogContent = new GUIContent("", AssetDatabase.LoadAssetAtPath(Path.Combine(Preferences.RootPath, "Common/Misc/pacman.png"), typeof(Texture2D)) as Texture2D);
+
+			Texture2D	pacman = new Texture2D(0, 0);
+			pacman.LoadImage(Convert.FromBase64String(StreamLog.PacMan));
+			this.consumeLogContent = new GUIContent(pacman);
 		}
 
 		public virtual void	Uninit()
@@ -130,9 +134,7 @@ namespace NGToolsEditor
 			if (EditorGUI.EndChangeCheck() == true)
 			{
 				if (Event.current.button == 0)
-				{
 					this.container.FocusStream(i);
-				}
 				else
 				{
 					// Show context menu on right click.
@@ -145,9 +147,7 @@ namespace NGToolsEditor
 						menu.DropDown(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y, 0, 0));
 					}
 					else if (Event.current.button == 2)
-					{
 						this.DeleteStream(i);
-					}
 				}
 			}
 		}
@@ -184,19 +184,12 @@ namespace NGToolsEditor
 				if (this.displayException == false)
 					return false;
 			}
-			else if ((row.log.mode & Mode.Error) != 0 ||
-					 (row.log.mode & Mode.Fatal) != 0 ||
-					 (row.log.mode & Mode.ScriptingError) != 0 ||
-					 (row.log.mode & Mode.ScriptCompileError) != 0 ||
-					 (row.log.mode & Mode.Assert) != 0 ||
-					 (row.log.mode & Mode.AssetImportError) != 0)
+			else if ((row.log.mode & (Mode.ScriptCompileError | Mode.ScriptingError | Mode.Fatal | Mode.Error | Mode.Assert | Mode.AssetImportError | Mode.ScriptingAssertion)) != 0)
 			{
 				if (this.displayError == false)
 					return false;
 			}
-			else if ((row.log.mode & Mode.ScriptingWarning) != 0 ||
-					 (row.log.mode & Mode.ScriptCompileWarning) != 0 ||
-					 (row.log.mode & Mode.AssetImportWarning) != 0)
+			else if ((row.log.mode & (Mode.ScriptCompileWarning | Mode.ScriptingWarning | Mode.AssetImportWarning)) != 0)
 			{
 				if (this.displayWarning == false)
 					return false;
@@ -411,6 +404,12 @@ namespace NGToolsEditor
 			this.displayException = GUI.Toggle(r, this.displayException, this.exceptionContent, Preferences.Settings.general.menuButtonStyle);
 			r.x += r.width;
 
+			this.consumeLogContent.tooltip = LC.G("StreamLog_ConsumeLogTooltip");
+			this.consumeLog = GUI.Toggle(r, this.consumeLog, this.consumeLogContent, Preferences.Settings.general.menuButtonStyle);
+			r.x += r.width;
+
+			r.width = maxWidth - r.width * 4F;
+
 			// Update Unity Console only if required.
 			if (EditorGUI.EndChangeCheck() == true)
 			{
@@ -422,12 +421,6 @@ namespace NGToolsEditor
 				Utility.RepaintConsoleWindow();
 			}
 
-			this.consumeLogContent.tooltip = LC.G("StreamLog_ConsumeLogTooltip");
-			this.consumeLog = GUI.Toggle(r, this.consumeLog, this.consumeLogContent, Preferences.Settings.general.menuButtonStyle);
-			r.x += r.width;
-
-			r.width = maxWidth - r.width * 4F;
-
 			return r;
 		}
 
@@ -435,6 +428,7 @@ namespace NGToolsEditor
 		{
 			EditorGUI.BeginChangeCheck();
 
+			r.height += 2F; // Layout overflows, this 2F fixes the error margin.
 			GUILayout.BeginArea(r);
 			{
 				GUILayout.BeginHorizontal();
@@ -492,26 +486,24 @@ namespace NGToolsEditor
 		private void	ToggleCategory()
 		{
 			this.onlyCategory = !this.onlyCategory;
+			this.console.SaveModules();
 		}
 
 		private void	RenameStream(object data, string newName)
 		{
 			if (string.IsNullOrEmpty(newName) == false)
 				this.name = newName;
+			this.console.SaveModules();
 		}
 
 		protected void	CountLog(Row row)
 		{
 			if ((row.log.mode & Mode.ScriptingException) != 0)
 				++this.exceptionCount;
-			else if ((row.log.mode & (Mode.ScriptCompileError | Mode.ScriptingError | Mode.Fatal | Mode.Error | Mode.Assert | Mode.AssetImportError)) != 0)
-			{
+			else if ((row.log.mode & (Mode.ScriptCompileError | Mode.ScriptingError | Mode.Fatal | Mode.Error | Mode.Assert | Mode.AssetImportError | Mode.ScriptingAssertion)) != 0)
 				++this.errorCount;
-			}
 			else if ((row.log.mode & (Mode.ScriptCompileWarning | Mode.ScriptingWarning | Mode.AssetImportWarning)) != 0)
-			{
 				++this.warningCount;
-			}
 			else
 				++this.logCount;
 			++this.totalCount;
@@ -521,14 +513,10 @@ namespace NGToolsEditor
 		{
 			if ((row.log.mode & Mode.ScriptingException) != 0)
 				--this.exceptionCount;
-			else if ((row.log.mode & (Mode.ScriptCompileError | Mode.ScriptingError | Mode.Fatal | Mode.Error | Mode.Assert | Mode.AssetImportError)) != 0)
-			{
+			else if ((row.log.mode & (Mode.ScriptCompileError | Mode.ScriptingError | Mode.Fatal | Mode.Error | Mode.Assert | Mode.AssetImportError | Mode.ScriptingAssertion)) != 0)
 				--this.errorCount;
-			}
 			else if ((row.log.mode & (Mode.ScriptCompileWarning | Mode.ScriptingWarning | Mode.AssetImportWarning)) != 0)
-			{
 				--this.warningCount;
-			}
 			else
 				--this.logCount;
 			--this.totalCount;

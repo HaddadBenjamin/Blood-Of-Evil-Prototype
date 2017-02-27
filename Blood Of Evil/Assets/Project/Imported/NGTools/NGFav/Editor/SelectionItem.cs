@@ -1,28 +1,32 @@
 ﻿using NGTools;
+using NGTools.NGFav;
+using NGTools.NGRemoteScene;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGFav
 {
 	using UnityEngine;
 
 	[Serializable]
-	public class SelectionItem
+	public sealed class SelectionItem
 	{
 		public const char	DataSeparator = ';';
 		public const char	DataSeparatorCharPlaceholder = (char)5;
 
 		private static Dictionary<string, MethodInfo>	cachedMethods = new Dictionary<string, MethodInfo>();
 
-		public string		assetPath;
+		public string		assetPath = string.Empty;
 		public Object		@object;
-		public List<string>	hierarchy;
+		public List<string>	hierarchy = new List<string>();
 		public string		resolverAssemblyQualifiedName;
 		public int			dataResolver;
 
 		public string	resolverFailedError;
+
+		private int	lastHierarchyUpdate = 0;
 
 		/// <summary></summary>
 		/// <param name="object"></param>
@@ -30,8 +34,6 @@ namespace NGToolsEditor
 		public	SelectionItem(Object @object)
 		{
 			this.@object = @object;
-			this.hierarchy = new List<string>();
-			this.assetPath = string.Empty;
 
 			if (this.@object is GameObject)
 			{
@@ -82,6 +84,11 @@ namespace NGToolsEditor
 		public void	TryReconnect()
 		{
 			InternalNGDebug.AssertFile(this.@object == null, "SelectionItem is trying to reconnect while having an object already.");
+
+			if (this.lastHierarchyUpdate == NGFavWindow.UpdateHierarchyCounter)
+				return;
+
+			this.lastHierarchyUpdate = NGFavWindow.UpdateHierarchyCounter;
 
 			if (string.IsNullOrEmpty(this.resolverAssemblyQualifiedName) == false)
 			{
@@ -146,10 +153,41 @@ namespace NGToolsEditor
 			// Is GameObject (Asset or scene).
 			if (this.@object == null && this.hierarchy.Count > 0)
 			{
+				// Can be found if GameObject is enabled.
 				this.@object = GameObject.Find(string.Join("/", this.hierarchy.ToArray()));
 
 				if (this.@object == null)
+				{
 					this.@object = GameObject.Find(this.hierarchy[this.hierarchy.Count - 1]);
+
+					if (this.@object == null)
+					{
+						// Otherwise have to look up through all hierarchy.
+						for (int i = 0; i < NGFavWindow.RootObjects.Count; i++)
+						{
+							Transform	t = NGFavWindow.RootObjects[i].transform;
+
+							if (t.name.Equals(this.hierarchy[0]) == true)
+							{
+								int	j = 1;
+
+								for (; j < this.hierarchy.Count; j++)
+								{
+									t = t.transform.FindChild(this.hierarchy[j]);
+
+									if (t == null)
+										break;
+								}
+
+								if (j >= this.hierarchy.Count)
+								{
+									this.@object = t.gameObject;
+									break;
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}

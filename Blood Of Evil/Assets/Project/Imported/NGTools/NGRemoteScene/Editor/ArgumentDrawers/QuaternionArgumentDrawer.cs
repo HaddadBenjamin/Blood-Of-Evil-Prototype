@@ -1,14 +1,15 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[ArgumentDrawerFor(typeof(Quaternion))]
-	public class QuaternionArgumentDrawer : ArgumentDrawer
+	internal sealed class QuaternionArgumentDrawer : ArgumentDrawer
 	{
 		private Vector4	v;
 
-		public QuaternionArgumentDrawer(string name) : base(name, typeof(Quaternion))
+		public QuaternionArgumentDrawer(string name, Type type) : base(name, typeof(Quaternion))
 		{
 		}
 
@@ -34,7 +35,7 @@ namespace NGToolsEditor
 			}
 		}
 
-		public override void	Serialize(string path)
+		public override void	Save(string path)
 		{
 			Quaternion	c = (Quaternion)this.value;
 
@@ -44,7 +45,7 @@ namespace NGToolsEditor
 			NGEditorPrefs.SetFloat(path + ".w", (float)c.w);
 		}
 
-		public override void	Deserialize(string path)
+		public override void	Load(string path)
 		{
 			Quaternion	v = (Quaternion)this.value;
 

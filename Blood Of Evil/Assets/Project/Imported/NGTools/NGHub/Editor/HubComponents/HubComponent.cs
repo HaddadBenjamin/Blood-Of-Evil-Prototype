@@ -1,13 +1,12 @@
 ﻿using System;
-using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGHub
 {
 	[Serializable, Exportable(ExportableAttribute.ArrayOptions.Overwrite)]
-	public class HubComponent
+	public abstract class HubComponent
 	{
-		public const string	CanDropMethod = "CanDrop";
+		public const string	StaticVerifierMethodName = "CanDrop";
 
 		[NonSerialized]
 		public NGHubWindow	hub;
@@ -43,10 +42,6 @@ namespace NGToolsEditor
 		public virtual void		OnGUI()
 		{
 			GUILayout.Label("NO OnGUI IMPLEMENTED");
-		}
-
-		public virtual void		CustomGenericMenu(GenericMenu menu)
-		{
 		}
 
 		public virtual void		InitDrop(NGHubWindow hub)

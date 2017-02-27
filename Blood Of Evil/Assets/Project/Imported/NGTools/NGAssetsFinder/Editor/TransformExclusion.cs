@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGAssetsFinder
 {
-	public class TransformExclusion : TypeMembersExclusion
+	internal sealed class TransformExclusion : TypeMembersExclusion
 	{
 		public	TransformExclusion()
 		{

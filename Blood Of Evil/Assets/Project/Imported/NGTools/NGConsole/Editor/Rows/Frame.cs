@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class Frame
+	public sealed class Frame
 	{
 		public string	raw;
 		public string	frameString;

@@ -1,13 +1,15 @@
-namespace NGTools
+using NGTools.Network;
+
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Scene_ServerUpdateMaterialProperty)]
-	public class ServerUpdateMaterialPropertyPacket : Packet
+	internal sealed class ServerUpdateMaterialPropertyPacket : Packet
 	{
 		public int		instanceID;
 		public string	propertyName;
 		public byte[]	rawValue;
 
-		protected	ServerUpdateMaterialPropertyPacket(ByteBuffer buffer) : base(buffer)
+		private	ServerUpdateMaterialPropertyPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

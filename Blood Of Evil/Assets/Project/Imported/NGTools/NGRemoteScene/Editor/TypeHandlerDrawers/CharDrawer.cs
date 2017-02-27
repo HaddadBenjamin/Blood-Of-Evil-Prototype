@@ -1,12 +1,12 @@
-﻿using NGTools;
+﻿using NGTools.NGRemoteScene;
 using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[TypeHandlerDrawerFor(typeof(CharHandler))]
-	public class CharDrawer : TypeHandlerDrawer
+	internal sealed class CharDrawer : TypeHandlerDrawer
 	{
 		private BgColorContentAnimator	anim;
 		private ValueMemorizer<Char>	drag;

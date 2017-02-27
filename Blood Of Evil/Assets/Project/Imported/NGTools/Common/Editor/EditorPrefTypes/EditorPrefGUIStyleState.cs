@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace NGToolsEditor
 {
-	public class EditorPrefGUIStyleState : EditorPrefType
+	internal sealed class EditorPrefGUIStyleState : EditorPrefType
 	{
 		public PropertyModifier[]	fields;
 

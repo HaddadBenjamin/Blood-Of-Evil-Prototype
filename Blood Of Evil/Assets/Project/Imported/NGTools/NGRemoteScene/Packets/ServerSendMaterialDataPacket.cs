@@ -1,15 +1,16 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Scene_ServerSendMaterialData)]
-	public class ServerSendMaterialDataPacket : Packet
+	internal sealed class ServerSendMaterialDataPacket : Packet
 	{
 		public readonly Material	serverMaterial;
 		public readonly NGShader	ngShader;
 		public NetMaterial		netMaterial;
 
-		protected	ServerSendMaterialDataPacket(ByteBuffer buffer) : base(buffer)
+		private	ServerSendMaterialDataPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

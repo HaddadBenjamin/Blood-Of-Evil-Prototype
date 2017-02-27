@@ -1,4 +1,4 @@
-﻿namespace NGTools
+﻿namespace NGTools.NGRemoteScene
 {
 	public class EnumData
 	{

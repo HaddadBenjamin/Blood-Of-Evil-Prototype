@@ -1,12 +1,13 @@
-﻿using NGTools;
+﻿using NGTools.Network;
+using NGTools.NGRemoteScene;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
-	public class ScreenshotModuleEditor : CameraDataModuleEditor
+	internal sealed class ScreenshotModuleEditor : CameraDataModuleEditor
 	{
-		public class Screenshot : CameraData
+		internal sealed class Screenshot : CameraData
 		{
 			public byte[]	data;
 		}
@@ -18,7 +19,7 @@ namespace NGToolsEditor
 		{
 		}
 
-		public override void	OnGUI(IReplaySettings settings, Rect r)
+		public override void	OnGUICamera(IReplaySettings settings, Rect r)
 		{
 			if (this.texture == null ||
 				this.texture.width != settings.TextureWidth ||
@@ -30,19 +31,17 @@ namespace NGToolsEditor
 			EditorGUI.DrawPreviewTexture(r, this.texture, null, ScaleMode.ScaleAndCrop);
 		}
 
-		public override void	OnGUIModule(NGHierarchyWindow hierarchy)
+		public override void	OnGUIModule(NGRemoteHierarchyWindow hierarchy)
 		{
 			EditorGUI.BeginChangeCheck();
 			this.useJPG = EditorGUILayout.Toggle("Use JPG", this.useJPG);
 			if (EditorGUI.EndChangeCheck() == true && hierarchy.IsClientConnected() == true)
-			{
-				hierarchy.Client.AddPacket(new ClientModulesetUseJPG(this.useJPG));
-			}
+				hierarchy.Client.AddPacket(new ClientModuleSetUseJPGPacket(this.useJPG));
 		}
 
 		public override void	OnServerInitialized(IReplaySettings settings, Client server)
 		{
-			server.AddPacket(new ClientModulesetUseJPG(this.useJPG));
+			server.AddPacket(new ClientModuleSetUseJPGPacket(this.useJPG));
 		}
 
 		public override void	HandlePacket(IReplaySettings settings, float time, byte[] data)
@@ -56,8 +55,7 @@ namespace NGToolsEditor
 
 		public override ReplayDataModule	ConvertToReplay(IReplaySettings settings)
 		{
-			ScreenshotReplayModule	module = new ScreenshotReplayModule(this, settings.TextureWidth, settings.TextureHeight);
-			return module;
+			return new ScreenshotReplayModule(this, settings.TextureWidth, settings.TextureHeight);
 		}
 	}
 }

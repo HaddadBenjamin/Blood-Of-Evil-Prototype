@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using NGTools.Network;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	public class CameraModulesRunner : MonoBehaviour, ICameraData
 	{

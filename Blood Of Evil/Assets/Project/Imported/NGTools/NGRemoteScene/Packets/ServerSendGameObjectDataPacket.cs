@@ -1,16 +1,18 @@
-﻿namespace NGTools
+﻿using NGTools.Network;
+
+namespace NGTools.NGRemoteScene
 {
 	/// <summary>
 	/// <para>Sends all primary data of a GameObject.</para>
 	/// </summary>
 	/// <seealso cref="NGTools.ClientRequestGameObjectDataPacket"/>
 	[PacketLinkTo(PacketId.Scene_ServerSendGameObjectData)]
-	public class ServerSendGameObjectDataPacket : Packet
+	internal sealed class ServerSendGameObjectDataPacket : Packet
 	{
 		public readonly ServerGameObject	serverGameObject;
 		public NetGameObjectData			gameObjectData;
 
-		protected	ServerSendGameObjectDataPacket(ByteBuffer buffer) : base(buffer)
+		private	ServerSendGameObjectDataPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

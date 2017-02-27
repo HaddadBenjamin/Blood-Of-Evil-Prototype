@@ -1,26 +1,27 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	[PacketLinkTo(PacketId.Scene_ClientUpdateMaterialVector2)]
-	public class ClientUpdateMaterialVector2Packet : Packet
+	public enum MaterialVector2Type
 	{
-		public enum Type
-		{
-			Scale,
-			Offset
-		}
+		Scale,
+		Offset
+	}
 
+	[PacketLinkTo(PacketId.Scene_ClientUpdateMaterialVector2, true)]
+	internal sealed class ClientUpdateMaterialVector2Packet : Packet
+	{
 		public int		instanceID;
 		public string	propertyName;
 		public Vector2	value;
-		public Type		type;
+		public MaterialVector2Type		type;
 
-		protected	ClientUpdateMaterialVector2Packet(ByteBuffer buffer) : base(buffer)
+		private	ClientUpdateMaterialVector2Packet(ByteBuffer buffer) : base(buffer)
 		{
 		}
 
-		public	ClientUpdateMaterialVector2Packet(int instanceID, string propertyName, Vector2 value, Type type)
+		public	ClientUpdateMaterialVector2Packet(int instanceID, string propertyName, Vector2 value, MaterialVector2Type type)
 		{
 			this.instanceID = instanceID;
 			this.propertyName = propertyName;

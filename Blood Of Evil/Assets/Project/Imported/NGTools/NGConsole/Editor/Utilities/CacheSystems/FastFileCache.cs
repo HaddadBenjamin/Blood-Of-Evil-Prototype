@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	public class FastFileCache
+	internal sealed class FastFileCache
 	{
-		public class HashFile
+		private sealed class HashFile
 		{
 			public readonly int		hash;
 			public string[]			lines;

@@ -1,10 +1,11 @@
 ﻿using NGTools;
+using NGTools.NGRemoteScene;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
-	public class MouseModuleEditor : CameraDataModuleEditor
+	internal sealed class MouseModuleEditor : CameraDataModuleEditor
 	{
-		public class MouseInput : CameraData
+		internal sealed class MouseInput : CameraData
 		{
 			public float	x;
 			public float	y;

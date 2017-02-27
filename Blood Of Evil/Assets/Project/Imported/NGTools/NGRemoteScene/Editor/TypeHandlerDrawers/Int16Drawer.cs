@@ -1,12 +1,12 @@
-using NGTools;
+using NGTools.NGRemoteScene;
 using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[TypeHandlerDrawerFor(typeof(Int16Handler))]
-	public class Int16Drawer : TypeHandlerDrawer
+	internal sealed class Int16Drawer : TypeHandlerDrawer
 	{
 		private BgColorContentAnimator	anim;
 		private ValueMemorizer<Int16>	drag;

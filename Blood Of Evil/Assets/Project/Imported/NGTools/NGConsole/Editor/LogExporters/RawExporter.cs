@@ -4,21 +4,21 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	public class RawExporter : ILogExporter
+	internal sealed class RawExporter : ILogExporter
 	{
 		public string	dataSeparator = "	";
 		public string	logSeparator = Environment.NewLine;
 
 		private StringBuilder	buffer;
 
-		public void	OnFocus()
+		public void	OnEnable()
 		{
 			Utility.LoadEditorPref(this, NGEditorPrefs.GetPerProjectPrefix());
 		}
 
-		public void	OnBlur()
+		public void	OnDestroy()
 		{
 			Utility.SaveEditorPref(this, NGEditorPrefs.GetPerProjectPrefix());
 		}
@@ -33,14 +33,10 @@ namespace NGToolsEditor
 				EditorGUILayout.LabelField(LC.G("LogSeparator"));
 
 				if (GUILayout.Button("CR") == true)
-				{
 					this.logSeparator += "\r";
-				}
 
 				if (GUILayout.Button("LF") == true)
-				{
 					this.logSeparator += "\n";
-				}
 			}
 			EditorGUILayout.EndHorizontal();
 

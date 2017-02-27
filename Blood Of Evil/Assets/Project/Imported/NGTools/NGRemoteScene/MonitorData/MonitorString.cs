@@ -1,14 +1,15 @@
-﻿using System;
+﻿using NGTools.Network;
+using System;
 using System.Collections.Generic;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	public class MonitorString : CustomMonitorData
+	internal sealed class MonitorString : CustomMonitorData
 	{
 		private IValueGetter	valueGetter;
 		private TypeHandler		typeHandler;
 
-		private static bool	CanHandle(Type type)
+		private static bool	CanMonitorType(Type type)
 		{
 			return type == typeof(String);
 		}

@@ -1,12 +1,14 @@
 ﻿using NGTools;
+using NGTools.Network;
+using NGTools.NGRemoteScene;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
-	public class ClientSceneExecuter : PacketExecuter
+	internal sealed class ClientSceneExecuter : PacketExecuter
 	{
-		public NGHierarchyWindow	hierarchy;
+		public NGRemoteHierarchyWindow	hierarchy;
 
-		public	ClientSceneExecuter(NGHierarchyWindow hierarchy)
+		public	ClientSceneExecuter(NGRemoteHierarchyWindow hierarchy)
 		{
 			this.hierarchy = hierarchy;
 
@@ -26,6 +28,7 @@ namespace NGToolsEditor
 			this.HandlePacket(PacketId.Scene_ServerUpdateMaterialVector2, this.Handle_Scene_ServerUpdateMaterialVector2);
 			this.HandlePacket(PacketId.Scene_ServerSendEnumData, this.Handle_Scene_ServerSendEnumData);
 			this.HandlePacket(PacketId.Scene_ServerSendComponent, this.Handle_Scene_ServerSendComponent);
+			this.HandlePacket(PacketId.Scene_ServerReturnInvokeResult, this.Handle_Scene_ServerReturnInvokeResult);
 		}
 
 		private void	Handle_Scene_HasDisconnected(Client sender, Packet _packet)
@@ -69,13 +72,9 @@ namespace NGToolsEditor
 			ClientGameObject	n = this.hierarchy.GetGameObject(packet.gameObjectData.gameObjectInstanceID);
 
 			if (n != null)
-			{
 				n.UpdateData(packet.gameObjectData);
-			}
 			else
-			{
 				InternalNGDebug.Log(Errors.Scene_GameObjectNotFound, "GameObject (" + packet.gameObjectData.gameObjectInstanceID + ") was not found. Failed to update its data.");
-			}
 		}
 
 		private void	Handle_Scene_ServerUpdateFieldValue(Client sender, Packet _packet)
@@ -132,6 +131,13 @@ namespace NGToolsEditor
 			ServerSendComponentPacket	packet = _packet as ServerSendComponentPacket;
 
 			this.hierarchy.AddComponent(packet.gameObjectInstanceID, packet.component);
+		}
+
+		private void	Handle_Scene_ServerReturnInvokeResult(Client sender, Packet _packet)
+		{
+			ServerReturnInvokeResultPacket	packet = _packet as ServerReturnInvokeResultPacket;
+
+			this.hierarchy.SetInvokeResult(packet.result);
 		}
 	}
 }

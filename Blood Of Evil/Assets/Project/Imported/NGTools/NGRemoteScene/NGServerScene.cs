@@ -1,12 +1,15 @@
-﻿using System;
+﻿#if UNITY_4_5 || UNITY_4_6 || UNITY_4_7
+#define UNITY_4
+#endif
+
+using NGTools.Network;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	using UnityEngine;
 
@@ -32,6 +35,7 @@ namespace NGTools
 		ComponentNotFound,
 		MethodNotFound,
 		InvalidArgument,
+		InvocationFailed
 	}
 
 	public enum ReturnUpdateMaterialProperty
@@ -69,10 +73,10 @@ namespace NGTools
 	}
 
 	[Serializable]
-	public class ListingAssets
+	public sealed class ListingAssets
 	{
 		[Serializable]
-		public class AssetReferences
+		public sealed class AssetReferences
 		{
 			public string	asset;
 			public Object[]	references;
@@ -84,10 +88,10 @@ namespace NGTools
 	}
 
 	[Serializable]
-	public class ListingShaders
+	public sealed class ListingShaders
 	{
 		[Serializable]
-		public class AssetReferences
+		public sealed class AssetReferences
 		{
 			public string	asset;
 			public Shader[]	references;
@@ -101,17 +105,16 @@ namespace NGTools
 	[HelpURL(Constants.WikiBaseURL + "#markdown-header-13-ng-remote-scene"), DisallowMultipleComponent]
 	public class NGServerScene : BaseServer, IHierarchyManagement
 	{
-		public const float		UDPPingInterval = 3F;
-		public const int		UDPPortBroadcastMin = 6547;
-		public const int		UDPPortBroadcastMax = 6557;
-		public static byte[]	UDPPingMessage = new byte[] { (byte)'N', (byte)'G', (byte)'S', (byte)'S' };
-		public static byte[]	UDPEndMessage = new byte[] { (byte)'E', (byte)'N' };
-		public static byte[]	EmptyByteArray = {};
+		public const int	UDPPortBroadcastMin = 6547;
+		public const int	UDPPortBroadcastMax = 6557;
 
 		private static ByteBuffer	Buffer = new ByteBuffer(64);
 
 		[Header("Interval between watched GameObject updates (second)")]
 		public float	refreshMonitoring = 2F;
+
+		[Header("Disable NG Server Scene after Start() to avoid call to OnGUI().")]
+		public bool		autoDisabled = true;
 
 		private List<ServerGameObject>				rootGameObjects = new List<ServerGameObject>();
 		private Dictionary<int, ServerGameObject>	cachedGameObjects = new Dictionary<int, ServerGameObject>();
@@ -122,15 +125,27 @@ namespace NGTools
 
 		private Dictionary<Type, Dictionary<int, Object>>	registeredResources = new Dictionary<Type, Dictionary<int, Object>>();
 
+		[Header("Assets embed into your build")]
 		public ListingAssets	resources;
+		[Header("Shaders embed into your build (Available in the list of shaders when changing a Material)")]
 		public ListingShaders	shaderReferences;
+
+		[Group("[Debug]")]
 		public bool	displayDebug = false;
+		[Group("[Debug]")]
+		public int	offsetSent = 0;
+		[Group("[Debug]")]
+		public int	offsetReceived = 0;
+		[Group("[Debug]")]
+		public int	maxPacketsDisplay = 100;
+
+		private GUIStyle	packetStyle;
 
 		private int			selected = -1;
 		private string[]	names = null;
+		private Vector2		eventScrollPosition;
 		private Vector2		sendScrollPosition;
 		private Vector2		receiveScrollPosition;
-		private Vector2		eventScrollPosition;
 
 		private List<string>	events = new List<string>();
 		
@@ -146,8 +161,7 @@ namespace NGTools
 		private List<int>		instanceIDs = new List<int>();
 		private List<Transform>	result = new List<Transform>();
 
-		private UdpClient		Client;
-		private IPEndPoint[]	BroadcastEndPoint;
+		private AutoDetectUDPClient	udpClient;
 
 		protected override void	Start()
 		{
@@ -155,17 +169,20 @@ namespace NGTools
 
 			this.StartCoroutine(this.UpdateWatchers());
 
-			this.Client = new UdpClient(this.listener.port);
-			this.Client.EnableBroadcast = true;
-
-			this.BroadcastEndPoint = new IPEndPoint[NGServerScene.UDPPortBroadcastMax - NGServerScene.UDPPortBroadcastMin + 1];
-
-			for (int i = 0; i < this.BroadcastEndPoint.Length; i++)
-				this.BroadcastEndPoint[i] = new IPEndPoint(IPAddress.Broadcast, NGServerScene.UDPPortBroadcastMin + i);
-
-			this.InvokeRepeating("AsyncSendPing", 0F, NGServerScene.UDPPingInterval);
+			try
+			{
+				if (this.listener != null)
+					this.udpClient = new AutoDetectUDPClient(this, this.listener.port, NGServerScene.UDPPortBroadcastMin, NGServerScene.UDPPortBroadcastMax, AutoDetectUDPClient.UDPPingInterval);
+			}
+			catch (SocketException ex)
+			{
+				InternalNGDebug.LogException("The UDP client has failed, it may be caused by port " + this.listener.port + " already in use.", ex);
+			}
 
 			this.events.Add("Start");
+
+			if (this.autoDisabled == true)
+				this.enabled = false;
 		}
 
 		protected virtual void	OnEnable()
@@ -182,9 +199,8 @@ namespace NGTools
 		{
 			base.OnDestroy();
 
-			for (int i = 0; i < this.BroadcastEndPoint.Length; i++)
-				this.Client.Send(NGServerScene.UDPEndMessage, NGServerScene.UDPEndMessage.Length, this.BroadcastEndPoint[i]);
-			this.Client.Close();
+			if (this.udpClient != null)
+				this.udpClient.Stop();
 
 			this.events.Add("OnDestroy");
 		}
@@ -199,9 +215,7 @@ namespace NGTools
 				this.eventScrollPosition = GUILayout.BeginScrollView(this.eventScrollPosition);
 				{
 					for (int i = this.events.Count - 1; i >= 0; --i)
-					{
 						GUILayout.Label(this.events[i]);
-					}
 				}
 				GUILayout.EndScrollView();
 			}
@@ -238,6 +252,12 @@ namespace NGTools
 
 		private void	DrawClientPackets(Client client)
 		{
+			if (this.packetStyle == null)
+			{
+				this.packetStyle = new GUIStyle(GUI.skin.label);
+				this.packetStyle.fontSize = 9;
+			}
+
 			GUILayout.Label("Client " + client.tcpClient.Client.LocalEndPoint.ToString() + " " + DateTime.Now.ToString("HH:mm:ss"));
 			GUILayout.Label(client.ToString());
 
@@ -250,8 +270,8 @@ namespace NGTools
 						GUILayout.Label("Sent (" + client.sentPacketsHistoric.Count + ")");
 						this.sendScrollPosition = GUILayout.BeginScrollView(this.sendScrollPosition);
 						{
-							for (int i = client.sentPacketsHistoric.Count - 1; i >= 0; --i)
-								GUILayout.Label(client.sentPacketsHistoric[i].time + " " + client.sentPacketsHistoric[i].packet.ToString());
+							for (int i = client.sentPacketsHistoric.Count - 1 - this.offsetSent, j = 0; i >= 0 && j < this.maxPacketsDisplay; --i, ++j)
+								GUILayout.Label(client.sentPacketsHistoric[i].time + " " + client.sentPacketsHistoric[i].packet.ToString(), this.packetStyle);
 						}
 						GUILayout.EndScrollView();
 					}
@@ -263,8 +283,8 @@ namespace NGTools
 					GUILayout.Label("Received (" + client.receivedPacketsHistoric.Count + ")");
 					this.receiveScrollPosition = GUILayout.BeginScrollView(this.receiveScrollPosition);
 					{
-						for (int i = client.receivedPacketsHistoric.Count - 1; i >= 0; --i)
-							GUILayout.Label(client.receivedPacketsHistoric[i]);
+						for (int i = client.receivedPacketsHistoric.Count - 1 - this.offsetReceived, j = 0; i >= 0 && j < this.maxPacketsDisplay; --i, ++j)
+							GUILayout.Label(client.receivedPacketsHistoric[i], this.packetStyle);
 					}
 					GUILayout.EndScrollView();
 				}
@@ -370,11 +390,60 @@ namespace NGTools
 		{
 			this.rootGameObjects.Clear();
 
-			GameObject[]	go = GameObject.FindObjectsOfType<GameObject>();
+			GameObject[]	go = Resources.FindObjectsOfTypeAll<GameObject>();
 
-			// Process new or refresh old GameObjects.
+			// Hell of a trick...
+#if UNITY_4 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
+			InternalNGDebug.Log("NG Remote Scene is going to scan all GameObject from the current scene, the following errors that might appear are harmless.");
+
+			GameObject	temp = new GameObject();
+#endif
+
+			// Process new or refresh old GameObject.
 			for (int i = 0; i < go.Length; i++)
-				this.ProcessRootGameObject(go[i].transform.root.gameObject);
+			{
+				//Debug.Log(go[i].name + " " + go[i].hideFlags + " " + go[i].transform.GetSiblingIndex() + " " + go[i].activeInHierarchy + " " + go[i].transform.parent + " " + go[i].transform.root, go[i]);
+				if ((go[i].hideFlags & HideFlags.HideInHierarchy) != 0
+#if !UNITY_4 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
+					|| go[i].scene.IsValid() == false
+#endif
+					)
+				{
+					continue;
+				}
+
+				try
+				{
+#if UNITY_4 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
+					Transform	t = go[i].transform.parent;
+
+#if UNITY_5
+					if (go[i].transform is RectTransform)
+						go[i].transform.SetParent(temp.transform, false);
+					else
+#endif
+					go[i].transform.parent = temp.transform; // Prior to Unity 5.3, this line will fail, and therefore give us the information we need, if it is a prefab or not.
+					if (go[i].transform.parent != temp.transform)
+						continue;
+
+#if UNITY_5
+					if (go[i].transform is RectTransform)
+						go[i].transform.SetParent(t, false);
+					else
+#endif
+						go[i].transform.parent = t;
+#endif
+					this.ProcessRootGameObject(go[i].transform.root.gameObject);
+				}
+				catch (Exception ex)
+				{
+					Debug.LogException(ex);
+				}
+			}
+
+#if UNITY_4 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
+			Object.DestroyImmediate(temp);
+#endif
 
 			this.rootGameObjects.Sort((a, b) => b.gameObject.transform.GetSiblingIndex() - a.gameObject.transform.GetSiblingIndex());
 
@@ -543,72 +612,74 @@ namespace NGTools
 			return false;
 		}
 
-		public ReturnInvokeComponentMethod	InvokeComponentMethod(int gameObjectInstanceID, int instanceID, string methodName, byte[] arguments)
+		public ReturnInvokeComponentMethod	InvokeComponentMethod(int gameObjectInstanceID, int instanceID, string methodSignature, byte[] arguments, ref string result)
 		{
 			ServerGameObject	gameObject;
 
-			if (this.cachedGameObjects.TryGetValue(gameObjectInstanceID, out gameObject) == true)
-			{
-				ServerComponent	component = gameObject.GetComponent(instanceID);
+			if (this.cachedGameObjects.TryGetValue(gameObjectInstanceID, out gameObject) == false)
+				return ReturnInvokeComponentMethod.GameObjectNotFound;
 
-				if (component != null)
-				{
-					ServerMethodInfo	method = component.GetMethod(methodName);
+			ServerComponent	component = gameObject.GetComponent(instanceID);
 
-					if (method != null)
-					{
-						object[]	convertedArgs = new object[method.argumentTypes.Length];
-
-						NGServerScene.Buffer.Clear();
-						NGServerScene.Buffer.Append(arguments);
-
-						try
-						{
-							for (int i = 0; i < method.argumentTypes.Length; i++)
-							{
-								TypeHandler	typeHandler = TypeHandlersManager.GetTypeHandler(method.argumentTypes[i]);
-
-								if (typeHandler == null)
-									return ReturnInvokeComponentMethod.InvalidArgument;
-
-								convertedArgs[i] = typeHandler.DeserializeRealValue(this, NGServerScene.Buffer, method.argumentTypes[i]);
-							}
-
-							method.methodInfo.Invoke(component.component, convertedArgs);
-							return ReturnInvokeComponentMethod.Success;
-						}
-						catch
-						{
-							return ReturnInvokeComponentMethod.InvalidArgument;
-						}
-					}
-
-					return ReturnInvokeComponentMethod.MethodNotFound;
-				}
-
+			if (component == null)
 				return ReturnInvokeComponentMethod.ComponentNotFound;
-			}
 
-			return ReturnInvokeComponentMethod.GameObjectNotFound;
+			ServerMethodInfo	method = component.GetMethodFromSignature(methodSignature);
+
+			if (method == null)
+				return ReturnInvokeComponentMethod.MethodNotFound;
+
+			object[]	convertedArgs = new object[method.argumentTypes.Length];
+
+			NGServerScene.Buffer.Clear();
+			NGServerScene.Buffer.Append(arguments);
+
+			try
+			{
+				for (int i = 0; i < method.argumentTypes.Length; i++)
+				{
+					TypeHandler	typeHandler = TypeHandlersManager.GetTypeHandler(method.argumentTypes[i]);
+
+					if (typeHandler == null)
+						return ReturnInvokeComponentMethod.InvalidArgument;
+
+					convertedArgs[i] = typeHandler.DeserializeRealValue(this, NGServerScene.Buffer, method.argumentTypes[i]);
+				}
+			}
+			catch
+			{
+				return ReturnInvokeComponentMethod.InvalidArgument;
+			}
+			
+			try
+			{
+				object	value = method.methodInfo.Invoke(component.component, convertedArgs);
+
+				if (value != null)
+					result = value.ToString();
+				return ReturnInvokeComponentMethod.Success;
+			}
+			catch
+			{
+				return ReturnInvokeComponentMethod.InvocationFailed;
+			}
 		}
 
 		public ReturnDeleteGameObject DeleteGameObject(int instanceID, List<int> instanceIDsDeleted)
 		{
 			ServerGameObject	gameObject = this.GetGameObject(instanceID);
 
-			if (gameObject != null)
-			{
-				gameObject.gameObject.GetComponentsInChildren<Transform>(true, result);
+			if (gameObject == null)
+				return ReturnDeleteGameObject.GameObjectNotFound;
 
-				for (int i = 0; i < result.Count; i++)
-					instanceIDsDeleted.Add(result[i].gameObject.GetInstanceID());
+			gameObject.gameObject.GetComponentsInChildren<Transform>(true, result);
 
-				GameObject.Destroy(gameObject.gameObject);
+			for (int i = 0; i < result.Count; i++)
+				instanceIDsDeleted.Add(result[i].gameObject.GetInstanceID());
 
-				return ReturnDeleteGameObject.Success;
-			}
+			GameObject.Destroy(gameObject.gameObject);
 
-			return ReturnDeleteGameObject.GameObjectNotFound;
+			return ReturnDeleteGameObject.Success;
 		}
 
 		public void	DeleteGameObjects(List<int> instanceIDs)
@@ -646,7 +717,18 @@ namespace NGTools
 			}
 
 			if (packet.instanceIDs.Count > 0)
-				this.listener.BroadcastPacket(packet);
+			{
+				lock (this.currentWatchingListGameObjects)
+				{
+					foreach (var pair in this.watchedGameObjects)
+					{
+						for (int j = 0; j < packet.instanceIDs.Count; j++)
+							pair.Value.Key.DeleteComponent(packet.instanceIDs[j]);
+					}
+
+					this.listener.BroadcastPacket(packet);
+				}
+			}
 			if (gpacket.instanceIDs.Count > 0)
 				this.listener.BroadcastPacket(gpacket);
 		}
@@ -684,9 +766,7 @@ namespace NGTools
 				KeyValuePair<MonitorGameObject, List<Client>>	watcher;
 
 				if (this.watchedGameObjects.TryGetValue(instanceIDs[i], out watcher) == true)
-				{
 					watcher.Value.Add(sender);
-				}
 				else
 				{
 					watcher = new KeyValuePair<MonitorGameObject, List<Client>>(new MonitorGameObject(serverGameObject), new List<Client>());
@@ -729,9 +809,7 @@ namespace NGTools
 				KeyValuePair<MonitorMaterial, List<Client>>	watcher;
 
 				if (this.watchedMaterials.TryGetValue(instanceIDs[i], out watcher) == true)
-				{
 					watcher.Value.Add(sender);
-				}
 				else
 				{
 					NGShader	shader = this.GetNGShader(mat.shader);
@@ -817,7 +895,7 @@ namespace NGTools
 			return ReturnUpdateMaterialProperty.InternalError;
 		}
 
-		public ReturnUpdateMaterialVector2	UpdateMaterialVector2(int instanceID, string propertyName, Vector2 value, ClientUpdateMaterialVector2Packet.Type vectorType, out Vector2 newValue)
+		public ReturnUpdateMaterialVector2	UpdateMaterialVector2(int instanceID, string propertyName, Vector2 value, MaterialVector2Type vectorType, out Vector2 newValue)
 		{
 			Material	material = this.GetResource<Material>(instanceID);
 
@@ -826,12 +904,12 @@ namespace NGTools
 			if (material == null)
 				return ReturnUpdateMaterialVector2.MaterialNotFound;
 
-			if (vectorType == ClientUpdateMaterialVector2Packet.Type.Offset)
+			if (vectorType == MaterialVector2Type.Offset)
 			{
 				material.SetTextureOffset(propertyName, value);
 				newValue = material.GetTextureOffset(propertyName);
 			}
-			else if (vectorType == ClientUpdateMaterialVector2Packet.Type.Scale)
+			else if (vectorType == MaterialVector2Type.Scale)
 			{
 				material.SetTextureScale(propertyName, value);
 				newValue = material.GetTextureScale(propertyName);
@@ -1190,9 +1268,7 @@ namespace NGTools
 			Type	type = field.Type;
 
 			if (i == this.paths.Length - 1)
-			{
 				return field.GetValue(instance);
-			}
 			else if (type.IsUnityArray() == true) // Any Array or IList.
 			{
 				object	array = field.GetValue(instance);
@@ -1268,17 +1344,6 @@ namespace NGTools
 
 			array = this.GetResolve(f, b.component, 2) as IEnumerable;
 			return ReturnGetArray.Success;
-		}
-
-		private void	AsyncSendPing()
-		{
-			for (int i = 0; i < this.BroadcastEndPoint.Length; i++)
-				this.Client.BeginSend(NGServerScene.UDPPingMessage, NGServerScene.UDPPingMessage.Length, this.BroadcastEndPoint[i], new AsyncCallback(this.SendPresence), null);
-		}
-
-		private void	SendPresence(IAsyncResult ar)
-		{
-			this.Client.EndSend(ar);
 		}
 	}
 }

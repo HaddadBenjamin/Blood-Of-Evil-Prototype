@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class SampleStream : StreamLog
+	public sealed class SampleStream : StreamLog
 	{
 		private const float	ConditionSpacing = 3F;
 		private const float	ResetButtonWidth = 70F;
@@ -66,7 +66,7 @@ namespace NGToolsEditor
 
 			r.width *= .5F;
 			r.height = EditorGUIUtility.singleLineHeight;
-			using (BgColorContentRestorer.Get(this.hasStarted == true ? Color.green: GUI.backgroundColor))
+			using (BgColorContentRestorer.Get(this.hasStarted, Color.green))
 				this.currentStartMode = EditorGUI.Popup(r, LC.G("SampleStream_StartMode"), this.currentStartMode, NGConsoleWindow.startModeNames);
 
 			r.y += r.height;
@@ -80,7 +80,7 @@ namespace NGToolsEditor
 			r.y -= r.height;
 
 			r.x += r.width + SampleStream.ConditionSpacing;
-			using (BgColorContentRestorer.Get(this.hasEnded == true ? Color.green: GUI.backgroundColor))
+			using (BgColorContentRestorer.Get(this.hasEnded, Color.green))
 				this.currentEndMode = EditorGUI.Popup(r, LC.G("SampleStream_EndMode"), this.currentEndMode, NGConsoleWindow.endModeNames);
 			r.y += r.height;
 
@@ -95,9 +95,7 @@ namespace NGToolsEditor
 			r.width = SampleStream.ResetButtonWidth;
 			r.height = EditorGUIUtility.singleLineHeight + EditorGUIUtility.singleLineHeight;
 			if (GUI.Button(r, LC.G("Reset")) == true)
-			{
 				this.Clear();
-			}
 			r.y += r.height;
 
 			r.x = rectModes.x;

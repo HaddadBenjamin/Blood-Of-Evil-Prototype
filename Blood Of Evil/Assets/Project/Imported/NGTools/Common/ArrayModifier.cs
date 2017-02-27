@@ -12,6 +12,14 @@ namespace NGTools
 			}
 		}
 
+		public Type	Type
+		{
+			get
+			{
+				return Utility.GetArraySubType(this.array.GetType());
+			}
+		}
+
 		public Array	array;
 
 		public	ArrayModifier(Array array)

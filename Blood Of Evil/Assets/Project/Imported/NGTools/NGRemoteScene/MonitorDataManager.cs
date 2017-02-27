@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	public static class MonitorDataManager
+	internal static class MonitorDataManager
 	{
 		private static readonly Dictionary<MethodInfo, Type>	types;
 		private static readonly object[]						cachedCanHandleArgument;
@@ -15,9 +14,7 @@ namespace NGTools
 			MonitorDataManager.types = new Dictionary<MethodInfo, Type>();
 
 			foreach (Type t in Utility.EachSubClassesOf(typeof(CustomMonitorData)))
-			{
 				MonitorDataManager.types.Add(t.GetMethod(CustomMonitorData.StaticCanHandleMethodName, BindingFlags.Static | BindingFlags.NonPublic), t);
-			}
 
 			MonitorDataManager.cachedCanHandleArgument = new object[1];
 		}

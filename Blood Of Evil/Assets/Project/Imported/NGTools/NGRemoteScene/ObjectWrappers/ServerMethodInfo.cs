@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Reflection;
+using System.Text;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	public sealed class ServerMethodInfo
 	{
@@ -23,6 +24,27 @@ namespace NGTools
 				this.argumentTypes[i] = parameters[i].ParameterType;
 				this.argumentNames[i] = parameters[i].Name;
 			}
+		}
+
+		public string	GetSignature()
+		{
+			StringBuilder	buffer = Utility.sharedBuffer;
+
+			buffer.Length = 0;
+			buffer.Append(this.methodInfo.ReturnType.Name);
+			buffer.Append(' ');
+			buffer.Append(this.methodInfo.Name);
+			buffer.Append('(');
+
+			for (int i = 0; i < this.argumentTypes.Length; i++)
+			{
+				if (i > 0)
+					buffer.Append(',');
+				buffer.Append(this.argumentTypes[i].Name);
+			}
+
+			buffer.Append(')');
+			return buffer.ToString();
 		}
 	}
 }

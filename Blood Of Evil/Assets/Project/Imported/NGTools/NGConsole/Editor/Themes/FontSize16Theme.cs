@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	public class FontSize16Theme : Theme
+	internal sealed class FontSize16Theme : Theme
 	{
 		public override void	SetTheme(NGSettings instance)
 		{

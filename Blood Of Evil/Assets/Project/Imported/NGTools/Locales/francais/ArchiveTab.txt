@@ -1,2 +1,0 @@
-SetNote=Assigner une note
-ExportArchives=Exporter archives

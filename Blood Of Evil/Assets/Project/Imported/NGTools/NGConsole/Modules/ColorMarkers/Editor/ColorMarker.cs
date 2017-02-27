@@ -1,11 +1,11 @@
 ﻿using System;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
 	[Exportable(ExportableAttribute.ArrayOptions.Overwrite)]
-	public class ColorMarker
+	public sealed class ColorMarker
 	{
 		[Exportable("r", "g", "b", "a")]
 		public Color		backgroundColor;

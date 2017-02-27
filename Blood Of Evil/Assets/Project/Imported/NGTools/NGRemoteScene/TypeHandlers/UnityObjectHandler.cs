@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	using UnityEngine;
 
@@ -54,7 +54,7 @@ namespace NGTools
 	}
 
 	[Priority(10)]
-	public class UnityObjectHandler : TypeHandler
+	internal sealed class UnityObjectHandler : TypeHandler
 	{
 		public override bool	CanHandle(Type type)
 		{
@@ -82,9 +82,7 @@ namespace NGTools
 				GameObject	gameObject = refUnityObject as GameObject;
 
 				if (gameObject != null)
-				{
 					buffer.Append(gameObject.GetInstanceID());
-				}
 				else
 				{
 					Component	component = refUnityObject as Component;

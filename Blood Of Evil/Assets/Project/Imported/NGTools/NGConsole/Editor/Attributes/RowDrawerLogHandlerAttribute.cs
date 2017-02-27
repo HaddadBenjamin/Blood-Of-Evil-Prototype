@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Reflection;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	/// <summary>
 	/// <para>Any class having this attribute must implement:</para>
 	/// <para>private static bool {<see cref="RowLogHandleAttribute.StaticMethodName"/>}(UnityLogEntry).</para>
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-	public class RowLogHandlerAttribute : Attribute
+	public sealed class RowLogHandlerAttribute : Attribute
 	{
-		public const string	StaticMethodName = "CanDealWithIt";
+		public const string	StaticVerifierMethodName = "CanDealWithIt";
 
 		public readonly int	priority;
 

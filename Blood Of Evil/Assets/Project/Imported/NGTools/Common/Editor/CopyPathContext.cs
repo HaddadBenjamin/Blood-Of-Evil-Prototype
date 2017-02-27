@@ -7,7 +7,7 @@ using UnityEngine;
 namespace NGToolsEditor
 {
 	[InitializeOnLoad]
-	public static class CopyPathContext
+	internal static class CopyPathContext
 	{
 		static	CopyPathContext()
 		{
@@ -63,9 +63,7 @@ namespace NGToolsEditor
 			for (int i = 0; i < Selection.objects.Length; i++)
 			{
 				if (Selection.objects[i] != null)
-				{
 					buffer.AppendLine(Selection.objects[i].name);
-				}
 			}
 
 			if (buffer.Length > Environment.NewLine.Length)
@@ -117,9 +115,7 @@ namespace NGToolsEditor
 			for (int i = 0; i < Selection.objects.Length; i++)
 			{
 				if (Selection.objects[i] != null)
-				{
 					buffer.AppendLine(Selection.objects[i].name);
-				}
 			}
 
 			if (buffer.Length > Environment.NewLine.Length)

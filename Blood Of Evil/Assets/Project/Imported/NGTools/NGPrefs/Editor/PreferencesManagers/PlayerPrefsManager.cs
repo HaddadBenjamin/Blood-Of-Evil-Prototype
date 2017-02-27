@@ -1,11 +1,9 @@
-﻿using NGTools;
-using System;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGPrefs
 {
-	public class PlayerPrefManager : PrefsManager
+	internal sealed class PlayerPrefManager : PrefsManager
 	{
 		public override void	DeleteKey(string key)
 		{
@@ -54,18 +52,12 @@ namespace NGToolsEditor
 
 		public override void	LoadPreferences()
 		{
-			try
-			{
-#if UNITY_EDITOR_WIN
+			if (Application.platform == RuntimePlatform.WindowsEditor)
 				this.LoadFromRegistrar(@"SOFTWARE\" + PlayerSettings.companyName + @"\" + PlayerSettings.productName);
-#elif UNITY_EDITOR_OSX
-				this.LoadFromRegistrar("/Users/Apple/Library/Preferences/unity." + Application.companyName + "." + Application.productName + ".plist");
-#endif
-			}
-			catch (Exception ex)
-			{
-				InternalNGDebug.LogException(ex);
-			}
+			else if (Application.platform == RuntimePlatform.OSXEditor)
+				this.LoadFromRegistrar("/Users/Apple/Library/Preferences/unity." + PlayerSettings.companyName + "." + PlayerSettings.productName + ".plist");
+			else
+				Debug.LogError("PlayerPrefsManager does not support the current platform " + Application.platform + ".");
 		}
 	}
 }

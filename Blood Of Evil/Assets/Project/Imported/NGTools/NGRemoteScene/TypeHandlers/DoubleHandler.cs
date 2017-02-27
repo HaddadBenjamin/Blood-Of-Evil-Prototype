@@ -1,10 +1,10 @@
 ﻿#if UNITY_5
 using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[Priority(0)]
-	public class DoubleHandler : TypeHandler
+	internal sealed class DoubleHandler : TypeHandler
 	{
 		public	DoubleHandler() : base(typeof(Double))
 		{

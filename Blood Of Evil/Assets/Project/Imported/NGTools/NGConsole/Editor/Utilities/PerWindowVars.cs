@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
 	public class PerWindowVars
@@ -23,7 +23,7 @@ namespace NGToolsEditor
 	public class PerWindowVars<T> : PerWindowVars where T : class, new()
 	{
 		[Serializable]
-		public class Vars
+		public sealed class Vars
 		{
 			public string		name;
 			[NonSerialized]
@@ -69,9 +69,7 @@ namespace NGToolsEditor
 		public IEnumerable<T>	Each()
 		{
 			for (int i = 0; i < this.vars.Count; i++)
-			{
 				yield return this.vars[i].vars;
-			}
 		}
 	}
 }

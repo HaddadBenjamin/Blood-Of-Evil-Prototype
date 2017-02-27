@@ -1,12 +1,12 @@
-﻿using NGTools;
+﻿using NGTools.NGRemoteScene;
 using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[TypeDrawerFor(typeof(Vector3))]
-	public class Vector3Drawer : TypeHandlerDrawer
+	internal sealed class Vector3Drawer : TypeHandlerDrawer
 	{
 		private BgColorContentAnimator	animX;
 		private BgColorContentAnimator	animY;

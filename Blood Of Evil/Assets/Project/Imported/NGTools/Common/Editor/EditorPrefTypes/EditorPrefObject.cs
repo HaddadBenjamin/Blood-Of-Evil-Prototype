@@ -6,7 +6,7 @@ namespace NGToolsEditor
 {
 	using UnityEngine;
 
-	public class EditorPrefObject : EditorPrefType
+	internal sealed class EditorPrefObject : EditorPrefType
 	{
 		public override bool	CanHandle(Type type)
 		{

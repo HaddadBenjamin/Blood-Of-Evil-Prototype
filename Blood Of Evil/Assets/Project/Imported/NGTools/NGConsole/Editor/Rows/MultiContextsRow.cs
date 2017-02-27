@@ -2,13 +2,13 @@
 using System;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	using UnityEngine;
 
 	[Serializable]
 	[RowLogHandler(10)]
-	public class MultiContextsRow : Row, ILogContentGetter
+	internal sealed class MultiContextsRow : Row, ILogContentGetter
 	{
 		public const float	Spacing = 2F;
 
@@ -27,7 +27,7 @@ namespace NGToolsEditor
 		/// <summary>Defines whether the Row is open or not by RowsDrawer.</summary>
 		public bool	isOpened;
 
-		protected LogConditionParser	logParser;
+		private LogConditionParser	logParser;
 
 		private int[]	instanceIDs;
 
@@ -93,10 +93,10 @@ namespace NGToolsEditor
 			if (this.instanceIDs == null)
 				this.ParseCondition();
 
-			float	originWidth = Utility.drawingWindow.position.width - rowsDrawer.verticalScrollbarWidth + rowsDrawer.currentVars.scrollPosition.x;
+			float	originWidth = Utility.drawingWindow.position.width - rowsDrawer.verticalScrollbarWidth + rowsDrawer.currentVars.scrollX;
 
 			// Draw highlight.
-			r.x = rowsDrawer.currentVars.scrollPosition.x;
+			r.x = rowsDrawer.currentVars.scrollX;
 			r.width = originWidth;
 			r.height = Preferences.Settings.log.height;
 
@@ -185,7 +185,7 @@ namespace NGToolsEditor
 				r.x += r.width + MultiContextsRow.Spacing;
 			}
 
-			r.x = rowsDrawer.currentVars.scrollPosition.x;
+			r.x = rowsDrawer.currentVars.scrollX;
 			r.width = originWidth;
 			this.HandleDefaultSelection(rowsDrawer, r, i);
 
@@ -226,6 +226,7 @@ namespace NGToolsEditor
 						this.isOpened = false;
 						rowsDrawer.InvalidateViewHeight();
 						Utility.drawingWindow.Repaint();
+						RowUtility.ClearPreview();
 					}
 				}
 				else if (Preferences.Settings.inputsManager.Check("Navigation", Constants.OpenLogCommand) == true)
@@ -235,6 +236,7 @@ namespace NGToolsEditor
 						this.isOpened = true;
 						rowsDrawer.InvalidateViewHeight();
 						Utility.drawingWindow.Repaint();
+						RowUtility.ClearPreview();
 					}
 				}
 				else if (Preferences.Settings.inputsManager.Check("Navigation", Constants.GoToLineCommand) == true &&

@@ -1,11 +1,12 @@
 ﻿using NGTools;
+using NGTools.NGRemoteScene;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	/// <summary>
 	/// </summary>
@@ -29,7 +30,7 @@ namespace NGToolsEditor
 	///  4	Int32	Module length
 	///  N	Byte[]	Data]+
 	/// </remarks>
-	public class Replay
+	public sealed class Replay
 	{
 		public static readonly char[]	MagicNumber = new char[] { 'a', 'b', 'c', 'd' };
 		public static readonly UInt16	Version = 1;
@@ -66,7 +67,7 @@ namespace NGToolsEditor
 			foreach (Type type in Utility.EachSubClassesOf(typeof(ReplayDataModule)))
 				this.modules.Add(Activator.CreateInstance(type) as ReplayDataModule);
 
-			this.modules.Sort((a, b) => b.priority - b.priority);
+			this.modules.Sort((a, b) => b.priority - a.priority);
 		}
 
 		public	Replay(IReplaySettings settings)
@@ -184,7 +185,7 @@ namespace NGToolsEditor
 			{
 				using (StreamReader reader = new StreamReader(filepath))
 				{
-					BinaryReader br = new BinaryReader(reader.BaseStream);
+					BinaryReader	br = new BinaryReader(reader.BaseStream);
 
 					char[]	magicNumber = br.ReadChars(4);
 

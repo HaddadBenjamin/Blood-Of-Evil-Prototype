@@ -1,10 +1,10 @@
 using System;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[Priority(70)]
-	public class QuaternionHandler : TypeHandler
+	internal sealed class QuaternionHandler : TypeHandler
 	{
 		public	QuaternionHandler() : base(typeof(Quaternion))
 		{

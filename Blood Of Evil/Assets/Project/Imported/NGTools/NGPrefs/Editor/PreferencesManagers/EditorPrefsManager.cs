@@ -1,13 +1,9 @@
-﻿using NGTools;
-using System;
-using UnityEditor;
-#if UNITY_EDITOR_OSX
+﻿using UnityEditor;
 using UnityEngine;
-#endif
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGPrefs
 {
-	public class EditorPrefManager : PrefsManager
+	internal sealed class EditorPrefManager : PrefsManager
 	{
 		public override void	DeleteKey(string key)
 		{
@@ -56,18 +52,12 @@ namespace NGToolsEditor
 
 		public override void	LoadPreferences()
 		{
-			try
-			{
-#if UNITY_EDITOR_WIN
+			if (Application.platform == RuntimePlatform.WindowsEditor)
 				this.LoadFromRegistrar(@"SOFTWARE\Unity Technologies\Unity Editor 5.x");
-#elif UNITY_EDITOR_OSX
+			else if (Application.platform == RuntimePlatform.OSXEditor)
 				this.LoadFromRegistrar("/Users/Apple/Library/Preferences/com.unity3d.UnityEditor" + Application.unityVersion.Substring(0, Application.unityVersion.IndexOf('.')) + ".x.plist");
-#endif
-			}
-			catch (Exception ex)
-			{
-				InternalNGDebug.LogException(ex);
-			}
+			else
+				Debug.LogError("EditorPrefsManager does not support the current platform " + Application.platform + ".");
 		}
 	}
 }

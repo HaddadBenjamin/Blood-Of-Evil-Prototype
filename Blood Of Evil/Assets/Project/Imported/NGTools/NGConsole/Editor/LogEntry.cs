@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class LogEntry
+	public sealed class LogEntry
 	{
 		private static Dictionary<int, string>	cachedFiles = new Dictionary<int, string>(64);
 

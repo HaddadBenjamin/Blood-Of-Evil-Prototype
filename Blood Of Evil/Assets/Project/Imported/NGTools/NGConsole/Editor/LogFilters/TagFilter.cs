@@ -1,12 +1,12 @@
 ﻿using System;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	using UnityEngine;
 
 	[Serializable]
-	public class TagFilter : ILogFilter
+	internal sealed class TagFilter : ILogFilter
 	{
 		private enum SearchMode
 		{
@@ -45,10 +45,7 @@ namespace NGToolsEditor
 		{
 			GUILayout.BeginHorizontal(GeneralStyles.Toolbar);
 			{
-				using (LabelWidthRestorer.Get(70F))
-				{
-					this.tag = EditorGUILayout.TextField(LC.G("Tag"), this.tag);
-				}
+				this.tag = EditorGUILayout.TextField(LC.G("Tag"), this.tag);
 			}
 			GUILayout.EndHorizontal();
 		}

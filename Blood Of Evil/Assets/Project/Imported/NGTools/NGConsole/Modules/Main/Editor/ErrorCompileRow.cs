@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	using UnityEngine;
 
 	[Serializable]
-	public class ErrorCompileRow : CompileRow, ILogContentGetter
+	internal sealed class ErrorCompileRow : CompileRow, ILogContentGetter
 	{
 		public struct FileLine
 		{
@@ -74,10 +74,10 @@ namespace NGToolsEditor
 
 		public override void	DrawRow(RowsDrawer rowsDrawer, Rect r, int i, bool? collapse)
 		{
-			float	originWidth = Utility.drawingWindow.position.width - rowsDrawer.verticalScrollbarWidth + rowsDrawer.currentVars.scrollPosition.x;
+			float	originWidth = Utility.drawingWindow.position.width - rowsDrawer.verticalScrollbarWidth + rowsDrawer.currentVars.scrollX;
 
 			// Draw highlight.
-			r.x = rowsDrawer.currentVars.scrollPosition.x;
+			r.x = rowsDrawer.currentVars.scrollX;
 			r.width = originWidth;
 			r.height = Preferences.Settings.log.height;
 
@@ -136,7 +136,7 @@ namespace NGToolsEditor
 			{
 				for (int j = 0; j < this.fileLines.Count; j++)
 				{
-					r.x = rowsDrawer.currentVars.scrollPosition.x;
+					r.x = rowsDrawer.currentVars.scrollX;
 					r.width = originWidth;
 
 					if (Event.current.type == EventType.Repaint &&

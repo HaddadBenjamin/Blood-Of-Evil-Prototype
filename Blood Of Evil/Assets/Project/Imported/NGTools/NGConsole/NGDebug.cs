@@ -5,41 +5,33 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
-using DConditional = System.Diagnostics.ConditionalAttribute;
 
 public partial class NGDebug
 {
-	[DConditional("UNITY_EDITOR")]
 	public static void	LogHierarchy(GameObject gameObject)
 	{
-		StringBuilder	buffer = Utility.sharedBuffer;
-
-		buffer.Length = 0;
-		buffer.Append(InternalNGDebug.MultiContextsStartChar);
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
 
 		if (gameObject != null)
-		{
-			Transform	transform = gameObject.transform;
-
-			while (transform != null)
-			{
-				buffer.Append(transform.GetInstanceID());
-				buffer.Append(InternalNGDebug.MultiContextsSeparator);
-
-				transform = transform.parent;
-			}
-
-			// Remove last separator.
-			buffer.Length -= 1;
-		}
-
-		buffer.Append(InternalNGDebug.MultiContextsEndChar);
-		Debug.Log(buffer.ToString());
+			NGDebug.LogHierarchy(gameObject.transform);
+		else
+			NGDebug.LogHierarchy((UnityEngine.Component)null);
 	}
 
-	[DConditional("UNITY_EDITOR")]
+	public static void	LogHierarchy(RaycastHit hit)
+	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
+		NGDebug.LogHierarchy(hit.transform);
+	}
+
 	public static void	LogHierarchy(UnityEngine.Component component)
 	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
 		StringBuilder	buffer = Utility.sharedBuffer;
 
 		buffer.Length = 0;
@@ -65,37 +57,11 @@ public partial class NGDebug
 		Debug.Log(buffer.ToString());
 	}
 
-	[DConditional("UNITY_EDITOR")]
-	public static void	LogHierarchy(RaycastHit hit)
-	{
-		StringBuilder	buffer = Utility.sharedBuffer;
-
-		buffer.Length = 0;
-		buffer.Append(InternalNGDebug.MultiContextsStartChar);
-
-		if (hit.transform != null)
-		{
-			Transform	transform = hit.transform;
-
-			while (transform != null)
-			{
-				buffer.Append(transform.GetInstanceID());
-				buffer.Append(InternalNGDebug.MultiContextsSeparator);
-
-				transform = transform.parent;
-			}
-
-			// Remove last separator.
-			buffer.Length -= 1;
-		}
-
-		buffer.Append(InternalNGDebug.MultiContextsEndChar);
-		Debug.Log(buffer.ToString());
-	}
-
-	[DConditional("UNITY_EDITOR")]
 	public static void	Log(params Object[] objects)
 	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
 		StringBuilder	buffer = Utility.sharedBuffer;
 
 		buffer.Length = 0;
@@ -121,9 +87,11 @@ public partial class NGDebug
 		Debug.Log(buffer.ToString());
 	}
 
-	[DConditional("UNITY_EDITOR")]
 	public static void	Log(params RaycastHit[] hits)
 	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
 		StringBuilder	buffer = Utility.sharedBuffer;
 
 		buffer.Length = 0;
@@ -149,9 +117,11 @@ public partial class NGDebug
 		Debug.Log(buffer.ToString());
 	}
 
-	[DConditional("UNITY_EDITOR")]
 	public static void	LogCollection(IEnumerable<RaycastHit> hits)
 	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
 		StringBuilder	buffer = Utility.sharedBuffer;
 
 		buffer.Length = 0;
@@ -175,9 +145,11 @@ public partial class NGDebug
 		Debug.Log(buffer.ToString());
 	}
 
-	[DConditional("UNITY_EDITOR")]
 	public static void	LogCollection<T>(IEnumerable<T> objects) where T : Object
 	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
 		StringBuilder	buffer = Utility.sharedBuffer;
 
 		buffer.Length = 0;
@@ -204,27 +176,35 @@ public partial class NGDebug
 	private static Dictionary<int, FieldInfo[]>		cachedFieldInfos = new Dictionary<int, FieldInfo[]>();
 	private static Dictionary<int, PropertyInfo[]>	cachedPropertiesInfos = new Dictionary<int, PropertyInfo[]>();
 
-	[DConditional("UNITY_EDITOR")]
 	public static void	Snapshot(object o)
 	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
 		NGDebug.Snapshot(o, BindingFlags.Public | BindingFlags.Instance, null);
 	}
 
-	[DConditional("UNITY_EDITOR")]
 	public static void	Snapshot(object o, Object context)
 	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
 		NGDebug.Snapshot(o, BindingFlags.Public | BindingFlags.Instance, context);
 	}
 
-	[DConditional("UNITY_EDITOR")]
 	public static void	Snapshot(object o, BindingFlags bindingFlags)
 	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
 		NGDebug.Snapshot(o, bindingFlags, null);
 	}
 
-	[DConditional("UNITY_EDITOR")]
-	public static void	Snapshot(object o, BindingFlags bindingFlags, Object context)
+	public static void	Snapshot(object o, BindingFlags bindingFlags, Object context, string suffix = null)
 	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
 		StringBuilder	buffer = Utility.sharedBuffer;
 
 		buffer.Length = 0;
@@ -232,83 +212,59 @@ public partial class NGDebug
 
 		if (o != null)
 		{
-			FieldInfo[]	fields;
-			System.Type type = o.GetType();
-			int			hash = type.GetHashCode() + bindingFlags.GetHashCode();
+			System.Type	type = o.GetType();
 
 			buffer.Append(type.Name);
+			if (suffix != null)
+				buffer.Append(suffix);
 
-			if (NGDebug.cachedFieldInfos.TryGetValue(hash, out fields) == false)
+			if (type.IsPrimitive == true)
 			{
-				fields = type.GetFields(bindingFlags);
-				NGDebug.cachedFieldInfos.Add(hash, fields);
-			}
-
-			for (int i = 0; i < fields.Length; i++)
-			{
-				buffer.Append(InternalNGDebug.DataSeparator);
-				buffer.Append(fields[i].Name);
 				buffer.Append("=");
-
-				object	v = fields[i].GetValue(o);
-
-				if (fields[i].FieldType.IsPrimitive == true || fields[i].FieldType.IsValueType == true)
-					buffer.Append(v);
-				else if (v == null)
-					buffer.Append("NULL");
-				else if (v is System.Array)
-					buffer.Append(fields[i].FieldType.GetElementType().Name + "[" + (v as System.Array).Length + "]");
-				else if (typeof(IList).IsAssignableFrom(fields[i].FieldType) == true)
-					buffer.Append(fields[i].FieldType.Name + "<" + Utility.GetArraySubType(fields[i].FieldType).Name + ">[" + (v as IList).Count + "]");
-				else
-					buffer.Append(v.ToString().Replace(InternalNGDebug.DataSeparator, InternalNGDebug.DataSeparatorReplace));
+				buffer.Append(o);
 			}
-
-			PropertyInfo[]	properties;
-
-			type = o.GetType();
-
-			if (NGDebug.cachedPropertiesInfos.TryGetValue(hash, out properties) == false)
+			else
 			{
-				properties = type.GetProperties(bindingFlags);
+				FieldInfo[]	fields;
+				int			hash = type.GetHashCode() + bindingFlags.GetHashCode();
 
-				List<PropertyInfo>	filteredProperties = new List<PropertyInfo>(properties.Length);
-
-				for (int i = 0; i < properties.Length; i++)
+				if (NGDebug.cachedFieldInfos.TryGetValue(hash, out fields) == false)
 				{
-					if (properties[i].CanWrite == false ||
-						properties[i].CanRead == false ||
-						properties[i].GetGetMethod(false) == null ||
-						properties[i].GetSetMethod(false) == null)
-					{
-						continue;
-					}
-
-					filteredProperties.Add(properties[i]);
+					fields = type.GetFields(bindingFlags);
+					NGDebug.cachedFieldInfos.Add(hash, fields);
 				}
 
-				properties = filteredProperties.ToArray();
-				NGDebug.cachedPropertiesInfos.Add(hash, properties);
-			}
+				for (int i = 0; i < fields.Length; i++)
+					NGDebug.SubSnap(buffer, fields[i].FieldType, fields[i].Name, fields[i].GetValue(o));
 
-			for (int i = 0; i < properties.Length; i++)
-			{
-				buffer.Append(InternalNGDebug.DataSeparator);
-				buffer.Append(properties[i].Name);
-				buffer.Append("=");
+				PropertyInfo[]	properties;
 
-				object	v = properties[i].GetValue(o, null);
+				if (NGDebug.cachedPropertiesInfos.TryGetValue(hash, out properties) == false)
+				{
+					properties = type.GetProperties(bindingFlags);
 
-				if (properties[i].PropertyType.IsPrimitive == true || properties[i].PropertyType.IsValueType == true)
-					buffer.Append(v);
-				else if (v == null)
-					buffer.Append("NULL");
-				else if (v is System.Array)
-					buffer.Append(properties[i].PropertyType.GetElementType().Name + "[" + (v as System.Array).Length + "]");
-				else if (typeof(IList).IsAssignableFrom(properties[i].PropertyType) == true)
-					buffer.Append(properties[i].PropertyType.Name + "<" + Utility.GetArraySubType(properties[i].PropertyType).Name + ">[" + (v as IList).Count + "]");
-				else
-					buffer.Append(v.ToString().Replace(InternalNGDebug.DataSeparator, InternalNGDebug.DataSeparatorReplace));
+					List<PropertyInfo>	filteredProperties = new List<PropertyInfo>(properties.Length);
+
+					for (int i = 0; i < properties.Length; i++)
+					{
+						if (properties[i].CanWrite == false ||
+							properties[i].CanRead == false ||
+							properties[i].GetGetMethod(false) == null ||
+							properties[i].GetSetMethod(false) == null ||
+							properties[i].GetIndexParameters().Length != 0)
+						{
+							continue;
+						}
+
+						filteredProperties.Add(properties[i]);
+					}
+
+					properties = filteredProperties.ToArray();
+					NGDebug.cachedPropertiesInfos.Add(hash, properties);
+				}
+
+				for (int i = 0; i < properties.Length; i++)
+					NGDebug.SubSnap(buffer, properties[i].PropertyType, properties[i].Name, properties[i].GetValue(o, null));
 			}
 		}
 		else
@@ -318,14 +274,92 @@ public partial class NGDebug
 		Debug.Log(buffer.ToString(), context);
 	}
 
+	private static void	SubSnap(StringBuilder buffer, System.Type type, string name, object v)
+	{
+		buffer.Append(InternalNGDebug.DataSeparator);
+		buffer.Append(name);
+		buffer.Append("=");
+
+		if (type.IsPrimitive == true || type.IsValueType == true)
+			buffer.Append(v);
+		else if (v == null)
+			buffer.Append("NULL");
+		else if (v is System.Array)
+			buffer.Append(type.GetElementType().Name + "[" + (v as System.Array).Length + "]");
+		else if (typeof(IList).IsAssignableFrom(type) == true)
+			buffer.Append(type.Name + "<" + Utility.GetArraySubType(type).Name + ">[" + (v as IList).Count + "]");
+		else
+			buffer.Append(v.ToString().Replace(InternalNGDebug.DataSeparator, InternalNGDebug.DataSeparatorReplace));
+	}
+
+	public static void	Snapshots<T>(IEnumerable<T> enumerable, int offset, Object context)
+	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
+		NGDebug.Snapshots<T>(enumerable, offset, int.MaxValue, BindingFlags.Public | BindingFlags.Instance, context);
+	}
+
+	public static void	Snapshots<T>(IEnumerable<T> enumerable, int offset, BindingFlags bindingFlags, Object context = null)
+	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
+		NGDebug.Snapshots<T>(enumerable, offset, int.MaxValue, bindingFlags, context);
+	}
+
+	public static void	Snapshots<T>(IEnumerable<T> enumerable, int offset, int count, Object context)
+	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
+		NGDebug.Snapshots<T>(enumerable, offset, count, BindingFlags.Public | BindingFlags.Instance, context);
+	}
+
+	public static void	Snapshots<T>(IEnumerable<T> enumerable, int offset = 0, int count = int.MaxValue, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance, Object context = null)
+	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
+		if (enumerable == null)
+		{
+			NGDebug.Snapshot(null);
+			return;
+		}
+
+		int			i = 0;
+		System.Type	type = enumerable.GetType();
+
+		if (type.IsArray == true)
+			Debug.Log(Utility.GetArraySubType(type).Name + "[" + (enumerable as IList).Count + "]");
+		else if (typeof(IList).IsAssignableFrom(enumerable.GetType()) == true)
+			Debug.Log(type.Name + "<" + Utility.GetArraySubType(type).Name + ">[" + (enumerable as IList).Count + "]");
+		else
+			Debug.Log(enumerable.GetType().Name, context);
+
+		foreach (T element in enumerable)
+		{
+			if (i >= offset)
+			{
+				NGDebug.Snapshot(element, bindingFlags, context, "[" + i + "]");
+				--count;
+				if (count <= 0)
+					break;
+			}
+			++i;
+		}
+	}
+
 	/// <summary>
 	/// <para>Log generating an exception to output a log with a stack trace to the console.</para>
 	/// <para>Works on multi-threads.</para>
 	/// </summary>
 	/// <param name="message"></param>
-	[DConditional("UNITY_EDITOR")]
 	public static void	MTLog(string message)
 	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
 		Debug.LogException(new MTLog(message));
 	}
 
@@ -335,15 +369,19 @@ public partial class NGDebug
 	/// </summary>
 	/// <param name="message"></param>
 	/// <param name="context"></param>
-	[DConditional("UNITY_EDITOR")]
 	public static void	MTLog(string message, Object context)
 	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
 		Debug.LogException(new MTLog(message), context);
 	}
 
-	[DConditional("UNITY_EDITOR")]
 	public static void	LogTags(string message, params string[] tags)
 	{
+		if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
+			return;
+
 		StringBuilder	buffer = Utility.sharedBuffer;
 
 		buffer.Length = 0;
@@ -379,7 +417,7 @@ public class MTLog : System.Exception
 	}
 }
 
-public class DataStore : ScriptableObject
+internal class DataStore : ScriptableObject
 {
 	public List<object>	array = new List<object>();
 }

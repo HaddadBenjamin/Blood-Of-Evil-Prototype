@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	public class PropertyCommand : CommandNode
 	{
@@ -51,9 +51,7 @@ namespace NGTools
 					return this.SetValue(n);
 			}
 			else if (this.propertyInfo.PropertyType == typeof(String))
-			{
 				return this.SetValue(args[0]);
-			}
 			else if (this.propertyInfo.PropertyType == typeof(Boolean))
 			{
 				// No constraints possible on boolean.

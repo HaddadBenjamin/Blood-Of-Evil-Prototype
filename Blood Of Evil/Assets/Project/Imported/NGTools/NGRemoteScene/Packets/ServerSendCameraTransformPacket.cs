@@ -1,9 +1,10 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Camera_ServerSendCameraTransform)]
-	public class ServerSendCameraTransformPacket : Packet
+	internal sealed class ServerSendCameraTransformPacket : Packet
 	{
 		public float	positionX;
 		public float	positionY;
@@ -11,7 +12,7 @@ namespace NGTools
 		public float	rotationX;
 		public float	rotationY;
 
-		protected	ServerSendCameraTransformPacket(ByteBuffer buffer) : base(buffer)
+		private	ServerSendCameraTransformPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

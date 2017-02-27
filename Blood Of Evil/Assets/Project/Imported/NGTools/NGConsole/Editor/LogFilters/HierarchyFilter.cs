@@ -1,12 +1,12 @@
 ﻿using System;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	using UnityEngine;
 
 	[Serializable]
-	public class HierarchyFilter : ILogFilter
+	internal sealed class HierarchyFilter : ILogFilter
 	{
 		private static Color	ParentBackgroundColor = Color.grey;
 
@@ -66,7 +66,7 @@ namespace NGToolsEditor
 				EditorGUI.BeginChangeCheck();
 				using (LabelWidthRestorer.Get(90F))
 				{
-					using (ColorContentRestorer.Get(string.IsNullOrEmpty(this.lastParent) == false ? HierarchyFilter.ParentBackgroundColor : GUI.contentColor))
+					using (ColorContentRestorer.Get(string.IsNullOrEmpty(this.lastParent) == false, HierarchyFilter.ParentBackgroundColor))
 					{
 						Utility.content.text = LC.G("ParentObject");
 						Utility.content.tooltip = this.lastParent;

@@ -1,5 +1,0 @@
-ContentFilter=Par le contenu
-SearchMode=Mode de recherche
-Keyword=Mot-clé
-FilterByThisContent=Filtrer par ce contenu
-ByContent=Par le contenu

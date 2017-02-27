@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using NGTools.Network;
+using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	/// <summary>
 	/// <para>Requests all primary data from a GameObject.</para>
@@ -17,11 +18,11 @@ namespace NGTools
 	/// </summary>
 	/// <seealso cref="NGTools.ServerSendGameObjectDataPacket"/>
 	[PacketLinkTo(PacketId.Scene_ClientRequestGameObjectData)]
-	public class ClientRequestGameObjectDataPacket : Packet
+	internal sealed class ClientRequestGameObjectDataPacket : Packet
 	{
 		public int	gameObjectInstanceID;
 
-		protected	ClientRequestGameObjectDataPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientRequestGameObjectDataPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

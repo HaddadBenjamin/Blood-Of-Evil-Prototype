@@ -1,11 +1,12 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Camera_ClientDisconnect)]
-	public class ClientDisconnectPacket : Packet
+	internal sealed class ClientDisconnectPacket : Packet
 	{
-		protected	ClientDisconnectPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientDisconnectPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

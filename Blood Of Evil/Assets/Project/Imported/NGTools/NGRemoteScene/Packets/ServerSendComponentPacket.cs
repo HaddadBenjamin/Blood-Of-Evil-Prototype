@@ -1,16 +1,18 @@
-﻿namespace NGTools
+﻿using NGTools.Network;
+
+namespace NGTools.NGRemoteScene
 {
 	/// <summary>
 	/// <para>Sends all fields and properties from a Component + enable.</para>
 	/// </summary>
 	[PacketLinkTo(PacketId.Scene_ServerSendComponent)]
-	public class ServerSendComponentPacket : Packet
+	internal sealed class ServerSendComponentPacket : Packet
 	{
 		public readonly ServerComponent	serverComponent;
 		public int						gameObjectInstanceID;
 		public NetComponent				component;
 
-		protected	ServerSendComponentPacket(ByteBuffer buffer) : base(buffer)
+		private	ServerSendComponentPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

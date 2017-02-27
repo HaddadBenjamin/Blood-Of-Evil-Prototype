@@ -1,15 +1,16 @@
-﻿using UnityEngine;
+﻿using NGTools.Network;
+using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Scene_ServerSendLayers)]
-	public class ServerSendLayersPacket : Packet
+	internal sealed class ServerSendLayersPacket : Packet
 	{
 		public const int	MaxLayers = 32;
 
 		public string[]	layers;
 
-		protected	ServerSendLayersPacket(ByteBuffer buffer) : base(buffer)
+		private	ServerSendLayersPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 
@@ -31,9 +32,7 @@ namespace NGTools
 			this.layers = new string[ServerSendLayersPacket.MaxLayers];
 
 			for (int i = 0; i < ServerSendLayersPacket.MaxLayers; i++)
-			{
 				this.layers[i] = buffer.ReadUnicodeString();
-			}
 		}
 	}
 }

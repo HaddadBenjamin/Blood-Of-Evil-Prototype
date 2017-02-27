@@ -1,13 +1,14 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	[PacketLinkTo(PacketId.Scene_ClientLoadBigArray)]
-	public class ClientLoadBigArrayPacket : Packet
+	[PacketLinkTo(PacketId.Scene_ClientLoadBigArray, true)]
+	internal sealed class ClientLoadBigArrayPacket : Packet
 	{
 		public string	arrayPath;
 
-		protected	ClientLoadBigArrayPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientLoadBigArrayPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	using UnityEngine;
 

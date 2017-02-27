@@ -6,6 +6,7 @@ ConsoleSettings_General_General=General
 ConsoleSettings_General_Log=Log
 ConsoleSettings_General_StackTrace=Stack Trace
 ConsoleSettings_NullTarget=The working NGSettings is null.
+ConsoleSettings_ResetConfirm=Are you sure you want to reset these settings?
 Language=Language
 General_AutoReplaceUnityConsole=Automatically replaces Unity Console by NG Console when opening the console for the first time.
 General_Clear=Defines the content of the button "Clear". Leave it empty to hide the button.

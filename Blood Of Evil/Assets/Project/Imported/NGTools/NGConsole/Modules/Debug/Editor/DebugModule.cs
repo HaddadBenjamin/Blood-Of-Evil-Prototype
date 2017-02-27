@@ -2,21 +2,37 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	using UnityEngine;
 
+	namespace Test
+	{
+		public class LambdaClass
+		{
+			public static class NestedClass
+			{
+				public static void	A()
+				{
+					Debug.Log("Log in NestedClass in nested namespace.");
+				}
+			}
+
+			public void	B()
+			{
+				Debug.Log("Log in nested namespace.");
+			}
+		}
+	}
+
 	[Serializable]
 	[ExcludeFromExport]
-	public class DebugModule : Module
+	internal sealed class DebugModule : Module
 	{
-		public static string	dbg;
-
 		public bool	debug;
 		public bool	increment;
 
@@ -27,26 +43,28 @@ namespace NGToolsEditor
 		{
 			base.OnEnable(editor, id);
 
-			this.AddDelegate();
+			Conf.DebugModeChanged += this.OnDebugModeChanged;
+
+			if (Conf.DebugMode != Conf.DebugModes.None)
+				this.console.PostOnGUIHeader += DrawDebugBar;
 		}
 
 		public override void	OnDisable()
 		{
 			base.OnDisable();
 
-			this.RemoveDelegate();
+			Conf.DebugModeChanged -= this.OnDebugModeChanged;
+
+			this.console.PostOnGUIHeader -= DrawDebugBar;
 		}
 
-		[Conditional(Constants.DebugSymbol)]
-		private void	AddDelegate()
-		{
-			this.console.PostOnGUIHeader += DrawDebugBar;
-		}
-
-		[Conditional(Constants.DebugSymbol)]
-		private void	RemoveDelegate()
+		private void	OnDebugModeChanged()
 		{
 			this.console.PostOnGUIHeader -= DrawDebugBar;
+			if (Conf.DebugMode != Conf.DebugModes.None)
+				this.console.PostOnGUIHeader += DrawDebugBar;
+
+			this.console.Repaint();
 		}
 
 		private Rect	DrawDebugBar(Rect r)
@@ -54,12 +72,6 @@ namespace NGToolsEditor
 			float	x = r.x;
 
 			r.height = 16F;
-
-			if (string.IsNullOrEmpty(DebugModule.dbg) == false)
-			{
-				GUI.TextArea(r, DebugModule.dbg);
-				r.y += r.height;
-			}
 
 			GUI.Box(r, GUIContent.none);
 			GUI.Label(r, "Debug");
@@ -72,9 +84,7 @@ namespace NGToolsEditor
 
 			r.width = 50F;
 			if (GUI.Button(r, "Sync") == true)
-			{
 				this.console.syncLogs.Sync();
-			}
 			r.x += r.width;
 
 			if (GUI.Button(r, "GC") == true)
@@ -87,40 +97,28 @@ namespace NGToolsEditor
 
 			r.width = 75F;
 			if (GUI.Button(r, "ClrCFiles") == true)
-			{
 				Utility.files.Reset();
-			}
 			r.x += r.width;
 			if (GUI.Button(r, "ClrCClasses") == true)
-			{
 				Utility.classes = new FastClassCache();
-			}
 			r.x += r.width;
 			if (GUI.Button(r, "DiffLcl") == true)
-			{
 				this.DiffLocalesMissingKeysFromDefaultLanguage();
-			}
 			r.x += r.width;
 			if (GUI.Button(r, "CheckLcl") == true)
-			{
 				this.CheckUnusedLocales();
-			}
 			r.x += r.width;
 			if (GUI.Button(r, "MultCtxts") == true)
-			{
 				NGDebug.Log(Preferences.Settings, Preferences.Settings, Preferences.Settings);
-			}
 			r.x += r.width;
 			if (GUI.Button(r, "Snapshot") == true)
-			{
 				NGDebug.Snapshot(this);
-			}
 			r.x += r.width;
 			if (GUI.Button(r, "TestParam") == true)
 			{
-				int n = 0;
+				int	n = 0;
 				int? m = 0;
-				Type t = null;
+				Type	t = null;
 				Vector3?	p = null;
 				this.TestParameterTypes<Type>(0, 1, true, 3, 4, 5, 6, ConsoleColor.Black, null, p, new Rect(), new Rect(),
 											  out n, ref n, out m, ref m, null, out t);
@@ -128,9 +126,7 @@ namespace NGToolsEditor
 			r.x += r.width;
 
 			if (GUI.Button(r, "ListReg") == true)
-			{
 				this.OutputWinReg();
-			}
 
 			r.x = x;
 			r.y += r.height;
@@ -139,9 +135,7 @@ namespace NGToolsEditor
 
 			// Test cases
 			if (GUI.Button(r, "1L") == true)
-			{
 				Debug.Log("monoline");
-			}
 			r.x += r.width;
 
 			r.width = 40F;
@@ -159,9 +153,7 @@ namespace NGToolsEditor
 			r.width = 40F;
 
 			if (GUI.Button(r, "Go") == true)
-			{
 				Utility.StartBackgroundTask(this.TaskWriteLogs());
-			}
 			r.x += r.width;
 
 			r.width = 20F;
@@ -170,55 +162,48 @@ namespace NGToolsEditor
 
 			r.width = 40F;
 			if (GUI.Button(r, "2L") == true)
-			{
 				Debug.Log("first\nSECOND");
-			}
 			r.x += r.width;
 			if (GUI.Button(r, "3L") == true)
-			{
 				Debug.Log("first\nSECOND\nThird");
-			}
 			r.x += r.width;
 			if (GUI.Button(r, "10L") == true)
-			{
 				Debug.Log("first\nSECOND\nThird\n4\n5\n6\n7\n8\n9\n10");
-			}
 			r.x += r.width;
 			if (GUI.Button(r, "20L") == true)
-			{
 				Debug.Log("first\nSECOND\nThird\n4\n5\n6\n7\n8\n9\n10\nfirst\nSECOND\nThird\n4\n5\n6\n7\n8\n9\n10");
-			}
 			r.x += r.width;
 			if (GUI.Button(r, "Warn.") == true)
-			{
 				Debug.LogWarning("Warning");
-			}
 			r.x += r.width;
 			if (GUI.Button(r, "Err.") == true)
-			{
 				Debug.LogError("Error");
-			}
 			r.x += r.width;
 			if (GUI.Button(r, "Exc.") == true)
-			{
 				Debug.LogException(new NotImplementedException("NotImp", new Exception("innerException")));
-			}
 			r.x += r.width;
 			if (GUI.Button(r, "CatA") == true)
-			{
 				this.CatA("TestA");
-			}
 			r.x += r.width;
 			if (GUI.Button(r, "CatB") == true)
-			{
 				this.CatB("TestB");
-			}
+#if !UNITY_4_5 && !UNITY_4_6 && !UNITY_4_7 && !UNITY_5_0
+			r.x += r.width;
+			if (GUI.Button(r, "Assert") == true)
+				Debug.Assert(false, "Assert test");
+#endif
+			r.x += r.width;
+			if (GUI.Button(r, "NestedA") == true)
+				Test.LambdaClass.NestedClass.A();
+			r.x += r.width;
+			if (GUI.Button(r, "NestedB") == true)
+				new Test.LambdaClass().B();
 			r.x += r.width;
 			if (GUI.Button(r, "DeepLog") == true)
 			{
 				try
 				{
-					var ms = new MemoryStream();
+					var	ms = new MemoryStream();
 					ms.Read(null, 0, 0);
 				}
 				catch (Exception ex)
@@ -253,7 +238,7 @@ namespace NGToolsEditor
 		{
 			Debug.Log("x32");
 
-			string registry_key = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
+			string	registry_key = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
 			using (Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(registry_key))
 			{
 				foreach (string subkey_name in key.GetSubKeyNames())
@@ -306,9 +291,7 @@ namespace NGToolsEditor
 						if (attributes.Length > 0)
 						{
 							if (keys.ContainsKey(attributes[0].key) == true)
-							{
 								keys[attributes[0].key]++;
-							}
 							else
 								Debug.Log("LocaleHeader \"" + attributes[0].key + "\" is missing from default locale.");
 						}
@@ -336,9 +319,7 @@ namespace NGToolsEditor
 				for (int i = 0; i < m; i++)
 				{
 					for (int j = 0; j < n; j++)
-					{
 						Debug.Log("Line");
-					}
 
 					yield return null;
 				}
@@ -348,9 +329,7 @@ namespace NGToolsEditor
 				for (int i = 0; i < m; i++)
 				{
 					for (int j = 1; j <= n; j++)
-					{
 						Debug.Log("Line" + (j + i * j));
-					}
 
 					yield return null;
 				}

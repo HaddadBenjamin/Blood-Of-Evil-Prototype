@@ -2,12 +2,12 @@
 using UnityEditor;
 using UnityEditorInternal;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGHub
 {
 	using UnityEngine;
 
 	[Serializable, Category("Scene")]
-	public class LoadSceneComponent : HubComponent
+	internal sealed class LoadSceneComponent : HubComponent
 	{
 		[Exportable]
 		public string	scene;

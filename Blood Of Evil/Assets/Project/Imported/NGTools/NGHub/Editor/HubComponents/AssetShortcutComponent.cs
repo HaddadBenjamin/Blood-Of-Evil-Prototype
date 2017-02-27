@@ -2,12 +2,12 @@
 using System.Runtime.Serialization;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGHub
 {
 	using UnityEngine;
 
 	[Serializable, Category("Misc")]
-	public class AssetShortcutComponent : HubComponent, ISerializable
+	internal sealed class AssetShortcutComponent : HubComponent, ISerializable
 	{
 		[Exportable]
 		public Object	asset;
@@ -88,10 +88,7 @@ namespace NGToolsEditor
 			}
 			else if (Event.current.type == EventType.MouseDown && r.Contains(Event.current.mousePosition) == true)
 			{
-				if (Event.current.button == 1)
-					Selection.activeObject = this.asset;
-				else
-					EditorGUIUtility.PingObject(this.asset);
+				NGEditorGUILayout.PingObject(asset);
 
 				Utility.position2D = Event.current.mousePosition;
 				DragAndDrop.PrepareStartDrag();

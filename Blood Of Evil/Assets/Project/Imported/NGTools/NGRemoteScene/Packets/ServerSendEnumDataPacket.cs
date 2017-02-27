@@ -1,16 +1,17 @@
+using NGTools.Network;
 using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Scene_ServerSendEnumData)]
-	public class ServerSendEnumDataPacket : Packet
+	internal sealed class ServerSendEnumDataPacket : Packet
 	{
 		public string	type;
 		public bool		hasFlagAttribute;
 		public string[]	names;
 		public int[]	values;
 
-		protected	ServerSendEnumDataPacket(ByteBuffer buffer) : base(buffer)
+		private	ServerSendEnumDataPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

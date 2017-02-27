@@ -2,10 +2,10 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGHub
 {
 	[Serializable, Category("Misc")]
-	public class TimeScaleComponent : HubComponent
+	internal sealed class TimeScaleComponent : HubComponent
 	{
 		public const float	MinTime = 0F;
 		public const float	MaxTime = 100F;

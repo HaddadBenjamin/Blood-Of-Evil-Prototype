@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-	public class MinLengthAttribute : PropertyConstraintAttribute
+	public sealed class MinLengthAttribute : PropertyConstraintAttribute
 	{
 		public readonly float	length;
 

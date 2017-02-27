@@ -2,10 +2,10 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class TimeEndMode : EndMode
+	internal sealed class TimeEndMode : EndMode
 	{
 		[Exportable]
 		private float	time;

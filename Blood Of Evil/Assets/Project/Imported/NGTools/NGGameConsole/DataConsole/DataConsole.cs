@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	public abstract class DataConsole : MonoBehaviour
 	{

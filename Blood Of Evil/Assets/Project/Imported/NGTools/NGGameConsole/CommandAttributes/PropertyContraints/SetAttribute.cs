@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Text;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-	public class SetAttribute : PropertyConstraintAttribute
+	public sealed class SetAttribute : PropertyConstraintAttribute
 	{
 		public readonly int[]	values;
 

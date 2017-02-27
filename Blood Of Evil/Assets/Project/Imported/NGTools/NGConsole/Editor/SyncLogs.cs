@@ -6,12 +6,12 @@ using UnityEngine;
 using UnityEngine.Profiling;
 #endif
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	/// <summary>
 	/// Interface between Unity's internal Console and NGConsole.
 	/// </summary>
-	public class SyncLogs
+	internal sealed class SyncLogs
 	{
 		public Action<int, UnityLogEntry>	NewLog;
 		public Action<int, UnityLogEntry>	UpdateLog;

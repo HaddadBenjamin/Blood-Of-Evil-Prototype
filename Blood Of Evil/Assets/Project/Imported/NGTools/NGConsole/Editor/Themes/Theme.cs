@@ -1,11 +1,11 @@
 ﻿using System;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	public abstract class Theme
 	{
-		public static Color[]		colors = new Color[] {
+		public static Color[]	colors = new Color[] {
 			Constants.NormalFoldoutColor,
 			Constants.WarningFoldoutColor,
 			Constants.ErrorFoldoutColor,

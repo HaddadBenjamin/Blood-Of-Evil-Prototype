@@ -1,11 +1,13 @@
-﻿namespace NGTools
+﻿using NGTools.Network;
+
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Scene_ServerSendProject)]
-	public class ServerSendProjectPacket : Packet
+	internal sealed class ServerSendProjectPacket : Packet
 	{
 		public ListingAssets.AssetReferences[]	assets;
 
-		protected	ServerSendProjectPacket(ByteBuffer buffer) : base(buffer)
+		private	ServerSendProjectPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

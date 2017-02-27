@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGHub
 {
 	public class NGHubExtensionWindow : EditorWindow
 	{
@@ -15,6 +15,16 @@ namespace NGToolsEditor
 			this.source = source;
 			this.minI = 0;
 			this.hiddenI = 0;
+		}
+
+		protected virtual void	OnEnable()
+		{
+			Undo.undoRedoPerformed += this.Repaint;
+		}
+
+		protected virtual void	OnDestroy()
+		{
+			Undo.undoRedoPerformed -= this.Repaint;
 		}
 
 		protected virtual void	OnGUI()

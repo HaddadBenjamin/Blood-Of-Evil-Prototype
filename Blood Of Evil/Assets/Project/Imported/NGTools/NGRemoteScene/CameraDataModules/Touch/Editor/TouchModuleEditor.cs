@@ -1,12 +1,13 @@
 ﻿using NGTools;
+using NGTools.NGRemoteScene;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
-	public class TouchModuleEditor : CameraDataModuleEditor
+	internal sealed class TouchModuleEditor : CameraDataModuleEditor
 	{
-		public class TouchesState : CameraData
+		internal sealed class TouchesState : CameraData
 		{
-			public struct Touch
+			internal struct Touch
 			{
 				public float	x;
 				public float	y;

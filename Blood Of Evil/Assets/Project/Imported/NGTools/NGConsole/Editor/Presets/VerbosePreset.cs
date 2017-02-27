@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	public class VerbosePreset : Preset
+	internal sealed class VerbosePreset : Preset
 	{
 		public override void	SetSettings(NGSettings instance)
 		{

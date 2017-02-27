@@ -1,25 +1,38 @@
 ﻿using NGTools;
 using System;
-using System.Text;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	using UnityEngine;
 
 	[Serializable]
 	[RowLogHandler(20)]
-	public class DataRow : Row
+	internal sealed class DataRow : Row, ILogContentGetter
 	{
 		/// <summary>Defines whether the Row is open or not by RowsDrawer.</summary>
 		public bool	isOpened;
 
+		public string	HeadMessage { get { return this.logParser.HeadMessage; } }
+		public string	FullMessage { get { return this.logParser.FullMessage; } }
+		public string	StackTrace { get { return this.logParser.StackTrace; } }
+		public bool		HasStackTrace { get { return this.logParser.HasStackTrace; } }
+		public string	Category { get { return this.logParser.Category; } }
+
+		/// <summary>
+		/// <para>An array of Frames giving parsed data.</para>
+		/// <para>Is generated once on demand.</para>
+		/// </summary>
+		public Frame[]	Frames { get { return this.logParser.Frames; } }
+
 		/// <summary>Defines if the Row is ready to be used. Do never use a main value (Head message, full message, stack trace) from non-ready Row! IsParsed is used to delay or to skip non-essential Row from computation when receiving massive logs.</summary>
 		public bool	isParsed;
 
-		protected LogConditionParser	logParser;
+		private LogConditionParser	logParser;
 
-		private string[]	fields;
+		private string	firstLine;
+		private string	fields;
+		private float	fieldsHeight;
 
 		private static bool	CanDealWithIt(UnityLogEntry log)
 		{
@@ -53,8 +66,8 @@ namespace NGToolsEditor
 
 		public override float	GetHeight()
 		{
-			if (this.isOpened == true && this.fields != null)
-				return Preferences.Settings.log.height * this.fields.Length;
+			if (this.isOpened == true)
+				return Preferences.Settings.log.height + this.fieldsHeight;
 			return Preferences.Settings.log.height;
 		}
 
@@ -63,10 +76,10 @@ namespace NGToolsEditor
 			if (this.isParsed == false)
 				this.ParseLog();
 
-			float	originWidth = Utility.drawingWindow.position.width - rowsDrawer.verticalScrollbarWidth + rowsDrawer.currentVars.scrollPosition.x;
+			float	originWidth = Utility.drawingWindow.position.width - rowsDrawer.verticalScrollbarWidth + rowsDrawer.currentVars.scrollX;
 
 			// Draw highlight.
-			r.x = rowsDrawer.currentVars.scrollPosition.x;
+			r.x = rowsDrawer.currentVars.scrollX;
 			r.width = originWidth;
 			r.height = Preferences.Settings.log.height;
 
@@ -76,7 +89,7 @@ namespace NGToolsEditor
 			EditorGUI.DrawRect(r, Color.gray);
 			bool	lastValue = this.isOpened;
 			this.isOpened = EditorGUI.Foldout(r, this.isOpened, "", Preferences.Settings.log.NormalFoldoutStyle);
-			if (lastValue != this.isOpened)
+			if (lastValue != this.isOpened && this.fields != string.Empty)
 				rowsDrawer.InvalidateViewHeight();
 			r.x = r.width;
 			r.width = originWidth - r.x;
@@ -101,7 +114,8 @@ namespace NGToolsEditor
 						GUI.FocusControl("L" + i);
 					}
 
-					this.isOpened = !this.isOpened;
+					if (this.fields != string.Empty)
+						this.isOpened = !this.isOpened;
 					rowsDrawer.InvalidateViewHeight();
 					Event.current.Use();
 				}
@@ -162,6 +176,11 @@ namespace NGToolsEditor
 					{
 						Selection.activeInstanceID = this.log.instanceID;
 					}
+					// Go to line if force focus is available.
+					else if ((Event.current.modifiers & Preferences.Settings.log.forceFocusOnModifier) != 0)
+					{
+						RowUtility.GoToLine(this, this.log, true);
+					}
 					// Handle multi-selection.
 					else if (Event.current.control == true &&
 							 rowsDrawer.currentVars.IsSelected(i) == true)
@@ -174,7 +193,12 @@ namespace NGToolsEditor
 						{
 							if (rowsDrawer.currentVars.CountSelection != 1)
 								rowsDrawer.bodyRect.height -= rowsDrawer.currentVars.rowContentHeight + Constants.RowContentSplitterHeight;
-
+							else
+							{
+								// Reset last click when selection changes.
+								if (rowsDrawer.currentVars.GetSelection(0) != i)
+									RowUtility.LastClickTime = 0;
+							}
 							rowsDrawer.currentVars.ClearSelection();
 						}
 
@@ -191,9 +215,24 @@ namespace NGToolsEditor
 				else if (Event.current.type == EventType.MouseUp &&
 						 Event.current.button == 0)
 				{
+					// Go to line on double click.
+					if (RowUtility.LastClickTime + Constants.DoubleClickTime > EditorApplication.timeSinceStartup &&
+						RowUtility.LastClickIndex == i &&
+						rowsDrawer.currentVars.IsSelected(i) == true)
+					{
+						bool	focus = false;
+
+						if ((Event.current.modifiers & Preferences.Settings.log.forceFocusOnModifier) != 0)
+							focus = true;
+
+						RowUtility.GoToLine(this, this.log, focus);
+					}
 					// Ping on simple click.
-					if (this.log.instanceID != 0)
+					else if (this.log.instanceID != 0)
 						EditorGUIUtility.PingObject(this.log.instanceID);
+
+					RowUtility.LastClickTime = EditorApplication.timeSinceStartup;
+					RowUtility.LastClickIndex = i;
 
 					GUI.FocusControl("L" + i);
 					Utility.drawingWindow.Repaint();
@@ -204,41 +243,26 @@ namespace NGToolsEditor
 			r = this.DrawPreLogData(rowsDrawer, r);
 			r.width = originWidth - r.x;
 
-			GUI.Label(r, this.fields[0]);
+			GUI.Label(r, this.firstLine);
 
 			if (this.isOpened == true)
 			{
 				r.y += r.height;
-				r.x = rowsDrawer.currentVars.scrollPosition.x + 16F;
+				r.x = rowsDrawer.currentVars.scrollX + 16F;
 				r.width = originWidth;
-
-				// Draw data anchors.
-				for (int j = 1; j < this.fields.Length; j++)
-				{
-					GUI.TextField(r, this.fields[j]);
-					r.y += r.height;
-				}
+				r.height = this.fieldsHeight;
+				GUI.TextArea(r, this.fields, GeneralStyles.RichTextArea);
 			}
 		}
 
 		private object	ShortCopy(object row)
 		{
-			return this.fields[0];
+			return this.firstLine;
 		}
 
 		private object	FullCopy(object row)
 		{
-			StringBuilder	buffer = Utility.GetBuffer();
-
-			for (int j = 1; j < this.fields.Length; j++)
-			{
-				buffer.AppendLine(this.fields[j]);
-			}
-
-			if (buffer.Length >= Environment.NewLine.Length)
-				buffer.Length -= Environment.NewLine.Length;
-
-			return Utility.ReturnBuffer(buffer);
+			return this.fields;
 		}
 
 		private object	CopyStackTrace(object row)
@@ -286,12 +310,21 @@ namespace NGToolsEditor
 
 			int		end = this.log.condition.IndexOf(InternalNGDebug.DataEndChar);
 			string	raw = this.log.condition.Substring(1, end - 1);
+			int		n = raw.IndexOf(InternalNGDebug.DataSeparator);
 
-			this.fields = raw.Split(InternalNGDebug.DataSeparator);
-
-			for (int i = 0; i < this.fields.Length; i++)
+			if (n != -1)
 			{
-				this.fields[i] = this.fields[i].Replace(InternalNGDebug.DataSeparatorReplace, InternalNGDebug.DataSeparator);
+				this.firstLine = raw.Substring(0, n).Replace(InternalNGDebug.DataSeparatorReplace, InternalNGDebug.DataSeparator);
+				this.fields = raw.Substring(n + 1).Replace(InternalNGDebug.DataSeparatorReplace, InternalNGDebug.DataSeparator);
+
+				Utility.content.text = this.fields;
+				this.fieldsHeight = GeneralStyles.RichTextArea.CalcHeight(Utility.content, 0F);
+			}
+			else
+			{
+				this.firstLine = raw.Replace(InternalNGDebug.DataSeparatorReplace, InternalNGDebug.DataSeparator);
+				this.fields = string.Empty;
+				this.fieldsHeight = 0F;
 			}
 		}
 	}

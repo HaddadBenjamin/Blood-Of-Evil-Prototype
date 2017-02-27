@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-	public class MaxLengthAttribute : PropertyConstraintAttribute
+	public sealed class MaxLengthAttribute : PropertyConstraintAttribute
 	{
 		public readonly float	length;
 

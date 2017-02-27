@@ -2,12 +2,12 @@
 using System;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[ArgumentDrawerFor(typeof(Double))]
-	public class DoubleArgumentDrawer : ArgumentDrawer
+	internal sealed class DoubleArgumentDrawer : ArgumentDrawer
 	{
-		public DoubleArgumentDrawer(string name) : base(name, typeof(Double))
+		public DoubleArgumentDrawer(string name, Type type) : base(name, typeof(Double))
 		{
 		}
 
@@ -16,12 +16,12 @@ namespace NGToolsEditor
 			this.value = (Double)EditorGUILayout.DoubleField(this.name, (Double)this.value);
 		}
 
-		public override void	Serialize(string path)
+		public override void	Save(string path)
 		{
 			NGEditorPrefs.SetString(path, ((Double)this.value).ToString());
 		}
 
-		public override void	Deserialize(string path)
+		public override void	Load(string path)
 		{
 			Double	result;
 

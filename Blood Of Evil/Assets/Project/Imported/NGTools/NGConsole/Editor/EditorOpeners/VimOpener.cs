@@ -1,6 +1,6 @@
-﻿namespace NGToolsEditor
+﻿namespace NGToolsEditor.NGConsole
 {
-	public class VimOpener : IEditorOpener
+	internal sealed class VimOpener : IEditorOpener
 	{
 		public string	defaultArguments { get { return "--remote-tab-silent +$(Line) \"$(File)\" "; } }
 

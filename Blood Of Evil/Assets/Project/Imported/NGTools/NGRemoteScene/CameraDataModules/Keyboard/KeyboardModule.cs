@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	public class KeyboardModule : CameraServerDataModule
+	internal sealed class KeyboardModule : CameraServerDataModule
 	{
 		public const int	ModuleID = 2;
 		public const int	Priority = 10;

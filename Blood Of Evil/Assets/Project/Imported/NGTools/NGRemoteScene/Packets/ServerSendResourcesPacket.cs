@@ -1,15 +1,16 @@
-﻿using System;
+﻿using NGTools.Network;
+using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Scene_ServerSendResources)]
-	public class ServerSendResourcesPacket : Packet
+	internal sealed class ServerSendResourcesPacket : Packet
 	{
 		public Type		type;
 		public string[]	resourceNames;
 		public int[]	instanceIDs;
 
-		protected	ServerSendResourcesPacket(ByteBuffer buffer) : base(buffer)
+		private	ServerSendResourcesPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

@@ -1,0 +1,2 @@
+NGSyncFolders_EraseSave=Erase save
+NGSyncFolders_EraseSaveQuestion=Confirm erase "{0}".

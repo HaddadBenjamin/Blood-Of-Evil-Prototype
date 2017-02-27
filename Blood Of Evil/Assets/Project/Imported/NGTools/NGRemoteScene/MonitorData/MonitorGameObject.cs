@@ -1,17 +1,18 @@
-﻿using System;
+﻿using NGTools.Network;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	public class MonitorGameObject : MonitorData
+	internal sealed class MonitorGameObject : MonitorData
 	{
 		private static List<MonitorData>	updatedData = new List<MonitorData>();
 
-		private ServerGameObject	gameObject;
-		private int					gameObjectInstanceID;
-		private List<ServerComponent>		newComponents = new List<ServerComponent>();
+		private ServerGameObject		gameObject;
+		private int						gameObjectInstanceID;
+		private List<ServerComponent>	newComponents = new List<ServerComponent>();
 
 		public	MonitorGameObject(ServerGameObject gameObject) : base(gameObject.gameObject.GetInstanceID().ToString(), () => gameObject)
 		{
@@ -35,9 +36,7 @@ namespace NGTools
 			this.children.Add(new MonitorProperty(this.path + ".layer", () => this.gameObject.gameObject, propertyInfo));
 
 			for (int i = 0; i < components.Length; i++)
-			{
 				this.children.Add(new MonitorComponent(this.path + "." + components[i].GetInstanceID().ToString(), this.GetClosureComponent(components[i])));
-			}
 		}
 
 		public override void	CollectUpdates(List<MonitorData> updates)
@@ -97,12 +96,10 @@ namespace NGTools
 		{
 			if (this.newComponents.Count > 0)
 			{
-				Packet[] p = new Packet[this.newComponents.Count];
+				Packet[]	p = new Packet[this.newComponents.Count];
 
 				for (int i = 0; i < this.newComponents.Count; i++)
-				{
 					p[i] = new ServerSendComponentPacket(this.gameObjectInstanceID, this.newComponents[i]);
-				}
 
 				this.newComponents.Clear();
 				return p;
@@ -130,6 +127,23 @@ namespace NGTools
 				{
 					for (int k = 0; k < packets.Length; k++)
 						clients[j].AddPacket(packets[k]);
+				}
+			}
+		}
+
+		public void	DeleteComponent(int instanceID)
+		{
+			for (int i = 0; i < this.children.Count; i++)
+			{
+				MonitorComponent	component = this.children[i] as MonitorComponent;
+
+				if (component != null)
+				{
+					if (component.InstanceID == instanceID)
+					{
+						this.children.RemoveAt(i);
+						break;
+					}
 				}
 			}
 		}

@@ -2,9 +2,9 @@
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGInspectorGadget
 {
-	public class CloneComponent : MonoBehaviour
+	internal sealed class CloneComponent
 	{
 		[MenuItem("CONTEXT/Component/Clone Component", priority = 501)]
 		private static void	Clone(MenuCommand menuCommand)

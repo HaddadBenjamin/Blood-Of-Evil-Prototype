@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class GroupFilters : ISerializationCallbackReceiver
+	public sealed class GroupFilters : ISerializationCallbackReceiver
 	{
 		public event Action	FilterAltered;
 
 		[Exportable(ExportableAttribute.ArrayOptions.Immutable)]
 		public List<ILogFilter>	filters;
 
+		[SerializeField]
 		private byte[]	serializedFilters;
 
 		public	GroupFilters()
@@ -86,12 +87,15 @@ namespace NGToolsEditor
 
 			if (GUILayout.Button("+", Preferences.Settings.general.menuButtonStyle) == true)
 			{
-				GenericMenu	menu = new GenericMenu();
+				if (FreeConstants.CheckMaxFilters(this.filters.Count) == true)
+				{
+					GenericMenu	menu = new GenericMenu();
 
-				for (int i = 0; i < NGConsoleWindow.logFilterTypes.Length; ++i)
-					menu.AddItem(new GUIContent(Utility.NicifyVariableName(LC.G(NGConsoleWindow.logFilterTypes[i].Name))), false, this.AddFilter, i);
+					for (int i = 0; i < NGConsoleWindow.logFilterTypes.Length; ++i)
+						menu.AddItem(new GUIContent(Utility.NicifyVariableName(LC.G(NGConsoleWindow.logFilterTypes[i].Name))), false, this.AddFilter, i);
 
-				menu.DropDown(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y, 0, 0));
+					menu.DropDown(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y, 0, 0));
+				}
 			}
 
 			GUILayout.FlexibleSpace();
@@ -100,9 +104,11 @@ namespace NGToolsEditor
 		private void	AddFilter(object data)
 		{
 			ILogFilter	filter = Activator.CreateInstance(NGConsoleWindow.logFilterTypes[(int)data]) as ILogFilter;
-			filter.ToggleEnable += this.OnFilterAltered;
 
 			this.filters.Add(filter);
+
+			filter.ToggleEnable += this.OnFilterAltered;
+			filter.Enabled = true;
 		}
 
 		private void	DeleteStream(object data)
@@ -122,12 +128,26 @@ namespace NGToolsEditor
 		public void	OnAfterDeserialize()
 		{
 			if (this.serializedFilters != null)
-				this.filters = Utility.DeserializeField<List<ILogFilter>>(this.serializedFilters);
+			{
+				try
+				{
+					this.filters = Utility.DeserializeField<List<ILogFilter>>(this.serializedFilters);
+				}
+				catch
+				{
+				}
+			}
 		}
 
 		public void	OnBeforeSerialize()
 		{
-			this.serializedFilters = Utility.SerializeField(this.filters);
+			try
+			{
+				this.serializedFilters = Utility.SerializeField(this.filters);
+			}
+			catch
+			{
+			}
 		}
 	}
 }

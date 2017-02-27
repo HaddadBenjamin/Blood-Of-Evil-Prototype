@@ -2,7 +2,7 @@ using System;
 
 namespace NGToolsEditor
 {
-	public class EditorPrefInt32Enum : EditorPrefType
+	internal sealed class EditorPrefInt32Enum : EditorPrefType
 	{
 		public override bool	CanHandle(Type type)
 		{

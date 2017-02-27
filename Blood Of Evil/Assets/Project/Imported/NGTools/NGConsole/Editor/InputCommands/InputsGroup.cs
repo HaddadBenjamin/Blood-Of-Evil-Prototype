@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class InputsGroup
+	public sealed class InputsGroup
 	{
-		public string					name;
+		public string				name;
 		public List<InputCommand>	commands;
 
 		public	InputsGroup(string name, InputCommand command)

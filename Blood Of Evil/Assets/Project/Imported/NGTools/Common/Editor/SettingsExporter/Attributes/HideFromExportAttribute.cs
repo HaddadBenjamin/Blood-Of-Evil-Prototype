@@ -3,7 +3,7 @@
 namespace NGToolsEditor
 {
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-	public class HideFromExportAttribute : Attribute
+	public sealed class HideFromExportAttribute : Attribute
 	{
 	}
 }

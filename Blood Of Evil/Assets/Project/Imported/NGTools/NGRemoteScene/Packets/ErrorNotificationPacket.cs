@@ -1,12 +1,14 @@
-﻿namespace NGTools
+﻿using NGTools.Network;
+
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Server_ErrorNotification)]
-	public class ErrorNotificationPacket : Packet
+	internal sealed class ErrorNotificationPacket : Packet
 	{
 		public int		error;
 		public string	message;
 
-		protected	ErrorNotificationPacket(ByteBuffer buffer) : base(buffer)
+		private	ErrorNotificationPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

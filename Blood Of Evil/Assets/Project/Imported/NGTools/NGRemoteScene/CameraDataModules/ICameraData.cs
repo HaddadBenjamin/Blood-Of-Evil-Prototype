@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using NGTools.Network;
+using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	public interface ICameraData
 	{
@@ -9,7 +10,7 @@ namespace NGTools
 	}
 
 	// Especially for ScreenshotModule, we need more data.
-	public interface ICameraScreenshotData : ICameraData
+	internal interface ICameraScreenshotData : ICameraData
 	{
 		Client				Sender { get; }
 		int					TargetRefresh { get; }

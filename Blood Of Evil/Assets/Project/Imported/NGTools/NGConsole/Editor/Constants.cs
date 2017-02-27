@@ -20,11 +20,11 @@ namespace NGToolsEditor
 		public const float	VerticalScrollbarWidth = 15F;
 		public const float	DefaultSingleLineHeight = 16F;
 
-		public static readonly Color	NormalFoldoutColor = new Color(105F / 255F, 105F / 255F, 105F / 255F, 1F);
-		public static readonly Color	ActiveFoldoutColor = new Color(164F / 255F, 164F / 255F, 164F / 255F, 1F);
-		public static readonly Color	WarningFoldoutColor = new Color(255F / 255F, 187F / 255F, 0F / 255F, 1F);
-		public static readonly Color	ErrorFoldoutColor = new Color(236F / 255F, 0F / 255F, 0F / 255F, 1F);
-		public static readonly Color	ExceptionFoldoutColor = new Color(255F / 255F, 0F / 255F, 0F / 255F, 1F);
+		public static readonly Color	NormalFoldoutColor = new Color(105F / 255F, 105F / 255F, 105F / 255F);
+		public static readonly Color	ActiveFoldoutColor = new Color(164F / 255F, 164F / 255F, 164F / 255F);
+		public static readonly Color	WarningFoldoutColor = new Color(255F / 255F, 187F / 255F, 0F / 255F);
+		public static readonly Color	ErrorFoldoutColor = new Color(236F / 255F, 0F / 255F, 0F / 255F);
+		public static readonly Color	ExceptionFoldoutColor = new Color(255F / 255F, 0F / 255F, 0F / 255F);
 		#endregion
 
 		#region RowsDrawer

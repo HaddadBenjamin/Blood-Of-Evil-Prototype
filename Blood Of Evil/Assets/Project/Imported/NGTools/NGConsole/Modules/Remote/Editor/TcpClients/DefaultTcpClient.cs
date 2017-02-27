@@ -1,9 +1,9 @@
-﻿using NGTools;
+﻿using NGTools.Network;
 using System.Net.Sockets;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	public class DefaultTcpClient : AbstractTcpClient
+	internal sealed class DefaultTcpClient : AbstractTcpClient
 	{
 		public override Client	CreateClient(string address, int port)
 		{

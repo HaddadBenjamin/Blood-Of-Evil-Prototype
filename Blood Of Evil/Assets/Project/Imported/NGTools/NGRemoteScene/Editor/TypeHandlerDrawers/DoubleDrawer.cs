@@ -1,13 +1,13 @@
 #if UNITY_5
-using NGTools;
+using NGTools.NGRemoteScene;
 using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[TypeHandlerDrawerFor(typeof(DoubleHandler))]
-	public class DoubleDrawer : TypeHandlerDrawer
+	internal sealed class DoubleDrawer : TypeHandlerDrawer
 	{
 		private BgColorContentAnimator	anim;
 		private ValueMemorizer<Double>	drag;

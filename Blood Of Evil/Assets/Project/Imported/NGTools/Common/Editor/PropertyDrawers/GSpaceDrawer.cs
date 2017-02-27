@@ -1,11 +1,10 @@
 ﻿using NGTools;
 using UnityEditor;
-using UnityEngine;
 
 namespace NGToolsEditor
 {
 	[CustomPropertyDrawer(typeof(GSpaceAttribute), true)]
-	public class GSpaceDrawer : DecoratorDrawer
+	internal sealed class GSpaceDrawer : DecoratorDrawer
 	{
 		public override float GetHeight()
 		{

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Exportable(ExportableAttribute.ArrayOptions.Overwrite)]
 	public interface ILogFilter

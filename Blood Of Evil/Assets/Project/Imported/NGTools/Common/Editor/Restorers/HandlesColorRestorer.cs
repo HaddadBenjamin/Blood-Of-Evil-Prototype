@@ -5,11 +5,16 @@ using UnityEngine;
 
 namespace NGToolsEditor
 {
-	public class HandlesColorRestorer : IDisposable
+	public sealed class HandlesColorRestorer : IDisposable
 	{
 		private static Dictionary<Color, HandlesColorRestorer>	cached = new Dictionary<Color, HandlesColorRestorer>();
 
 		private Color	last;
+
+		public static HandlesColorRestorer	Get(bool condition, Color color)
+		{
+			return condition ? HandlesColorRestorer.Get(color) : null;
+		}
 
 		public static HandlesColorRestorer	Get(Color color)
 		{
@@ -40,6 +45,7 @@ namespace NGToolsEditor
 
 		public IDisposable	Set(Color color)
 		{
+			this.last = Handles.color;
 			Handles.color = color;
 
 			return this;
@@ -54,12 +60,13 @@ namespace NGToolsEditor
 			c.b = b;
 			c.a = a;
 
+			this.last = Handles.color;
 			Handles.color = c;
 
 			return this;
 		}
 
-		public void Dispose()
+		public void	Dispose()
 		{
 			Handles.color = this.last;
 		}

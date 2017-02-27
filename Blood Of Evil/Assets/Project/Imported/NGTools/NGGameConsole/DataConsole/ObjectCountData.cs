@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	using UnityEngine;
 

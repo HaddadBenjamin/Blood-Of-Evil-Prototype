@@ -1,7 +1,0 @@
-Ok=Ok
-Yes=Oui
-No=Non
-Stop=Stop
-Edit=Éditer
-Options=Options
-Delete=Supprimer

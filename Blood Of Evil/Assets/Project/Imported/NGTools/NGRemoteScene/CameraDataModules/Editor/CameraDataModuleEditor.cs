@@ -1,8 +1,9 @@
-﻿using NGTools;
+﻿using NGTools.Network;
+using NGTools.NGRemoteScene;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	public abstract class CameraDataModuleEditor : CameraDataModule
 	{
@@ -12,18 +13,38 @@ namespace NGToolsEditor
 		{
 		}
 
-		public virtual void	OnGUI(IReplaySettings settings, Rect r)
+		/// <summary>
+		/// Displays GUI over the video feed.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="r"></param>
+		public virtual void	OnGUICamera(IReplaySettings settings, Rect r)
 		{
 		}
 
-		public virtual void	OnGUIModule(NGHierarchyWindow hierarchy)
+		/// <summary>
+		/// Displays GUI to alter module's settings.
+		/// </summary>
+		/// <param name="hierarchy"></param>
+		public virtual void	OnGUIModule(NGRemoteHierarchyWindow hierarchy)
 		{
 		}
 
+		/// <summary>
+		/// Initializes module. Invoked when the server is initialized.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="server"></param>
 		public virtual void	OnServerInitialized(IReplaySettings settings, Client server)
 		{
 		}
 
+		/// <summary>
+		/// Handle packet data incoming from the server.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="time"></param>
+		/// <param name="data"></param>
 		public abstract void	HandlePacket(IReplaySettings settings, float time, byte[] data);
 
 		/// <summary>

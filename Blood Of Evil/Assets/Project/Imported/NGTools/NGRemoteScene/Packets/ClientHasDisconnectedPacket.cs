@@ -1,11 +1,12 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.ClientHasDisconnect)]
-	public class ClientHasDisconnectedPacket : Packet
+	internal sealed class ClientHasDisconnectedPacket : Packet
 	{
-		protected	ClientHasDisconnectedPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientHasDisconnectedPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

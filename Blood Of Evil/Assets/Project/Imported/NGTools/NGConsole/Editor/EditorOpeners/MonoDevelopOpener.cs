@@ -1,9 +1,10 @@
-﻿using UnityEditor;
+﻿using System.IO;
+using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	public class MonoDevelopOpener : IEditorOpener
+	internal sealed class MonoDevelopOpener : IEditorOpener
 	{
 		public string	defaultArguments { get { return "--nologo \"$(File);$(Line)\""; } }
 
@@ -16,22 +17,22 @@ namespace NGToolsEditor
 		{
 			if (string.IsNullOrEmpty(editorPath) == true)
 			{
-#if UNITY_EDITOR_WIN
-				// Try to use the default executable.
-				if (System.IO.File.Exists(@"C:\Program Files\Unity\MonoDevelop\bin\MonoDevelop.exe") == true)
-					Utility.OpenFileLine(@"C:\Program Files\Unity\MonoDevelop\bin\MonoDevelop.exe", arguments.Replace("$(File)", file).Replace("$(Line)", line.ToString()));
+				if (Application.platform == RuntimePlatform.WindowsEditor)
+				{
+					// Try to use the default executable.
+					if (File.Exists(@"C:\Program Files\Unity\MonoDevelop\bin\MonoDevelop.exe") == true)
+						Utility.OpenFileLine(@"C:\Program Files\Unity\MonoDevelop\bin\MonoDevelop.exe", arguments.Replace("$(File)", file).Replace("$(Line)", line.ToString()));
+					else
+					{
+						TextAsset	fileAsset = AssetDatabase.LoadAssetAtPath(file, typeof(TextAsset)) as TextAsset;
+						AssetDatabase.OpenAsset(fileAsset, line);
+					}
+				}
 				else
 				{
 					TextAsset	fileAsset = AssetDatabase.LoadAssetAtPath(file, typeof(TextAsset)) as TextAsset;
 					AssetDatabase.OpenAsset(fileAsset, line);
-					return;
 				}
-#else
-				TextAsset	fileAsset = AssetDatabase.LoadAssetAtPath(file, typeof(TextAsset)) as TextAsset;
-				AssetDatabase.OpenAsset(fileAsset, line);
-				//Application.OpenURL(file);
-				return;
-#endif
 			}
 			else
 				Utility.OpenFileLine(editorPath, arguments.Replace("$(File)", file).Replace("$(Line)", line.ToString()));

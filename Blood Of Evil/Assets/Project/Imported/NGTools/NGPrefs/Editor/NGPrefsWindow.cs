@@ -7,18 +7,19 @@ using System.Security.Cryptography;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGPrefs
 {
 	[InitializeOnLoad]
 	public class NGPrefsWindow : EditorWindow, IHasCustomMenu
 	{
-		public const string	Title = "NG Prefs";
+		public const string	Title = "ƝƓ Ᵽrefs";
 		public const float	MinLabelWidth = 80F;
 		public const float	MinValueWidth = 100F;
 		public const float	AutoRestoreLabelWidthThreshold = 100F;
 		public const int	MaxStringLength = 16382;
 
-		private static Color	AlteredPrefBackgroundColor = new Color(51F / 255F, 51F / 255F, 51F / 255F, 1F);
+		[SetColor(51F / 255F, 51F / 255F, 51F / 255F, 1F, 166F / 255F, 166F / 255F, 166F / 255F, 1F)]
+		private static Color	AlteredPrefBackgroundColor = default(Color);
 		private static Color	ColumnHeaderBackgroundColor = Color.grey;
 
 		public enum PrefType
@@ -60,13 +61,15 @@ namespace NGToolsEditor
 		private byte[]		lastHash;
 		private DateTime	lastFileChange;
 
+		private ErrorPopup	errorPopup = new ErrorPopup("An error occured, try to reopen " + NGPrefsWindow.Title + ".");
+
 		static	NGPrefsWindow()
 		{
 			Utility.AddMenuItemPicker(Constants.MenuItemPath + NGPrefsWindow.Title);
 		}
 
 		[MenuItem(Constants.MenuItemPath + NGPrefsWindow.Title, priority = Constants.MenuItemPriority + 310)]
-		private static void	Open()
+		public static void	Open()
 		{
 			EditorWindow.GetWindow<NGPrefsWindow>(NGPrefsWindow.Title);
 		}
@@ -75,14 +78,7 @@ namespace NGToolsEditor
 		{
 			this.filteredIndexes = new List<int>();
 
-			var	prefs = new List<PrefsManager>();
-
-			foreach (Type c in Utility.EachSubClassesOf(typeof(PrefsManager)))
-			{
-				prefs.Add((PrefsManager)Activator.CreateInstance(c));
-			}
-
-			this.prefManagers = prefs.ToArray();
+			this.prefManagers = Utility.CreateInstancesOf<PrefsManager>();
 			this.prefManagerNames = this.prefManagers.Select(p => Utility.NicifyVariableName(p.GetType().Name)).ToArray();
 
 			if (this.currentManager >= this.prefManagers.Length)
@@ -90,8 +86,15 @@ namespace NGToolsEditor
 
 			if (this.currentManager >= 0)
 			{
-				this.prefManagers[this.currentManager].LoadPreferences();
-				this.UpdateFilteredIndexes();
+				try
+				{
+					this.prefManagers[this.currentManager].LoadPreferences();
+					this.UpdateFilteredIndexes();
+				}
+				catch (Exception ex)
+				{
+					this.errorPopup.exception = ex;
+				}
 			}
 
 			this.minSize = new Vector2(this.minSize.x, 100F);
@@ -117,62 +120,98 @@ namespace NGToolsEditor
 						this.currentManager = EditorGUILayout.Popup(this.currentManager, this.prefManagerNames, GeneralStyles.ToolbarDropDown);
 						if (EditorGUI.EndChangeCheck() == true)
 						{
-							this.prefManagers[this.currentManager].LoadPreferences();
-							this.UpdateFilteredIndexes();
+							try
+							{
+								this.prefManagers[this.currentManager].LoadPreferences();
+								this.UpdateFilteredIndexes();
+							}
+							catch (Exception ex)
+							{
+								this.errorPopup.exception = ex;
+							}
+							return;
 						}
 
 						if (GUILayout.Button(this.showAdd == true ? "˄" : "˅", GeneralStyles.ToolbarDropDown, GUILayout.Width(24F)) == true)
+						{
 							this.showAdd = !this.showAdd;
+							return;
+						}
 
 						EditorGUI.BeginChangeCheck();
-						this.filter = EditorGUILayout.TextField(this.filter, GeneralStyles.ToolbarSeachTextField);
+						this.filter = EditorGUILayout.TextField(this.filter, GeneralStyles.ToolbarSearchTextField);
 						if (EditorGUI.EndChangeCheck() == true)
 						{
 							this.UpdateFilteredIndexes();
+							return;
 						}
 
-						if (GUILayout.Button("", GeneralStyles.ToolbarSeachCancelButton) == true)
+						if (GUILayout.Button("", GeneralStyles.ToolbarSearchCancelButton) == true)
 						{
 							this.filter = string.Empty;
 							GUI.FocusControl(null);
 							this.UpdateFilteredIndexes();
+							return;
 						}
 
 						if (GUILayout.Button(LC.G("NGPrefs_Refresh"), GeneralStyles.ToolbarButton, GUILayout.MaxWidth(100F)))
 						{
-							this.prefManagers[this.currentManager].LoadPreferences();
-							this.UpdateFilteredIndexes();
+							try
+							{
+								this.prefManagers[this.currentManager].LoadPreferences();
+								this.UpdateFilteredIndexes();
+							}
+							catch (Exception ex)
+							{
+								this.errorPopup.exception = ex;
+							}
+							return;
 						}
 
 						if (string.IsNullOrEmpty(this.filter) == true)
 						{
 							if (GUILayout.Button(LC.G("NGPrefs_ClearAll"), GeneralStyles.ToolbarButton, GUILayout.MaxWidth(100F)) &&
-								EditorUtility.DisplayDialog(LC.G("NGPrefs_ClearAll"), LC.G("NGPrefs_ClearAllConfirm"), LC.G("Yes"), LC.G("No")) == true)
+								((Event.current.modifiers & Constants.ByPassPromptModifier) != 0 || EditorUtility.DisplayDialog(LC.G("NGPrefs_ClearAll"), LC.G("NGPrefs_ClearAllConfirm"), LC.G("Yes"), LC.G("No")) == true))
 							{
-								this.prefManagers[this.currentManager].DeleteAll();
+								try
+								{
+									this.prefManagers[this.currentManager].DeleteAll();
+								}
+								catch (Exception ex)
+								{
+									this.errorPopup.exception = ex;
+								}
+								return;
 							}
 						}
 						else
 						{
 							if (GUILayout.Button(LC.G("NGPrefs_ClearList"), GeneralStyles.ToolbarButton, GUILayout.MaxWidth(100F)) &&
-								EditorUtility.DisplayDialog(LC.G("NGPrefs_ClearList"), LC.G("NGPrefs_ClearListConfirm"), LC.G("Yes"), LC.G("No")) == true)
+								((Event.current.modifiers & Constants.ByPassPromptModifier) != 0 || EditorUtility.DisplayDialog(LC.G("NGPrefs_ClearList"), LC.G("NGPrefs_ClearListConfirm"), LC.G("Yes"), LC.G("No")) == true))
 							{
-								for (int k = 0; k < this.filteredIndexes.Count; k++)
+								try
 								{
-									int	i = this.filteredIndexes[k];
+									for (int k = 0; k < this.filteredIndexes.Count; k++)
+									{
+										int	i = this.filteredIndexes[k];
 
-									this.prefManagers[this.currentManager].DeleteKey(this.prefManagers[this.currentManager].keys[i]);
+										this.prefManagers[this.currentManager].DeleteKey(this.prefManagers[this.currentManager].keys[i]);
+									}
+
+									for (int k = 0; k < this.filteredIndexes.Count; k++)
+									{
+										int	i = this.filteredIndexes[k];
+
+										this.prefManagers[this.currentManager].DeleteIndex(i - k);
+									}
+
+									this.filteredIndexes.Clear();
 								}
-
-								for (int k = 0; k < this.filteredIndexes.Count; k++)
+								catch (Exception ex)
 								{
-									int	i = this.filteredIndexes[k];
-
-									this.prefManagers[this.currentManager].keys.RemoveAt(i - k);
-									this.prefManagers[this.currentManager].values.RemoveAt(i - k);
+									this.errorPopup.exception = ex;
 								}
-
-								this.filteredIndexes.Clear();
+								return;
 							}
 						}
 					}
@@ -221,8 +260,16 @@ namespace NGToolsEditor
 											break;
 									}
 
-									this.prefManagers[this.currentManager].LoadPreferences();
-									this.UpdateFilteredIndexes();
+									try
+									{
+										this.prefManagers[this.currentManager].LoadPreferences();
+										this.UpdateFilteredIndexes();
+									}
+									catch (Exception ex)
+									{
+										this.errorPopup.exception = ex;
+									}
+									return;
 								}
 								GUI.enabled = true;
 							}
@@ -233,10 +280,21 @@ namespace NGToolsEditor
 				}
 			}
 
+			r.y += r.height;
+
+			if (this.errorPopup.exception != null)
+			{
+				r.height = this.errorPopup.boxHeight;
+				this.errorPopup.OnGUIRect(r);
+				r.y += r.height;
+
+				r.height = EditorGUIUtility.singleLineHeight;
+			}
+
 			if (this.currentManager < 0)
 				return;
 
-			r.y += r.height + 1F;
+			r.y += 1F;
 
 			this.labelWidth = Mathf.Clamp(this.labelWidth, NGPrefsWindow.MinLabelWidth, this.position.width - NGPrefsWindow.MinValueWidth);
 			r.width = this.labelWidth;
@@ -342,155 +400,162 @@ namespace NGToolsEditor
 			float			width = r.width;
 			bool			nullValue = false;
 
-			for (int k = 0; k < this.filteredIndexes.Count; k++)
+			try
 			{
-				if (r.y + r.height <= this.scrollPosition.y)
+				for (int k = 0; k < this.filteredIndexes.Count; k++)
 				{
-					r.y += r.height;
-					continue;
-				}
-
-				int		i = this.filteredIndexes[k];
-				string	key = manager.keys[i];
-				object	value = manager.values[i];
-
-				if (value == null)
-				{
-					if (nullValue == false)
-						manager.BeginLoadFromRegistrar();
-					manager.LoadValueFromRegistrar(i);
-				}
-
-				r.x = x;
-				r.width = 20F;
-				if (GUI.Button(r, "X", GeneralStyles.ToolbarCloseButton) == true && (Event.current.shift == true || EditorUtility.DisplayDialog(LC.G("NGPrefs_DeletePref"), string.Format(LC.G("NGPrefs_DeletePrefConfirm"), key), LC.G("Yes"), LC.G("No")) == true))
-				{
-					manager.DeleteKey(i);
-
-					this.UpdateFilteredIndexes();
-
-					if (this.editingStringIndex == i)
-						this.editingStringIndex = -1;
-
-					break;
-				}
-
-				r.x += r.width;
-
-				this.content.text = key;
-				this.content.tooltip = key;
-
-				bool	isAltered = ((value is int && (int)value != manager.GetInt(key)) ||
-									 (value is float && (float)value != manager.GetFloat(key)) ||
-									 (value is string && (string)value != manager.GetString(key)));
-
-				r.width = (isAltered == true) ? width - r.x - 60F : width - r.x;
-
-				if (isAltered == true)
-				{
-					float	w = r.width;
-
-					r.x += w;
-					r.width = 30F;
-					if (GUI.Button(r, this.resetContent, GeneralStyles.ToolbarAltButton) == true)
+					if (r.y + r.height <= this.scrollPosition.y)
 					{
-						GUI.FocusControl(null);
-
-						if (manager.HasKey(key) == false)
-						{
-							manager.LoadPreferences();
-							this.UpdateFilteredIndexes();
-							break;
-						}
-						else if (value is int)
-							value = manager.GetInt(key);
-						else if (value is float)
-							value = manager.GetFloat(key);
-						else if (value is string)
-							value = manager.GetString(key);
+						r.y += r.height;
+						continue;
 					}
+
+					int		i = this.filteredIndexes[k];
+					string	key = manager.keys[i];
+					object	value = manager.values[i];
+
+					if (value == null)
+					{
+						if (nullValue == false)
+							manager.BeginLoadFromRegistrar();
+						manager.LoadValueFromRegistrar(i);
+						value = manager.values[i];
+					}
+
+					r.x = x;
+					r.width = 20F;
+					if (GUI.Button(r, "X", GeneralStyles.ToolbarCloseButton) == true && ((Event.current.modifiers & Constants.ByPassPromptModifier) != 0 || EditorUtility.DisplayDialog(LC.G("NGPrefs_DeletePref"), string.Format(LC.G("NGPrefs_DeletePrefConfirm"), key), LC.G("Yes"), LC.G("No")) == true))
+					{
+						manager.DeleteKey(i);
+
+						this.UpdateFilteredIndexes();
+
+						if (this.editingStringIndex == i)
+							this.editingStringIndex = -1;
+
+						break;
+					}
+
 					r.x += r.width;
 
-					if (GUI.Button(r, this.applyContent, GeneralStyles.ToolbarValidButton) == true)
+					this.content.text = key;
+					this.content.tooltip = key;
+
+					bool	isAltered = ((value is int && (int)value != manager.GetInt(key)) ||
+										 (value is float && (float)value != manager.GetFloat(key)) ||
+										 (value is string && (string)value != manager.GetString(key)));
+
+					r.width = (isAltered == true) ? width - r.x - 60F : width - r.x;
+
+					using (BgColorContentRestorer.Get(isAltered, NGPrefsWindow.AlteredPrefBackgroundColor))
 					{
 						if (value is int)
-							manager.SetInt(key, (int)value);
-						else if (value is float)
-							manager.SetFloat(key, (float)value);
+							manager.values[i] = EditorGUI.IntField(r, this.content, (int)value);
 						else if (value is string)
-							manager.SetString(key, (string)value);
-					}
-
-					r.x -= r.width + w;
-					r.width = w;
-				}
-
-				using (BgColorContentRestorer.Get(isAltered == true ? NGPrefsWindow.AlteredPrefBackgroundColor : GUI.backgroundColor))
-				{
-					if (value is int)
-					{
-						manager.values[i] = EditorGUI.IntField(r, this.content, (int)value);
-					}
-					else if (value is string)
-					{
-						string	content = (string)value;
-
-						if (content.Length <= NGPrefsWindow.MaxStringLength)
-							manager.values[i] = EditorGUI.TextField(r, this.content, content);
-						else
 						{
-							EditorGUI.LabelField(r, this.content);
+							string	content = (string)value;
 
-							r.x += labelWidth;
-							r.width -= labelWidth;
-
-							if (this.editingStringIndex != i)
-							{
-								if (GUI.Button(r, "String has more than " + NGPrefsWindow.MaxStringLength + " chars. Click to edit.") == true)
-								{
-									this.editingStringIndex = i;
-									this.tempFilePath = Path.Combine(Application.temporaryCachePath, Path.GetRandomFileName() + ".txt");
-
-									File.WriteAllText(this.tempFilePath, content);
-
-									this.lastFileChange = DateTime.Now;
-
-									using (var md5 = MD5.Create())
-									using (var stream = File.OpenRead(this.tempFilePath))
-									{
-										this.lastHash = md5.ComputeHash(stream);
-									}
-
-									EditorUtility.OpenWithDefaultApp(this.tempFilePath);
-
-									Utility.UnregisterIntervalCallback(this.CheckTempFile);
-									Utility.RegisterIntervalCallback(this.CheckTempFile, 100);
-								}
-							}
+							if (content.Length <= NGPrefsWindow.MaxStringLength)
+								manager.values[i] = EditorGUI.TextField(r, this.content, content);
 							else
 							{
-								if (GUI.Button(r, "Editing... Last changed at " + this.lastFileChange.ToString("HH:mm:ss") + ". Click to stop.") == true)
+								EditorGUI.LabelField(r, this.content);
+
+								r.x += labelWidth;
+								r.width -= labelWidth;
+
+								if (this.editingStringIndex != i)
 								{
-									this.editingStringIndex = -1;
-									Utility.UnregisterIntervalCallback(this.CheckTempFile);
+									if (GUI.Button(r, "String has more than " + NGPrefsWindow.MaxStringLength + " chars. Click to edit.") == true)
+									{
+										this.editingStringIndex = i;
+										this.tempFilePath = Path.Combine(Application.temporaryCachePath, Path.GetRandomFileName() + ".txt");
+
+										File.WriteAllText(this.tempFilePath, content);
+
+										this.lastFileChange = DateTime.Now;
+
+										using (var md5 = MD5.Create())
+										using (var stream = File.OpenRead(this.tempFilePath))
+										{
+											this.lastHash = md5.ComputeHash(stream);
+										}
+
+										EditorUtility.OpenWithDefaultApp(this.tempFilePath);
+
+										Utility.UnregisterIntervalCallback(this.CheckTempFile);
+										Utility.RegisterIntervalCallback(this.CheckTempFile, 100);
+									}
+								}
+								else
+								{
+									if (GUI.Button(r, "Editing... Last changed at " + this.lastFileChange.ToString("HH:mm:ss") + ". Click to stop.") == true)
+									{
+										this.editingStringIndex = -1;
+										Utility.UnregisterIntervalCallback(this.CheckTempFile);
+									}
 								}
 							}
 						}
+						else if (value is float)
+							manager.values[i] = EditorGUI.FloatField(r, this.content, (float)value);
 					}
-					else if (value is float)
+
+					r.x += r.width;
+
+					if (isAltered == true)
 					{
-						manager.values[i] = EditorGUI.FloatField(r, this.content, (float)value);
+						r.width = 30F;
+						if (GUI.Button(r, this.resetContent, GeneralStyles.ToolbarAltButton) == true)
+						{
+							if (manager.HasKey(key) == false)
+							{
+								try
+								{
+									manager.LoadPreferences();
+									this.UpdateFilteredIndexes();
+								}
+								catch (Exception ex)
+								{
+									this.errorPopup.exception = ex;
+								}
+								break;
+							}
+							else if (value is int)
+								manager.values[i] = manager.GetInt(key);
+							else if (value is float)
+								manager.values[i] = manager.GetFloat(key);
+							else if (value is string)
+								manager.values[i] = manager.GetString(key);
+						}
+						r.x += r.width;
+
+						if (GUI.Button(r, this.applyContent, GeneralStyles.ToolbarValidButton) == true)
+						{
+							if (value is int)
+								manager.SetInt(key, (int)value);
+							else if (value is float)
+								manager.SetFloat(key, (float)value);
+							else if (value is string)
+								manager.SetString(key, (string)value);
+						}
 					}
+
+					r.y += r.height;
+
+					if (r.y - this.scrollPosition.y >= this.bodyRect.height)
+						break;
 				}
-
-				r.y += r.height;
-
-				if (r.y - this.scrollPosition.y >= this.bodyRect.height)
-					break;
 			}
-
-			if (nullValue == true)
-				manager.EndLoadFromRegistrar();
+			catch (Exception ex)
+			{
+				this.errorPopup.exception = ex;
+			}
+			finally
+			{
+				if (nullValue == true)
+					manager.EndLoadFromRegistrar();
+			}
 		}
 
 		private void	CheckTempFile()

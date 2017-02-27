@@ -1,13 +1,14 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Camera_ClientSendCameraZoom)]
-	public class ClientSendCameraZoomPacket : Packet
+	internal sealed class ClientSendCameraZoomPacket : Packet
 	{
 		public float	factor;
 
-		protected	ClientSendCameraZoomPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientSendCameraZoomPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

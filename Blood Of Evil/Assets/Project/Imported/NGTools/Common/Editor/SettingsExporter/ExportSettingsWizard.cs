@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using NGTools;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -49,12 +50,15 @@ namespace NGToolsEditor
 			this.DrawWizardGUI();
 #endif
 
-			if (GUILayout.Button(LC.G("ExportSettings_Export")) == true)
+			using (BgColorContentRestorer.Get(GeneralStyles.HighlightActionButton))
 			{
-				if (SettingsExporter.Export(this.instances, this.root, exportFile) == true)
-					Debug.Log(LC.G("ExportSettings_ExportSuccess"));
-				else
-					Debug.LogError(LC.G("ExportSettings_ExportFailed"));
+				if (GUILayout.Button(LC.G("ExportSettings_Export")) == true)
+				{
+					if (SettingsExporter.Export(this.instances, this.root, exportFile) == true)
+						Debug.Log(LC.G("ExportSettings_ExportSuccess"));
+					else
+						Debug.LogError(LC.G("ExportSettings_ExportFailed"));
+				}
 			}
 
 			this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
@@ -99,9 +103,7 @@ namespace NGToolsEditor
 			Debug.Log(new string('	', depth) + node.name + "=" + node.value);
 
 			for (int i = 0; i < node.children.Count; i++)
-			{
 				this.OutputNode(node.children[i], depth + 1);
-			}
 		}
 	}
 }

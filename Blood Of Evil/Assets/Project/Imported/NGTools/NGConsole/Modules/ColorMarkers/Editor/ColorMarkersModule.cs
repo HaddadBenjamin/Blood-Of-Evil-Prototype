@@ -3,44 +3,23 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	[Serializable]
-	public class ColorBackground : ISerializationCallbackReceiver
-	{
-		public string	name;
-		public Color	color;
-
-		public void	OnBeforeSerialize()
-		{
-		}
-
-		public void	OnAfterDeserialize()
-		{
-			// Force a default value. People might easily forget the alpha of the color.
-			if (this.name == string.Empty)
-			{
-				name = "New Marker";
-				color = Color.black;
-			}
-		}
-	}
-
-	public class ColoredRow
-	{
-		public Row	row;
-		public int	i;
-	}
-
 	[InitializeOnLoad, Serializable]
-	public class ColorMarkersModule : Module
+	internal sealed class ColorMarkersModule : Module
 	{
+		private sealed class ColoredRow
+		{
+			public Row	row;
+			public int	i;
+		}
+
 		[NonSerialized]
 		private List<ColoredRow>	coloredRows;
 
 		static	ColorMarkersModule()
 		{
-			new SectionDrawer("Color Markers Module", typeof(NGSettings.ColorMarkersModuleSettings));
+			new SectionDrawer("Color Markers Module", typeof(NGSettings.ColorMarkersModuleSettings), 30);
 		}
 
 		public	ColorMarkersModule()
@@ -133,9 +112,7 @@ namespace NGToolsEditor
 		private void	HeaderButton()
 		{
 			if (Preferences.Settings != null && GUILayout.Button(LC.G("ColorMarkers"), Preferences.Settings.general.menuButtonStyle) == true)
-			{
 				ScriptableWizard.GetWindow<ColorMarkersWizard>(true, ColorMarkersWizard.Title, true);
-			}
 		}
 	}
 }

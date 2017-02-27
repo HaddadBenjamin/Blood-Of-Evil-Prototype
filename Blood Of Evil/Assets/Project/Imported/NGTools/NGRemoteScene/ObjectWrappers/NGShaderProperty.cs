@@ -1,4 +1,4 @@
-﻿namespace NGTools
+﻿namespace NGTools.NGRemoteScene
 {
 	/// <summary>Describes information and value of a single shader property.</summary>
 	public sealed class NGShaderProperty

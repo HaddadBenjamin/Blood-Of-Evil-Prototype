@@ -1,13 +1,13 @@
 #if UNITY_5
-using NGTools;
+using NGTools.NGRemoteScene;
 using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[TypeHandlerDrawerFor(typeof(UInt64Handler))]
-	public class UInt64Drawer : TypeHandlerDrawer
+	internal sealed class UInt64Drawer : TypeHandlerDrawer
 	{
 		private BgColorContentAnimator	anim;
 		private ValueMemorizer<UInt64>	drag;

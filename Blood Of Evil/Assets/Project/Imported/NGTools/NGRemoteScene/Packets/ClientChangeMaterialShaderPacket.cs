@@ -1,14 +1,15 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	[PacketLinkTo(PacketId.Scene_ClientChangeMaterialShader)]
-	public class ClientChangeMaterialShaderPacket : Packet
+	[PacketLinkTo(PacketId.Scene_ClientChangeMaterialShader, true)]
+	internal sealed class ClientChangeMaterialShaderPacket : Packet
 	{
 		public int	instanceID;
 		public int	shaderInstanceID;
 
-		protected	ClientChangeMaterialShaderPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientChangeMaterialShaderPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

@@ -1,12 +1,12 @@
-using NGTools;
+using NGTools.NGRemoteScene;
 using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[TypeHandlerDrawerFor(typeof(BooleanHandler))]
-	public class BooleanDrawer : TypeHandlerDrawer
+	internal sealed class BooleanDrawer : TypeHandlerDrawer
 	{
 		private BgColorContentAnimator	anim;
 		private ValueMemorizer<Boolean>	drag;

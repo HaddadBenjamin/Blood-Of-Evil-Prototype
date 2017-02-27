@@ -5,106 +5,45 @@ using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGFav
 {
 	using UnityEngine;
 
 	[InitializeOnLoad]
 	public class NGFavWindow : EditorWindow, IHasCustomMenu
 	{
-		[Serializable]
-		public class Selection
-		{
-			private static List<Object>	cacheObjects = new List<Object>();
-
-			public Object	this[int i]
-			{
-				get
-				{
-					return this.refs[i].@object;
-				}
-			}
-
-			public List<SelectionItem>	refs = new List<SelectionItem>();
-
-			public	Selection(Object[] objects)
-			{
-				for (int i = 0; i < objects.Length; i++)
-				{
-					try
-					{
-						this.refs.Add(new SelectionItem(objects[i]));
-					}
-					catch (MissingMethodException)
-					{
-					}
-				}
-			}
-
-			public	Selection(int[] instanceIDs)
-			{
-				for (int i = 0; i < instanceIDs.Length; i++)
-				{
-					try
-					{
-						Object	obj = EditorUtility.InstanceIDToObject(instanceIDs[i]);
-
-						if (obj != null)
-							this.refs.Add(new SelectionItem(obj));
-					}
-					catch (MissingMethodException)
-					{
-					}
-				}
-			}
-
-			public void	Select()
-			{
-				if (this.refs.Count == 1)
-					UnityEditor.Selection.objects = new Object[] { this.refs[0].@object };
-				else
-				{
-					Selection.cacheObjects.Clear();
-
-					for (int i = 0; i < this.refs.Count; i++)
-					{
-						if (this.refs[i].@object != null)
-							Selection.cacheObjects.Add(this.refs[i].@object);
-					}
-
-					UnityEditor.Selection.objects = Selection.cacheObjects.ToArray();
-				}
-			}
-
-			public int	GetSelectionHash()
-			{
-				int	hash = 0;
-
-				for (int i = 0; i < this.refs.Count; i++)
-				{
-					// Yeah, what? Is there a problem with my complex anti-colisionning hash function?
-					if (this.refs[i].@object != null)
-						hash += this.refs[i].@object.GetInstanceID();
-				}
-
-				return hash;
-			}
-		}
-
-		[Serializable]
-		public class Favorites
-		{
-			public string			name;
-			public List<Selection>	favorites = new List<Selection>();
-		}
-
-		public const string	Title = "NG Fav";
+		public const string	Title = "ƝƓ Ḟav";
 		public const char	FavSeparator = ':';
 		public const char	SaveSeparator = ',';
 		public const char	SaveSeparatorCharPlaceholder = (char)4;
 		public const float	FavSpacing = 5F;
 		public const int	ForceRepaintRefreshTick = 100;
 		public const string	DefaultSaveName = "default";
+
+		public static int				UpdateHierarchyCounter = 0;
+		public static List<GameObject>	RootObjects
+		{
+			get
+			{
+				if (NGFavWindow.rootObjects.Count == 0)
+				{
+					GameObject[]	objects = Resources.FindObjectsOfTypeAll<GameObject>();
+
+					for (int i = 0; i < objects.Length; i++)
+					{
+						if ((objects[i].hideFlags & HideFlags.HideInHierarchy) != 0)
+							continue;
+
+						GameObject	root = objects[i].transform.root.gameObject;
+
+						if (NGFavWindow.rootObjects.Contains(root) == false)
+							NGFavWindow.rootObjects.Add(root);
+					}
+				}
+
+				return NGFavWindow.rootObjects;
+			}
+		}
 
 		private List<HorizontalScrollbar>	horizontalScrolls;
 		private int							delayToDelete;
@@ -113,30 +52,35 @@ namespace NGToolsEditor
 		[SerializeField]
 		private Vector2	scrollPosition;
 		private double	lastClick;
+		[SerializeField]
 		private int		currentSave;
 		private Vector2	dragOriginPosition;
 
-		private static bool	avoidMultiAdd;
+		private ErrorPopup	errorPopup = new ErrorPopup("An error occured, try to reopen " + NGFavWindow.Title + ", clear the favorite or reset the settings.");
+
+		private static bool				avoidMultiAdd;
 		private static SectionDrawer	sectionDrawer;
+		private static List<GameObject>	rootObjects = new List<GameObject>();
 
 		static	NGFavWindow()
 		{
 			Utility.AddMenuItemPicker(Constants.MenuItemPath + NGFavWindow.Title);
-#if NGT_DEBUG
-			Utility.AddMenuItemPicker(Constants.MenuItemPath + NGFavWindow.Title + " Clear");
-#endif
 			Utility.AddMenuItemPicker("Assets/Add Selection");
 			Utility.AddMenuItemPicker("GameObject/Add Selection");
 
 			Preferences.SettingsChanged += NGFavWindow.Preferences_SettingsChanged;
 		}
 
+		[MenuItem(Constants.MenuItemPath + NGFavWindow.Title, priority = Constants.MenuItemPriority + 307)]
+		public static void	Open()
+		{
+			EditorWindow.GetWindow<NGFavWindow>(NGFavWindow.Title);
+		}
+
 		private static void	Preferences_SettingsChanged()
 		{
 			if (Preferences.Settings != null)
-			{
 				NGFavWindow.sectionDrawer = new SectionDrawer(NGFavWindow.Title, typeof(NGSettings.FavSettings));
-			}
 			else
 			{
 				if (NGFavWindow.sectionDrawer != null)
@@ -148,23 +92,6 @@ namespace NGToolsEditor
 		}
 
 		#region Menu Items
-		[MenuItem(Constants.MenuItemPath + NGFavWindow.Title, priority = Constants.MenuItemPriority + 307)]
-		private static void	Open()
-		{
-			EditorWindow.GetWindow<NGFavWindow>(NGFavWindow.Title);
-		}
-
-#if NGT_DEBUG
-		[MenuItem(Constants.MenuItemPath + NGFavWindow.Title + " Clear", priority = Constants.MenuItemPriority + 308)]
-		private static void Clear()
-		{
-			NGFavWindow[]	instances = Resources.FindObjectsOfTypeAll<NGFavWindow>();
-
-			for (int i = 0; i < instances.Length; i++)
-				instances[i].list.list.Clear();
-		}
-#endif
-
 		[MenuItem("Assets/Add Selection")]
 		private static void	AssetAddSelection(MenuCommand menuCommand)
 		{
@@ -320,16 +247,22 @@ namespace NGToolsEditor
 			this.list.headerHeight = 0F;
 			this.list.footerHeight = 0F;
 			this.list.drawElementCallback = this.DrawElement;
-			this.list.onChangedCallback = (ReorderableList list) => { Preferences.InvalidateSettings(); };
+			this.list.onReorderCallback = (ReorderableList list) => { Preferences.InvalidateSettings(); };
 
+			Preferences.SettingsChanged += this.Repaint;
 			Utility.RegisterIntervalCallback(this.Repaint, NGFavWindow.ForceRepaintRefreshTick);
 			NGEditorApplication.ChangeScene += this.ReconnectOnChangeScene;
+			EditorApplication.hierarchyWindowChanged += this.ResetRootObjects;
+			Undo.undoRedoPerformed += this.Repaint;
 		}
 
 		protected virtual void	OnDisable()
 		{
-			NGEditorApplication.ChangeScene -= this.ReconnectOnChangeScene;
+			Preferences.SettingsChanged -= this.Repaint;
 			Utility.UnregisterIntervalCallback(this.Repaint);
+			NGEditorApplication.ChangeScene -= this.ReconnectOnChangeScene;
+			EditorApplication.hierarchyWindowChanged -= this.ResetRootObjects;
+			Undo.undoRedoPerformed -= this.Repaint;
 		}
 
 		protected virtual void	OnGUI()
@@ -338,11 +271,14 @@ namespace NGToolsEditor
 			{
 				GUILayout.Label(string.Format(LC.G("RequiringConfigurationFile"), NGFavWindow.Title));
 				if (GUILayout.Button(LC.G("ShoWPreferencesWindow")) == true)
-				{
 					Utility.ShowPreferencesWindowAt(Constants.PreferenceTitle);
-				}
 				return;
 			}
+
+			FreeOverlay.First(this, NGFavWindow.Title + " is restrained to:\n" +
+							  "• " + FreeConstants.MaxFavorites + " favorites.\n" +
+							  "• " + FreeConstants.MaxSelectionPerFavorite + " selections per favorite.\n" +
+							  "• " + FreeConstants.MaxAssetPerSelection+ " assets per selection.");
 
 			// Guarantee there is always one in the list.
 			if (Preferences.Settings.fav.favorites.Count == 0)
@@ -350,17 +286,18 @@ namespace NGToolsEditor
 
 			this.currentSave = Mathf.Clamp(this.currentSave, 0, Preferences.Settings.fav.favorites.Count - 1);
 
-			this.list.list = Preferences.Settings.fav.favorites[this.currentSave].favorites;
+			Favorites	fav = Preferences.Settings.fav.favorites[this.currentSave];
 
-			EditorGUILayout.BeginHorizontal("Toolbar");
+			this.list.list = fav.favorites;
+
+			EditorGUILayout.BeginHorizontal(GeneralStyles.Toolbar);
 			{
 				if (GUILayout.Button("", GeneralStyles.ToolbarDropDown, GUILayout.Width(20F)) == true)
 				{
 					GenericMenu	menu = new GenericMenu();
+
 					for (int i = 0; i < Preferences.Settings.fav.favorites.Count; i++)
-					{
-						menu.AddItem(new GUIContent(Preferences.Settings.fav.favorites[i].name), i == this.currentSave, this.SwitchFavorite, i);
-					}
+						menu.AddItem(new GUIContent((i + 1) + " - " + Preferences.Settings.fav.favorites[i].name), i == this.currentSave, this.SwitchFavorite, i);
 
 					menu.AddSeparator("");
 					menu.AddItem(new GUIContent(LC.G("Add")), false, this.AddFavorite);
@@ -372,25 +309,31 @@ namespace NGToolsEditor
 				}
 
 				EditorGUI.BeginChangeCheck();
-				Preferences.Settings.fav.favorites[this.currentSave].name = EditorGUILayout.TextField(Preferences.Settings.fav.favorites[this.currentSave].name, GeneralStyles.ToolbarTextField, GUILayout.ExpandWidth(true));
+				fav.name = EditorGUILayout.TextField(fav.name, GeneralStyles.ToolbarTextField, GUILayout.ExpandWidth(true));
 				if (EditorGUI.EndChangeCheck() == true)
 					Preferences.InvalidateSettings();
 
-				if (GUILayout.Button(LC.G("Clear"), GeneralStyles.ToolbarButton) == true && EditorUtility.DisplayDialog(LC.G("NGFav_ClearSave"), string.Format(LC.G("NGFav_ClearSaveQuestion"), Preferences.Settings.fav.favorites[this.currentSave].name), LC.G("Yes"), LC.G("No")) == true)
+				if (GUILayout.Button(LC.G("Clear"), GeneralStyles.ToolbarButton) == true && ((Event.current.modifiers & Constants.ByPassPromptModifier) != 0 || EditorUtility.DisplayDialog(LC.G("NGFav_ClearSave"), string.Format(LC.G("NGFav_ClearSaveQuestion"), fav.name), LC.G("Yes"), LC.G("No")) == true))
 				{
-					Preferences.Settings.fav.favorites[this.currentSave].favorites.Clear();
+					Undo.RecordObject(Preferences.Settings, "Clear favorite");
+					fav.favorites.Clear();
 					Preferences.InvalidateSettings();
+					this.Focus();
+					return;
 				}
 
-				GUI.enabled = Preferences.Settings.fav.favorites.Count >= 2;
-				if (GUILayout.Button(LC.G("Erase"), GeneralStyles.ToolbarButton) == true && EditorUtility.DisplayDialog(LC.G("NGFav_EraseSave"), string.Format(LC.G("NGFav_EraseSaveQuestion"), Preferences.Settings.fav.favorites[this.currentSave].name), LC.G("Yes"), LC.G("No")) == true)
+				EditorGUI.BeginDisabledGroup(Preferences.Settings.fav.favorites.Count <= 1);
+				if (GUILayout.Button(LC.G("Erase"), GeneralStyles.ToolbarButton) == true && ((Event.current.modifiers & Constants.ByPassPromptModifier) != 0 || EditorUtility.DisplayDialog(LC.G("NGFav_EraseSave"), string.Format(LC.G("NGFav_EraseSaveQuestion"), fav.name), LC.G("Yes"), LC.G("No")) == true))
 				{
+					Undo.RecordObject(Preferences.Settings, "Erase favorite");
 					Preferences.Settings.fav.favorites.RemoveAt(this.currentSave);
 					this.currentSave = Mathf.Clamp(this.currentSave, 0, Preferences.Settings.fav.favorites.Count - 1);
-					this.list.list = Preferences.Settings.fav.favorites[this.currentSave].favorites;
+					this.list.list = fav.favorites;
 					Preferences.InvalidateSettings();
+					this.Focus();
+					return;
 				}
-				GUI.enabled = true;
+				EditorGUI.EndDisabledGroup();
 			}
 			EditorGUILayout.EndHorizontal();
 
@@ -426,28 +369,35 @@ namespace NGToolsEditor
 				Event.current.Use();
 			}
 
+			this.errorPopup.OnGUILayout();
+
 			if (this.currentSave >= 0)
 			{
 				this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
 				{
 					try
 					{
-						while (this.horizontalScrolls.Count < Preferences.Settings.fav.favorites[this.currentSave].favorites.Count)
+						while (this.horizontalScrolls.Count < fav.favorites.Count)
 							this.horizontalScrolls.Add(new HorizontalScrollbar(0F, 0F, this.position.width, 4F, 0F));
 
 						this.list.DoLayoutList();
-						Utility.content.tooltip = string.Empty;
 					}
 					catch (Exception ex)
 					{
+						this.errorPopup.exception = ex;
 						InternalNGDebug.LogFileException(ex);
+					}
+					finally
+					{
+						Utility.content.tooltip = string.Empty;
 					}
 				}
 				EditorGUILayout.EndScrollView();
 
 				if (this.delayToDelete != -1)
 				{
-					Preferences.Settings.fav.favorites[this.currentSave].favorites.RemoveAt(this.delayToDelete);
+					Undo.RecordObject(Preferences.Settings, "Delete favorite");
+					fav.favorites.RemoveAt(this.delayToDelete);
 					this.delayToDelete = -1;
 				}
 			}
@@ -457,28 +407,40 @@ namespace NGToolsEditor
 				DragAndDrop.PrepareStartDrag();
 				this.dragOriginPosition = Vector2.zero;
 			}
+
+			FreeOverlay.Last();
 		}
 
 		private void	SwitchFavorite(object data)
 		{
+			Undo.RecordObject(this, "Switch favorite");
 			this.currentSave = Mathf.Clamp((int)data, 0, Preferences.Settings.fav.favorites.Count - 1);
 		}
 
 		private void	AddFavorite()
 		{
-			Preferences.Settings.fav.favorites.Add(new Favorites() { name = "Favorite " + (Preferences.Settings.fav.favorites.Count + 1) });
-			this.currentSave = Preferences.Settings.fav.favorites.Count - 1;
-			Preferences.InvalidateSettings();
+			if (FreeConstants.CheckMaxFavorites(Preferences.Settings.fav.favorites.Count) == true)
+			{
+				Undo.RecordObject(this, "Add favorite");
+				Preferences.Settings.fav.favorites.Add(new Favorites() { name = "Favorite " + (Preferences.Settings.fav.favorites.Count + 1) });
+				this.currentSave = Preferences.Settings.fav.favorites.Count - 1;
+				Preferences.InvalidateSettings();
+			}
 		}
 
 		private void	CreateSelection(Object[] objects)
 		{
-			Selection	selection = new Selection(objects);
+			AssetsSelection	selection = new AssetsSelection(objects);
 
 			if (selection.refs.Count > 0)
 			{
-				Preferences.Settings.fav.favorites[this.currentSave].favorites.Add(selection);
-				Preferences.InvalidateSettings();
+				if (FreeConstants.CheckMaxAssetsPerSelection(selection.refs.Count) == true &&
+					FreeConstants.CheckMaxSelections(Preferences.Settings.fav.favorites[this.currentSave].favorites.Count) == true)
+				{
+					Undo.RecordObject(Preferences.Settings, "Add Selection as favorite");
+					Preferences.Settings.fav.favorites[this.currentSave].favorites.Add(selection);
+					Preferences.InvalidateSettings();
+				}
 			}
 		}
 
@@ -487,12 +449,16 @@ namespace NGToolsEditor
 			if (Preferences.Settings == null)
 				return;
 
-			for (int i = 0; i < Preferences.Settings.fav.favorites[this.currentSave].favorites.Count; i++)
+			Favorites	fav = Preferences.Settings.fav.favorites[this.currentSave];
+
+			NGFavWindow.rootObjects.Clear();
+
+			for (int i = 0; i < fav.favorites.Count; i++)
 			{
-				for (int j = 0; j < Preferences.Settings.fav.favorites[this.currentSave].favorites[i].refs.Count; j++)
+				for (int j = 0; j < fav.favorites[i].refs.Count; j++)
 				{
-					if (Preferences.Settings.fav.favorites[this.currentSave].favorites[i].refs[j].@object == null)
-						Preferences.Settings.fav.favorites[this.currentSave].favorites[i].refs[j].TryReconnect();
+					if (fav.favorites[i].refs[j].@object == null)
+						fav.favorites[i].refs[j].TryReconnect();
 				}
 			}
 
@@ -501,27 +467,28 @@ namespace NGToolsEditor
 
 		private void	DrawElement(Rect rect, int index, bool isActive, bool isFocused)
 		{
-			float	x = rect.x;
-			float	width = rect.width;
+			Favorites	fav = Preferences.Settings.fav.favorites[this.currentSave];
+			float		x = rect.x;
+			float		width = rect.width;
 
 			if (rect.Contains(Event.current.mousePosition) == true)
 			{
 				float	totalWidth = 0F;
 
-				for (int i = 0; i < Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs.Count; i++)
+				for (int i = 0; i < fav.favorites[index].refs.Count; i++)
 				{
-					if (Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs[i].@object == null)
+					if (fav.favorites[index].refs[i].@object == null)
 					{
-						if (Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs[i].hierarchy.Count > 0)
-							Utility.content.text = (string.IsNullOrEmpty(Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs[i].resolverAssemblyQualifiedName) == false ? "(R)" : "") + Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs[i].hierarchy[Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs[i].hierarchy.Count - 1];
+						if (fav.favorites[index].refs[i].hierarchy.Count > 0)
+							Utility.content.text = (string.IsNullOrEmpty(fav.favorites[index].refs[i].resolverAssemblyQualifiedName) == false ? "(R)" : "") + fav.favorites[index].refs[i].hierarchy[fav.favorites[index].refs[i].hierarchy.Count - 1];
 						else
-							Utility.content.text = (string.IsNullOrEmpty(Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs[i].resolverAssemblyQualifiedName) == false ? "(R)" : "") + Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs[i].assetPath;
+							Utility.content.text = (string.IsNullOrEmpty(fav.favorites[index].refs[i].resolverAssemblyQualifiedName) == false ? "(R)" : "") + fav.favorites[index].refs[i].assetPath;
 					}
 					else
 					{
-						Utility.content.text = Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs[i].@object.name;
+						Utility.content.text = fav.favorites[index].refs[i].@object.name;
 
-						if (Utility.GetIcon(Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs[i].@object.GetInstanceID()) != null)
+						if (Utility.GetIcon(fav.favorites[index].refs[i].@object.GetInstanceID()) != null)
 							totalWidth += rect.height;
 					}
 
@@ -536,9 +503,9 @@ namespace NGToolsEditor
 						totalWidth += 22F; // Number 10 is centralized.
 				}
 
-				if (Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs.Count > 1)
+				if (fav.favorites[index].refs.Count > 1)
 				{
-					Utility.content.text = "(" + Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs.Count + ")";
+					Utility.content.text = "(" + fav.favorites[index].refs.Count + ")";
 					totalWidth += GUI.skin.label.CalcSize(Utility.content).x;
 				}
 
@@ -551,6 +518,8 @@ namespace NGToolsEditor
 
 				rect.width = 20F;
 				rect.x = x + width - rect.width;
+				rect.y += 4F;
+				rect.height -= 4F;
 
 				if (GUI.Button(rect, "X") == true)
 				{
@@ -558,6 +527,8 @@ namespace NGToolsEditor
 					return;
 				}
 
+				rect.y -= 4F;
+				rect.height += 4F;
 				rect.x = x;
 				rect.width = width;
 			}
@@ -583,65 +554,21 @@ namespace NGToolsEditor
 				rect.width = width - rect.x;
 			}
 
-			if (Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs.Count >= 2)
+			if (fav.favorites[index].refs.Count >= 2)
 			{
-				Utility.content.text = "(" + Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs.Count + ")";
+				Utility.content.text = "(" + fav.favorites[index].refs.Count + ")";
 				rect.width = GeneralStyles.HorizontalCenteredText.CalcSize(Utility.content).x;
 				GUI.Label(rect, Utility.content, GeneralStyles.HorizontalCenteredText);
 				rect.x += rect.width;
 				rect.width = width - rect.x;
 			}
 
-			Rect	r = rect;
-			r.xMin = r.xMax - r.width / 3F;
+			Rect	dropZone = rect;
+			dropZone.xMin = dropZone.xMax - dropZone.width / 3F;
 
-			// Drop zone to append new Object to the current selection.
-			if (Event.current.type == EventType.Repaint &&
-				DragAndDrop.objectReferences.Length > 0 &&
-				rect.Contains(Event.current.mousePosition) == true)
+			for (int i = 0; i < fav.favorites[index].refs.Count; i++)
 			{
-				Utility.DropZone(r, "Add to selection");
-			}
-			else if (Event.current.type == EventType.DragUpdated &&
-					 r.Contains(Event.current.mousePosition) == true)
-			{
-				if (DragAndDrop.objectReferences.Length > 0)
-					DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
-				else
-					DragAndDrop.visualMode = DragAndDropVisualMode.Rejected;
-			}
-			else if (Event.current.type == EventType.DragExited)
-			{
-				DragAndDrop.PrepareStartDrag();
-			}
-			else if (Event.current.type == EventType.DragPerform &&
-					 r.Contains(Event.current.mousePosition) == true)
-			{
-				DragAndDrop.AcceptDrag();
-
-				for (int i = 0; i < DragAndDrop.objectReferences.Length; i++)
-				{
-					int	j = 0;
-
-					for (; j < Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs.Count; j++)
-					{
-						if (Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs[j].@object == DragAndDrop.objectReferences[i])
-							break;
-					}
-
-					if (j == Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs.Count)
-						Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs.Add(new SelectionItem(DragAndDrop.objectReferences[i]));
-				}
-
-				Preferences.InvalidateSettings();
-
-				DragAndDrop.PrepareStartDrag();
-				Event.current.Use();
-			}
-
-			for (int i = 0; i < Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs.Count; i++)
-			{
-				SelectionItem	selectionItem = Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs[i];;
+				SelectionItem	selectionItem = fav.favorites[index].refs[i];;
 				if (selectionItem.@object == null)
 					selectionItem.TryReconnect();
 
@@ -672,12 +599,11 @@ namespace NGToolsEditor
 				}
 
 				rect.width = GeneralStyles.HorizontalCenteredText.CalcSize(Utility.content).x;
-				using (ColorContentRestorer.Get(string.IsNullOrEmpty(selectionItem.resolverFailedError) == false ? Color.red : GUI.contentColor))
+				using (ColorContentRestorer.Get(string.IsNullOrEmpty(selectionItem.resolverFailedError) == false, Color.red))
 				{
 					GUI.Label(rect, Utility.content, GeneralStyles.HorizontalCenteredText);
 					Utility.content.tooltip = string.Empty;
 				}
-
 
 				GUI.enabled = true;
 
@@ -709,9 +635,10 @@ namespace NGToolsEditor
 
 						if (Event.current.button == 0 && (int)Event.current.modifiers == ((int)Preferences.Settings.fav.deleteModifiers >> 1))
 						{
-							Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs.RemoveAt(i);
+							Undo.RecordObject(Preferences.Settings, "Delete element in favorite");
+							fav.favorites[index].refs.RemoveAt(i);
 
-							if (Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs.Count == 0)
+							if (fav.favorites[index].refs.Count == 0)
 								this.delayToDelete = index;
 						}
 						else if (Event.current.button == 1 ||
@@ -725,9 +652,7 @@ namespace NGToolsEditor
 							NGFavWindow.SelectFav(index);
 						}
 						else
-						{
-							EditorGUIUtility.PingObject(Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs[i].@object);
-						}
+							EditorGUIUtility.PingObject(fav.favorites[index].refs[i].@object);
 
 						this.lastClick = EditorApplication.timeSinceStartup;
 
@@ -746,9 +671,10 @@ namespace NGToolsEditor
 					{
 						if ((int)Event.current.modifiers == ((int)Preferences.Settings.fav.deleteModifiers >> 1))
 						{
-							Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs.RemoveAt(i);
+							Undo.RecordObject(Preferences.Settings, "Delete element in favorite");
+							fav.favorites[index].refs.RemoveAt(i);
 
-							if (Preferences.Settings.fav.favorites[this.currentSave].favorites[index].refs.Count == 0)
+							if (fav.favorites[index].refs.Count == 0)
 								this.delayToDelete = index;
 
 							Event.current.Use();
@@ -767,14 +693,71 @@ namespace NGToolsEditor
 			rect.x = x;
 			rect.width = width;
 
+			// Drop zone to append new Object to the current selection.
+			if (Event.current.type == EventType.Repaint &&
+				DragAndDrop.objectReferences.Length > 0 &&
+				rect.Contains(Event.current.mousePosition) == true)
+			{
+				Utility.DropZone(dropZone, "Add to selection");
+			}
+			else if (Event.current.type == EventType.DragUpdated &&
+					 dropZone.Contains(Event.current.mousePosition) == true)
+			{
+				if (DragAndDrop.objectReferences.Length > 0)
+					DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+				else
+					DragAndDrop.visualMode = DragAndDropVisualMode.Rejected;
+			}
+			else if (Event.current.type == EventType.DragExited)
+				DragAndDrop.PrepareStartDrag();
+			else if (Event.current.type == EventType.DragPerform &&
+					 dropZone.Contains(Event.current.mousePosition) == true)
+			{
+				DragAndDrop.AcceptDrag();
+
+				for (int i = 0; i < DragAndDrop.objectReferences.Length; i++)
+				{
+					int	j = 0;
+
+					for (; j < fav.favorites[index].refs.Count; j++)
+					{
+						if (fav.favorites[index].refs[j].@object == DragAndDrop.objectReferences[i])
+							break;
+					}
+
+					if (j == fav.favorites[index].refs.Count)
+					{
+						if (FreeConstants.CheckMaxAssetsPerSelection(fav.favorites[index].refs.Count) == true)
+						{
+							Undo.RecordObject(Preferences.Settings, "Add to favorite");
+							fav.favorites[index].refs.Add(new SelectionItem(DragAndDrop.objectReferences[i]));
+							Preferences.InvalidateSettings();
+						}
+						else
+							break;
+					}
+				}
+
+				DragAndDrop.PrepareStartDrag();
+				Event.current.Use();
+			}
+
 			// Just draw the button in front.
 			if (rect.Contains(Event.current.mousePosition) == true)
 			{
 				rect.width = 20F;
 				rect.x = x + width - rect.width;
+				rect.y += 4F;
+				rect.height -= 4F;
 
 				GUI.Button(rect, "X");
 			}
+		}
+
+		private void	ResetRootObjects()
+		{
+			++NGFavWindow.UpdateHierarchyCounter;
+			NGFavWindow.rootObjects.Clear();
 		}
 
 		void	IHasCustomMenu.AddItemsToMenu(GenericMenu menu)

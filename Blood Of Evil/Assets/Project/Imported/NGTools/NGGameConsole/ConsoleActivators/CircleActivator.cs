@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	public class CircleActivator : MonoBehaviour
 	{

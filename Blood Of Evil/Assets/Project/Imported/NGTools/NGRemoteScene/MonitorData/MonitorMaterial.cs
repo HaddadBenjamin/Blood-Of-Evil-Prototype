@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using NGTools.Network;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	public class MonitorMaterial : MonitorData
+	internal sealed class MonitorMaterial : MonitorData
 	{
 		private static List<MonitorData>	updatedData = new List<MonitorData>();
 
@@ -99,8 +100,8 @@ namespace NGTools
 			{
 				if (shader.properties[i].type == NGShader.ShaderPropertyType.TexEnv)
 				{
-					this.children.Add(new MonitorMaterialVector2(this.material, shader.properties[i], ClientUpdateMaterialVector2Packet.Type.Offset));
-					this.children.Add(new MonitorMaterialVector2(this.material, shader.properties[i], ClientUpdateMaterialVector2Packet.Type.Scale));
+					this.children.Add(new MonitorMaterialVector2(this.material, shader.properties[i], MaterialVector2Type.Offset));
+					this.children.Add(new MonitorMaterialVector2(this.material, shader.properties[i], MaterialVector2Type.Scale));
 				}
 
 				this.children.Add(new MonitorMaterialProperty(this.material, shader.properties[i]));

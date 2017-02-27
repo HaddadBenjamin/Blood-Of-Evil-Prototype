@@ -1,12 +1,13 @@
 ﻿using NGTools;
+using NGTools.NGRemoteScene;
 using System;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
-	public class KeyboardReplayModule : ReplayDataModule
+	internal sealed class KeyboardReplayModule : ReplayDataModule
 	{
 		public static Color	BackgroundColor = Color.black * .75F;
 

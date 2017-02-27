@@ -1,12 +1,12 @@
 ﻿using System;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	using UnityEngine;
 
 	[Serializable]
-	public class MaskTypeFilter : ILogFilter
+	internal sealed class MaskTypeFilter : ILogFilter
 	{
 		[Exportable]
 		private bool	enabled;
@@ -49,7 +49,7 @@ namespace NGToolsEditor
 					return FilterResult.Accepted;
 				return FilterResult.None;
 			}
-			else if ((row.log.mode & (Mode.ScriptCompileError | Mode.ScriptingError | Mode.Fatal | Mode.Error | Mode.Assert | Mode.AssetImportError)) != 0)
+			else if ((row.log.mode & (Mode.ScriptCompileError | Mode.ScriptingError | Mode.Fatal | Mode.Error | Mode.Assert | Mode.AssetImportError | Mode.ScriptingAssertion)) != 0)
 			{
 				if ((this.maskType & (1 << (int)LogType.Error)) != 0)
 					return FilterResult.Accepted;

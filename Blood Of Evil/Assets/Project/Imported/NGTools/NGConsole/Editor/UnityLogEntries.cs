@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Reflection;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	/// <summary>
 	/// Class cloned from Unity's editor internal class "UnityEditorInternal.LogEntries".
 	/// </summary>
-	class UnityLogEntries
+	internal sealed class UnityLogEntries
 	{
 		public int	consoleFlags
 		{

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class InputsManager
+	public sealed class InputsManager
 	{
 		public List<InputsGroup>	groups = new List<InputsGroup>();
 

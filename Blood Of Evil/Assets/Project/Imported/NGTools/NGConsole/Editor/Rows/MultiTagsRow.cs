@@ -1,13 +1,13 @@
 ﻿using NGTools;
 using System;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	using UnityEngine;
 
 	[Serializable]
 	[RowLogHandler(3)]
-	public class MultiTagsRow : DefaultRow
+	internal sealed class MultiTagsRow : DefaultRow
 	{
 		public bool		isParsed;
 

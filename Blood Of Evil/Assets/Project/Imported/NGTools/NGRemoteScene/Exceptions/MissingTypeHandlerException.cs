@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	/// <summary>
 	/// Thrown when trying to fetch a non-implemented TypeHandler.
 	/// </summary>
-	public class MissingTypeHandlerException : Exception
+	internal sealed class MissingTypeHandlerException : Exception
 	{
 		public readonly	Type	type;
 

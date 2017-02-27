@@ -19,10 +19,11 @@ namespace NGTools
 
 			for (int i = 0; i < cs.Length; i++)
 			{
+				if (cs[i] == null)
+					continue;
+
 				if (typeof(T).IsAssignableFrom(cs[i].GetType()) == true)
-				{
 					return (T)(object)cs[i];
-				}
 			}
 
 			return default(T);
@@ -40,10 +41,11 @@ namespace NGTools
 
 			for (int i = 0; i < cs.Length; i++)
 			{
+				if (cs[i] == null)
+					continue;
+
 				if (typeof(T).IsAssignableFrom(cs[i].GetType()) == true)
-				{
 					result.Add((T)(object)cs[i]);
-				}
 			}
 
 			return result.ToArray();

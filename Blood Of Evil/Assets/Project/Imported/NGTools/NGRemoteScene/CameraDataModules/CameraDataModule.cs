@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace NGTools
+﻿namespace NGTools.NGRemoteScene
 {
 	public abstract class CameraDataModule
 	{
@@ -15,10 +13,6 @@ namespace NGTools
 			this.moduleID = moduleID;
 			this.priority = priority;
 			this.name = name;
-		}
-
-		public virtual void	OnGUIDBG()
-		{
 		}
 	}
 }

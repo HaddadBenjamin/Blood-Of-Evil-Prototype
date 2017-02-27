@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[InitializeOnLoad, Serializable, VisibleModule(50)]
-	public class MainModule : Module, IStreams
+	internal sealed class MainModule : Module, IStreams
 	{
 		[Serializable]
-		public class Vars
+		private sealed class Vars
 		{
 			public int	workingStream;
 		}
@@ -28,7 +28,7 @@ namespace NGToolsEditor
 
 		static	MainModule()
 		{
-			new SectionDrawer("Main Module", typeof(NGSettings.MainModuleSettings));
+			new SectionDrawer("Main Module", typeof(NGSettings.MainModuleSettings), 20);
 		}
 
 		public	MainModule()
@@ -45,7 +45,11 @@ namespace NGToolsEditor
 			base.OnEnable(console, id);
 
 			foreach (var stream in this.streams)
+			{
 				stream.Init(this.console, this);
+				stream.FilterAltered += this.console.SaveModules;
+				stream.OptionAltered += this.console.SaveModules;
+			}
 
 			this.console.CheckNewLogConsume += this.CreateStreamForCategory;
 			this.console.OptionAltered += this.UpdateFilteredRows;
@@ -70,7 +74,11 @@ namespace NGToolsEditor
 			this.console.wantsMouseMove = false;
 
 			foreach (var stream in this.streams)
+			{
 				stream.Uninit();
+				stream.FilterAltered -= this.console.SaveModules;
+				stream.OptionAltered -= this.console.SaveModules;
+			}
 		}
 
 		public override void	OnGUI(Rect r)
@@ -115,6 +123,8 @@ namespace NGToolsEditor
 				this.perWindowVars.Get(Utility.drawingWindow).workingStream = this.streams.Count - 1;
 			else
 				this.perWindowVars.Get(Utility.drawingWindow).workingStream = i;
+
+			this.console.SaveModules();
 		}
 
 		public void	DeleteStream(int i)
@@ -124,6 +134,8 @@ namespace NGToolsEditor
 
 			foreach (Vars var in this.perWindowVars.Each())
 				var.workingStream = Mathf.Clamp(var.workingStream, 0, this.streams.Count - 1);
+
+			this.console.SaveModules();
 		}
 
 		private Rect	DrawStreamTabs(Rect r)
@@ -162,13 +174,18 @@ namespace NGToolsEditor
 
 					if (GUILayout.Button("+", Preferences.Settings.general.menuButtonStyle) == true)
 					{
-						StreamLog	stream = new StreamLog();
-						stream.Init(this.console, this);
-						stream.RefreshFilteredRows();
-						this.streams.Add(stream);
+						if (FreeConstants.CheckMaxStreams(this.streams.Count - 2) == true)
+						{
+							StreamLog	stream = new StreamLog();
+							stream.Init(this.console, this);
+							stream.RefreshFilteredRows();
+							this.streams.Add(stream);
+						
+							this.console.SaveModules();
 
-						if (this.streams.Count == 1)
-							vars.workingStream = 0;
+							if (this.streams.Count == 1)
+								vars.workingStream = 0;
+						}
 					}
 
 					GUILayout.FlexibleSpace();

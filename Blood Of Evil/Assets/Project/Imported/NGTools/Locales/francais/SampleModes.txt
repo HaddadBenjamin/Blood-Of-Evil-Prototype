@@ -1,3 +1,0 @@
-Time=Temps
-Regex=Regex
-MaxSamples=Max échantillon

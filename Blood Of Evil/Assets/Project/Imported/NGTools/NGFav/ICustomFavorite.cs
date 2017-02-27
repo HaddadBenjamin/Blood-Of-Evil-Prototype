@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGFav
 {
 	/// <summary>
 	/// <para>Implement it on a MonoBehaviour to give NG Fav a more specific way to fetch a GameObject.</para>

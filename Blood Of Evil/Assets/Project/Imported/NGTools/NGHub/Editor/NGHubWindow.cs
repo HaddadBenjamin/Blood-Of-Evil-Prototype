@@ -1,20 +1,20 @@
-﻿using NGTools;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGHub
 {
 	using UnityEngine;
 
 	[InitializeOnLoad, Exportable(ExportableAttribute.ArrayOptions.Overwrite | ExportableAttribute.ArrayOptions.Immutable)]
 	public class NGHubWindow : EditorWindow, ISettingExportable, IHasCustomMenu
 	{
-		public const string	Title = "NG Hub";
-		public const string	ForceRecreateKey = "NGHubForceRecreate";
-		public static Color	DockBackgroundColor = NGHubWindow.GetBackgroundColor();
+		public const string	Title = "ƝƓ Ħub";
+		public const string	ForceRecreateKey = "NGHub_ForceRecreate";
+		[SetColor(41F / 255F, 41F / 255F, 41F / 255F, 1F, 162F / 255F, 162F / 255F, 162F / 255F, 1F)]
+		public static Color	DockBackgroundColor = default(Color);
 
 		public float	height = EditorGUIUtility.singleLineHeight;
 
@@ -27,6 +27,8 @@ namespace NGToolsEditor
 		public bool	dockedAsMenu = false;
 
 		public NGHubExtensionWindow	extensionWindow;
+
+		private ErrorPopup	errorPopup = new ErrorPopup("Error occured");
 
 		static	NGHubWindow()
 		{
@@ -43,13 +45,13 @@ namespace NGToolsEditor
 		}
 
 		[MenuItem(Constants.MenuItemPath + NGHubWindow.Title, priority = Constants.MenuItemPriority + 300)]
-		private static void	Open()
+		public static void	Open()
 		{
 			EditorWindow.GetWindow<NGHubWindow>(NGHubWindow.Title);
 		}
 
 		[MenuItem(Constants.MenuItemPath + NGHubWindow.Title + " as Dock %#H", priority = Constants.MenuItemPriority + 301)]
-		private static void	OpenAsDock()
+		public static void	OpenAsDock()
 		{
 			NGHubWindow[]	editors = Resources.FindObjectsOfTypeAll<NGHubWindow>();
 
@@ -95,14 +97,6 @@ namespace NGToolsEditor
 			EditorPrefs.SetInt(NGHubWindow.ForceRecreateKey, -2);
 		}
 
-		private static Color	GetBackgroundColor()
-		{
-			if (EditorGUIUtility.isProSkin == true)
-				return new Color(41F / 255F, 41F / 255F, 41F / 255F, 1F);
-			else
-				return new Color(162F / 255F, 162F / 255F, 162F / 255F, 1F);
-		}
-
 		protected virtual void	OnEnable()
 		{
 			if (this.initialized == true || Preferences.Settings == null)
@@ -116,25 +110,14 @@ namespace NGToolsEditor
 
 				foreach (Type type in Utility.EachSubClassesOf(typeof(HubComponent)))
 				{
-					MethodInfo	method = type.GetMethod(HubComponent.CanDropMethod, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+					MethodInfo	method = type.GetMethod(HubComponent.StaticVerifierMethodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 
 					if (method != null)
 						this.droppableComponents.Add(method);
 				}
 
 				this.components = new List<HubComponent>();
-				Preferences.Settings.hubData.Deserialize(this.components);
-				for (int i = 0; i < this.components.Count; i++)
-				{
-					// In case of corrupted data.
-					if (this.components[i] != null && this.components[i].GetType().IsSubclassOf(typeof(HubComponent)) == true)
-						this.components[i].Init(this);
-					else
-					{
-						this.components.RemoveAt(i);
-						--i;
-					}
-				}
+				this.RestoreComponents();
 
 				this.settings = Preferences.Settings;
 
@@ -144,8 +127,10 @@ namespace NGToolsEditor
 			}
 			catch (Exception ex)
 			{
-				InternalNGDebug.LogException(ex);
+				this.errorPopup.exception = ex;
 			}
+
+			Undo.undoRedoPerformed += this.RestoreComponents;
 		}
 
 		protected virtual void	OnDisable()
@@ -168,6 +153,8 @@ namespace NGToolsEditor
 				this.extensionWindow.Close();
 
 			this.SaveComponents();
+
+			Undo.undoRedoPerformed -= this.RestoreComponents;
 		}
 
 		protected virtual void	OnGUI()
@@ -179,26 +166,32 @@ namespace NGToolsEditor
 				GUILayout.BeginHorizontal();
 				{
 					if (GUILayout.Button(LC.G("ShoWPreferencesWindow")) == true)
-					{
 						Utility.ShowPreferencesWindowAt(Constants.PreferenceTitle);
-					}
 
 					// Especially for NG Hub, we need to add a way to manually close the window when the dock mode is failing.
 					if (GUILayout.Button("X", GUILayout.Width(16F)) == true)
-					{
 						this.Close();
-					}
 				}
 				GUILayout.EndHorizontal();
 
 				return;
 			}
 
+			FreeOverlay.First(this, NGHubWindow.Title + " is restrained to " + FreeConstants.MaxHubComponents + " components.");
+
 			if (Event.current.type == EventType.Repaint && this.dockedAsMenu == true)
 				EditorGUI.DrawRect(new Rect(0F, 0F, this.position.width, this.position.height), NGHubWindow.DockBackgroundColor);
 
 			EditorGUILayout.BeginHorizontal(GUILayout.Height(this.height));
 			{
+				if (this.errorPopup.exception != null)
+				{
+					Rect	r = GUILayoutUtility.GetRect(0F, 0F, GUILayout.Width(115F), GUILayout.Height(this.height + 3F));
+					r.x += 1F;
+					r.y += 1F;
+					this.errorPopup.OnGUIRect(r);
+				}
+
 				this.HandleDrop();
 
 				bool		overflow = false;
@@ -215,10 +208,25 @@ namespace NGToolsEditor
 					if (this.dockedAsMenu == true && Event.current.type == EventType.Repaint)
 						Utility.DrawRectDotted(r, this.position, Color.grey, .02F, 0F);
 
-					GUI.Label(r, "Right-click to add Component", GeneralStyles.CenterText);
+					GUI.Label(r, "Right-click to add Component" + (this.dockedAsMenu == true && Application.platform == RuntimePlatform.OSXEditor? " (Dock mode is buggy under OSX)" : ""), GeneralStyles.CenterText);
 				}
 				else
 				{
+					Rect	miseryRect = default(Rect);
+
+					if (this.dockedAsMenu == true &&
+						this.extensionWindow != null &&
+						maxWidth > 0F)
+					{
+						miseryRect = new Rect(this.maxWidth, 0F, this.position.width - this.maxWidth, this.height + 4F);
+						GUI.Button(miseryRect, new GUIContent("", null, "\0"));
+
+						if (miseryRect.Contains(Event.current.mousePosition) == true)
+						{
+							GUIUtility.hotControl = 0;
+						}
+					}
+
 					for (int i = 0; i < this.components.Count; i++)
 					{
 						// Catch event from the cropped component.
@@ -243,7 +251,14 @@ namespace NGToolsEditor
 
 						EditorGUILayout.BeginHorizontal();
 						{
-							this.components[i].OnGUI();
+							try
+							{
+								this.components[i].OnGUI();
+							}
+							catch (Exception ex)
+							{
+								this.errorPopup.exception = ex;
+							}
 						}
 						EditorGUILayout.EndHorizontal();
 
@@ -253,25 +268,31 @@ namespace NGToolsEditor
 
 							if (r.xMax >= this.position.width)
 							{
-								// Hide the miserable trick...
-								r.xMin -= 2F;
-								r.yMin -= 2F;
-								r.yMax += 2F;
-								r.xMax += 2F;
-								EditorGUI.DrawRect(r, NGHubWindow.DockBackgroundColor);
+								this.maxWidth = r.xMin;
 
 								if (this.extensionWindow == null)
 								{
 									this.extensionWindow = ScriptableObject.CreateInstance<NGHubExtensionWindow>();
 									this.extensionWindow.Init(this);
 									this.extensionWindow.ShowPopup();
+									this.Repaint();
 								}
 
 								this.extensionWindow.minI = i;
 								overflow = true;
 								break;
 							}
+							else if (overflow == false)
+								this.maxWidth = 0F;
 						}
+					}
+
+					if (this.dockedAsMenu == true &&
+						this.extensionWindow != null &&
+						maxWidth > 0F)
+					{
+						// Hide the miserable trick...
+						EditorGUI.DrawRect(miseryRect, NGHubWindow.DockBackgroundColor);
 					}
 				}
 
@@ -294,7 +315,11 @@ namespace NGToolsEditor
 			GUILayout.FlexibleSpace();
 
 			EditorGUILayout.EndHorizontal();
+
+			FreeOverlay.Last();
 		}
+
+		private float	maxWidth = 0F;
 
 		protected virtual void	Update()
 		{
@@ -374,14 +399,17 @@ namespace NGToolsEditor
 						{
 							DragAndDrop.AcceptDrag();
 
-							HubComponent	component = Activator.CreateInstance(this.droppableComponents[i].DeclaringType) as HubComponent;
-
-							if (component != null)
+							if (FreeConstants.CheckMaxHubComponents(this.components.Count) == true)
 							{
-								component.InitDrop(this);
-								this.components.Insert(0, component);
-								EditorApplication.delayCall += this.Repaint;
-								this.SaveComponents();
+								HubComponent	component = Activator.CreateInstance(this.droppableComponents[i].DeclaringType) as HubComponent;
+
+								if (component != null)
+								{
+									component.InitDrop(this);
+									this.components.Insert(0, component);
+									EditorApplication.delayCall += this.Repaint;
+									this.SaveComponents();
+								}
 							}
 
 							DragAndDrop.PrepareStartDrag();
@@ -401,7 +429,7 @@ namespace NGToolsEditor
 
 		public void	OpenContextMenu()
 		{
-			GenericMenu menu = new GenericMenu();
+			GenericMenu	menu = new GenericMenu();
 
 			menu.AddItem(new GUIContent("Add Component"), false, this.OpenAddComponentWizard);
 			menu.AddItem(new GUIContent("Edit"), false, () => EditorWindow.GetWindow<NGHubEditorWindow>(true, NGHubEditorWindow.Title, true).Init(this));
@@ -432,17 +460,23 @@ namespace NGToolsEditor
 
 		public void	OpenAddComponentWizard()
 		{
-			GenericTypesSelectorWizard.Start(NGHubWindow.Title + " - Add Component", typeof(HubComponent), this.OnCreateComponent, true, true, true);
+			GenericTypesSelectorWizard	wizard = GenericTypesSelectorWizard.Start(NGHubWindow.Title + " - Add Component", typeof(HubComponent), this.OnCreateComponent, true, true);
+			wizard.EnableCategories = true;
+			wizard.position = new Rect(this.position.x, this.position.y + 60F, wizard.position.width, wizard.position.height);
 		}
 
 		public void	SaveComponents()
 		{
+			Undo.RecordObject(this.settings, "Change HubComponent");
 			this.settings.hubData.Serialize(this.components);
 			Preferences.InvalidateSettings();
 		}
 
 		private void	OnCreateComponent(Type type)
 		{
+			if (FreeConstants.CheckMaxHubComponents(this.components.Count) == false)
+				return;
+
 			HubComponent	component = Activator.CreateInstance(type) as HubComponent;
 			component.Init(this);
 
@@ -461,8 +495,34 @@ namespace NGToolsEditor
 				editor.ShowPopup();
 			}
 
+			Undo.RecordObject(this.settings, "Add HubComponent");
 			this.components.Add(component);
 			this.SaveComponents();
+			this.Repaint();
+		}
+
+		protected virtual void	ShowButton(Rect r)
+		{
+			EditorGUI.BeginChangeCheck();
+			GUI.Toggle(r, false, "E", GUI.skin.label);
+			if (EditorGUI.EndChangeCheck() == true)
+				EditorWindow.GetWindow<NGHubEditorWindow>(true, NGHubEditorWindow.Title, true).Init(this);
+		}
+
+		private void	RestoreComponents()
+		{
+			Preferences.Settings.hubData.Deserialize(this.components);
+			for (int i = 0; i < this.components.Count; i++)
+			{
+				// In case of corrupted data.
+				if (this.components[i] != null && this.components[i].GetType().IsSubclassOf(typeof(HubComponent)) == true)
+					this.components[i].Init(this);
+				else
+				{
+					this.components.RemoveAt(i);
+					--i;
+				}
+			}
 			this.Repaint();
 		}
 
@@ -475,26 +535,18 @@ namespace NGToolsEditor
 			Utility.AddNGMenuItems(menu, this, NGHubWindow.Title, Constants.WikiBaseURL + "#markdown-header-110-ng-hub");
 		}
 
-		public void	PreExport()
+		void	ISettingExportable.PreExport()
 		{
 		}
 
-		public void	PreImport()
+		void	ISettingExportable.PreImport()
 		{
 		}
 
-		public void	PostImport()
+		void	ISettingExportable.PostImport()
 		{
 			for (int i = 0; i < this.components.Count; i++)
 				this.components[i].hub = this;
-		}
-
-		protected virtual void	ShowButton(Rect r)
-		{
-			EditorGUI.BeginChangeCheck();
-			GUI.Toggle(r, false, "E", GUI.skin.label);
-			if (EditorGUI.EndChangeCheck() == true)
-				EditorWindow.GetWindow<NGHubEditorWindow>(true, NGHubEditorWindow.Title, true).Init(this);
 		}
 	}
 }

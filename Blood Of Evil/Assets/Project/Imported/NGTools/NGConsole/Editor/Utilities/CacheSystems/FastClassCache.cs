@@ -1,13 +1,13 @@
 ﻿using NGTools;
 using System;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class FastClassCache
+	internal sealed class FastClassCache
 	{
 		[Serializable]
-		public class HashClass
+		internal sealed class HashClass
 		{
 			public readonly int		hash;
 			public Type				type;
@@ -27,15 +27,16 @@ namespace NGToolsEditor
 			this.classes = new HashClass[128];
 			this.indexLeft = 0;
 		}
-
+		
 		/// <summary>
 		/// Finds the cached version or will try to retrieve the type from assemblies.
 		/// </summary>
+		/// <param name="namespace"></param>
 		/// <param name="className"></param>
 		/// <returns></returns>
-		public HashClass	GetType(string className)
+		public HashClass	GetType(string @namespace, string className)
 		{
-			int	hash = className.GetHashCode();
+			int	hash = @namespace.GetHashCode() + className.GetHashCode();
 
 			// Check if cached.
 			for (int i = 0; i < this.indexLeft; i++)
@@ -49,7 +50,11 @@ namespace NGToolsEditor
 				// Populate new file.
 				HashClass	hashClass = new HashClass(hash);
 
-				hashClass.type = Utility.GetType(className);
+				if (string.IsNullOrEmpty(@namespace) == false)
+					hashClass.type = Utility.GetType(@namespace, className);
+				else
+					hashClass.type = Utility.GetType(className);
+
 				if (hashClass.type != null)
 					hashClass.methods = new FastMethodCache(hashClass.type);
 

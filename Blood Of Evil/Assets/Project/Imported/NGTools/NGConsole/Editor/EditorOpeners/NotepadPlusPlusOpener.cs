@@ -1,6 +1,6 @@
-﻿namespace NGToolsEditor
+﻿namespace NGToolsEditor.NGConsole
 {
-	public class NotepadPlusPlusOpener : IEditorOpener
+	internal sealed class NotepadPlusPlusOpener : IEditorOpener
 	{
 		public string	defaultArguments { get { return "\"$(File)\" -n$(Line)"; } }
 

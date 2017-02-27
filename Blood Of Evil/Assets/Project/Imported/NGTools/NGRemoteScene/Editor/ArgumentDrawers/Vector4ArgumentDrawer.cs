@@ -1,12 +1,13 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[ArgumentDrawerFor(typeof(Vector4))]
-	public class Vector4ArgumentDrawer : ArgumentDrawer
+	internal sealed class Vector4ArgumentDrawer : ArgumentDrawer
 	{
-		public Vector4ArgumentDrawer(string name) : base(name, typeof(Vector4))
+		public Vector4ArgumentDrawer(string name, Type type) : base(name, typeof(Vector4))
 		{
 		}
 
@@ -15,7 +16,7 @@ namespace NGToolsEditor
 			this.value = EditorGUILayout.Vector4Field(this.name, (Vector4)this.value);
 		}
 
-		public override void	Serialize(string path)
+		public override void	Save(string path)
 		{
 			Vector4	c = (Vector4)this.value;
 
@@ -25,7 +26,7 @@ namespace NGToolsEditor
 			NGEditorPrefs.SetFloat(path + ".w", (float)c.w);
 		}
 
-		public override void	Deserialize(string path)
+		public override void	Load(string path)
 		{
 			Vector4	v = (Vector4)this.value;
 

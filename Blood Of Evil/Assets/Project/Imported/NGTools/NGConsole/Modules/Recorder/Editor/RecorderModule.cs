@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
 	//[VisibleModule(100)]
-	public class RecorderModule : Module, IStreams
+	internal sealed class RecorderModule : Module, IStreams
 	{
 		[Serializable]
-		public class Vars
+		private sealed class Vars
 		{
 			public int	workingStream;
 		}
@@ -165,9 +165,7 @@ namespace NGToolsEditor
 				GUILayout.BeginHorizontal();
 				{
 					for (int i = 0; i < this.streams.Count; i++)
-					{
 						this.streams[i].OnTabGUI(i);
-					}
 
 					if (GUILayout.Button("+", Preferences.Settings.general.menuButtonStyle) == true)
 					{

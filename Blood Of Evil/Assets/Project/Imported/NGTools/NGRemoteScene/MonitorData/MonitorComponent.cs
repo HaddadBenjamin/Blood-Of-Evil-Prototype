@@ -1,11 +1,14 @@
-﻿using System;
+﻿using NGTools.Network;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	public class MonitorComponent : MonitorData
+	internal sealed class MonitorComponent : MonitorData
 	{
+		public int	InstanceID { get { return this.instanceID; } }
+
 		private Component	component;
 		private int			gameObjectInstanceID;
 		private int			instanceID;

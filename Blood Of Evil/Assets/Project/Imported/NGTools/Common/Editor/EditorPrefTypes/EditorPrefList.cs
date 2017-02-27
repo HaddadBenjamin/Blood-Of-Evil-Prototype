@@ -8,7 +8,7 @@ namespace NGToolsEditor
 	/// <summary>
 	/// Saves IList with any class, but the class must be public and implement a default constructor.
 	/// </summary>
-	public class EditorPrefList : EditorPrefType
+	internal sealed class EditorPrefList : EditorPrefType
 	{
 		public override bool	CanHandle(Type type)
 		{
@@ -63,7 +63,7 @@ namespace NGToolsEditor
 
 			Type	subType = Utility.GetArraySubType(type);
 
-			if (subType.IsValueType == true || subType == typeof(string) || subType.IsInterface == true || subType.IsAbstract == true)
+			if (count > 0 && (subType.IsValueType == true || subType == typeof(string) || subType.IsInterface == true || subType.IsAbstract == true))
 			{
 				string	v = NGEditorPrefs.GetString(path + ".serialized", null);
 

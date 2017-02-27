@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	public sealed class ServerComponent
 	{
@@ -44,11 +44,17 @@ namespace NGTools
 
 			this.fields = ServerComponent.tempFields.ToArray();
 
-			MethodInfo[]	methods = type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
+			List<MethodInfo>	methods = new List<MethodInfo>(type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public));
 
-			this.methods = new ServerMethodInfo[methods.Length];
+			for (int j = 0; j < methods.Count; j++)
+			{
+				if (methods[j].IsGenericMethod == true)
+					methods.RemoveAt(j--);
+			}
 
-			for (i = 0; i < methods.Length; i++)
+			this.methods = new ServerMethodInfo[methods.Count];
+
+			for (i = 0; i < methods.Count; i++)
 				this.methods[i] = new ServerMethodInfo(methods[i]);
 		}
 
@@ -63,11 +69,11 @@ namespace NGTools
 			return null;
 		}
 
-		public ServerMethodInfo	GetMethod(string name)
+		public ServerMethodInfo	GetMethodFromSignature(string signature)
 		{
 			for (int i = 0; i < this.methods.Length; i++)
 			{
-				if (this.methods[i].methodInfo.Name == name)
+				if (this.methods[i].GetSignature() == signature)
 					return this.methods[i];
 			}
 

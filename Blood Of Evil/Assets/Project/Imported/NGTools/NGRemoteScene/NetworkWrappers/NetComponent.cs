@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Reflection;
-using System.Text;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	public sealed class NetComponent
 	{
@@ -21,27 +19,7 @@ namespace NGTools
 			Type	componentType = component.component.GetType();
 
 			buffer.Append(component.instanceID);
-
-			if (component.component is Behaviour)
-			{
-				if (componentType.GetMethod("Start", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null ||
-					componentType.GetMethod("Awake", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null ||
-					componentType.GetMethod("Update", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null ||
-					componentType.GetMethod("FixedUpdate", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null ||
-					componentType.GetMethod("OnGUI", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null)
-				{
-					buffer.Append(true); // Togglable
-				}
-				else
-					buffer.Append(false); // Togglable
-			}
-			else
-			{
-				if (componentType.GetProperty("enabled", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null)
-					buffer.Append(true); // Togglable
-				else
-					buffer.Append(false); // Togglable
-			}
+			buffer.Append(Utility.IsComponentEnableable(component.component));
 
 			if ((component.component is Transform) == true)
 				buffer.Append(false); // Deletable

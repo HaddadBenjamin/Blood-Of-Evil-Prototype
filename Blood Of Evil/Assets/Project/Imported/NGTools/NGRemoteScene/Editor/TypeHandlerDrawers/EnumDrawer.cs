@@ -1,12 +1,12 @@
-using NGTools;
+using NGTools.NGRemoteScene;
 using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[TypeHandlerDrawerFor(typeof(EnumHandler))]
-	public class EnumDrawer : TypeHandlerDrawer
+	internal sealed class EnumDrawer : TypeHandlerDrawer
 	{
 		private BgColorContentAnimator	anim;
 
@@ -56,9 +56,7 @@ namespace NGToolsEditor
 					int	newValue;
 
 					if (enumInstance.GetFlag() == EnumInstance.IsFlag.Value)
-					{
 						newValue = EditorGUI.IntPopup(r, Utility.NicifyVariableName(data.name), enumInstance.value, enumData.names, enumData.values);
-					}
 					else
 					{
 						newValue = EditorGUI.MaskField(r, Utility.NicifyVariableName(data.name), enumInstance.value, enumData.names);

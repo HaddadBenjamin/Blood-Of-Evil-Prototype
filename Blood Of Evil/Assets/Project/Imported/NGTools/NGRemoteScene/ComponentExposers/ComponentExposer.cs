@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	/// <summary>
 	/// <para>Explicitly defines which fields or properties the class must expose.</para>

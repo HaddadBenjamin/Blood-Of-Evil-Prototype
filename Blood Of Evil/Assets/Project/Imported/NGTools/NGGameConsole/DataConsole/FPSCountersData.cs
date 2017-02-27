@@ -1,11 +1,11 @@
 ﻿using System;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	public class FPSCountersData : DataConsole
 	{
-		const float	RefreshPeriod = 0.5f;
+		public const float	RefreshPeriod = 0.5f;
 
 		private float	nextTime;
 		private int		updateCount;

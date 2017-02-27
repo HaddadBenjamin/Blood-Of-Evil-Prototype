@@ -1,7 +1,6 @@
-﻿using UnityEngine;
-namespace NGToolsEditor
+﻿namespace NGToolsEditor.NGConsole
 {
-	public class MinimalPreset : Preset
+	internal sealed class MinimalPreset : Preset
 	{
 		public override void	SetSettings(NGSettings instance)
 		{

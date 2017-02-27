@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using UnityEditor;
-#if !UNITY_4 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
+#if !UNITY_4 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2 && !UNITY_5_3
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 #endif
@@ -16,7 +16,7 @@ using NGTools;
 using System.Linq;
 using UnityEditorInternal;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGAssetsFinder
 {
 	using UnityEngine;
 
@@ -24,7 +24,7 @@ namespace NGToolsEditor
 	public class NGAssetsFinderWindow : EditorWindow, IHasCustomMenu
 	{
 		[Serializable]
-		public class SceneMatch
+		private sealed class SceneMatch
 		{
 			public readonly Object	scene;
 			public readonly string	scenePath;
@@ -38,9 +38,9 @@ namespace NGToolsEditor
 			}
 		}
 
-		public class Asset
+		private sealed class Asset
 		{
-			public readonly NGAssetsFinderWindow assetsFinder;
+			public readonly NGAssetsFinderWindow	assetsFinder;
 			public readonly Object		asset;
 			public readonly GUIContent	content;
 			public readonly List<Asset>	children;
@@ -78,14 +78,14 @@ namespace NGToolsEditor
 			{
 				Rect	r = GUILayoutUtility.GetRect(0F, 16F);
 
-				r.xMin = EditorGUIUtility.labelWidth;
+				r.xMin = EditorGUIUtility.labelWidth + 4F;
 
 				float	w = r.width;
 
 				r.width = 16F;
 				if (this.children.Count > 0)
 				{
-					r.x = EditorGUIUtility.labelWidth + EditorGUI.indentLevel * 16F;
+					r.x += EditorGUI.indentLevel * 16F;
 					if (Event.current.type == EventType.MouseUp && r.Contains(Event.current.mousePosition) == true)
 					{
 						this.open = !this.open;
@@ -93,24 +93,20 @@ namespace NGToolsEditor
 						Event.current.Use();
 					}
 
-					r.x = EditorGUIUtility.labelWidth;
+					r.x -= EditorGUI.indentLevel * 16F;
 					EditorGUI.Foldout(r, this.open, string.Empty);
 				}
 
 				r.x += r.width;
 				r.width = w - r.width;
 				if (EditorGUI.ToggleLeft(r, this.content, this.asset == this.assetsFinder.targetAsset) == true)
-				{
 					this.assetsFinder.targetAsset = this.asset;
-				}
 
 				if (this.open == true)
 				{
 					++EditorGUI.indentLevel;
 					for (int i = 0; i < this.children.Count; i++)
-					{
 						this.children[i].Draw();
-					}
 					--EditorGUI.indentLevel;
 				}
 			}
@@ -124,10 +120,23 @@ namespace NGToolsEditor
 
 				return c;
 			}
+
+			public int	CountOpenSubAssets()
+			{
+				int	c = 1;
+
+				if (this.open == true)
+				{
+					for (int i = 0; i < this.children.Count; i++)
+						c += this.children[i].CountOpenSubAssets();
+				}
+
+				return c;
+			}
 		}
 
 		[Serializable]
-		public class Folder
+		private sealed class Folder
 		{
 			public string	path;
 			public bool		active;
@@ -155,9 +164,9 @@ namespace NGToolsEditor
 			Scene = 1 << 7,
 		}
 
-		public const string	Title = "NG Assets Finder";
-		public const float	MaxProcessTimePerFrame = 1F / 24F;
+		public const string	Title = "ƝƓ Ⱥssets Ḟinder";
 		public const float	SearchHeaderWidth = 100F;
+		public const float	DropZoneHeight = 32F;
 
 		//private static Type[]	PotentialBigResultTypes = new Type[] { typeof(Component), typeof(Behaviour), typeof(MonoBehaviour), typeof(Renderer), typeof(MeshRenderer), typeof(Collider), typeof(BoxCollider), typeof(SphereCollider), typeof(AudioSource), typeof(Transform) };
 
@@ -201,7 +210,6 @@ namespace NGToolsEditor
 		private double			lastClick;
 		private float			lastFrameTime;
 
-		[NonSerialized]
 		private Asset	mainAsset;
 
 		private bool	displayAllAssets;
@@ -215,26 +223,28 @@ namespace NGToolsEditor
 		private GUIContent	componentTypeContent = new GUIContent("By Component Type", "Look for Component of the same type as target type.");
 		private GUIContent	nonPublicContent = new GUIContent("Hidden Fields/Properties", "Include non-public fields and properties. This option considerably increases the search time.");
 
-#if !UNITY_4 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
+#if !UNITY_4 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2 && !UNITY_5_3
 		private static MethodInfo	GetRootGameObjectsMethod;
 
 		private List<GameObject>	roots = new List<GameObject>();
 #endif
 
+		private ErrorPopup	errorPopup = new ErrorPopup("An error occured, try to reopen " + NGAssetsFinderWindow.Title + ".");
+
 		static	NGAssetsFinderWindow()
 		{
+			Utility.AddMenuItemPicker(Constants.MenuItemPath + NGAssetsFinderWindow.Title);
 			Utility.AddMenuItemPicker("GameObject/Search Game Object");
 			Utility.AddMenuItemPicker("Assets/Search Asset");
-			Utility.AddMenuItemPicker(Constants.MenuItemPath + NGAssetsFinderWindow.Title);
 
-#if !UNITY_4 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
+#if !UNITY_4 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2 && !UNITY_5_3
 			NGAssetsFinderWindow.GetRootGameObjectsMethod = typeof(Scene).GetMethod("GetRootGameObjects", new Type[] { typeof(List<GameObject>) });
 #endif
 		}
 
 		#region Menu Items
 		[MenuItem(Constants.MenuItemPath + NGAssetsFinderWindow.Title, priority = Constants.MenuItemPriority + 330)]
-		private static void	Open()
+		public static void	Open()
 		{
 			EditorWindow.GetWindow<NGAssetsFinderWindow>(false, NGAssetsFinderWindow.Title);
 		}
@@ -246,6 +256,11 @@ namespace NGToolsEditor
 
 			window.AssignTargetAndLoadSubAssets(menuCommand.context);
 			window.ClearResults();
+
+			if (PrefabUtility.GetPrefabType(menuCommand.context) == PrefabType.Prefab)
+				window.searchOptions |= Options.InProject;
+			else
+				window.searchOptions |= Options.InCurrentScene;
 		}
 
 		[MenuItem("GameObject/Search Game Object", priority = 12)]
@@ -255,6 +270,7 @@ namespace NGToolsEditor
 
 			window.AssignTargetAndLoadSubAssets(menuCommand.context);
 			window.ClearResults();
+			window.searchOptions |= Options.InCurrentScene;
 		}
 
 		[MenuItem("Assets/Search Asset")]
@@ -264,35 +280,46 @@ namespace NGToolsEditor
 
 			window.AssignTargetAndLoadSubAssets(Selection.activeObject);
 			window.ClearResults();
+			window.searchOptions |= Options.InProject;
 		}
 		#endregion
 
 		protected virtual void	OnEnable()
 		{
-			List<TypeMembersExclusion>	instances = new List<TypeMembersExclusion>();
-
-			foreach (Type type in Utility.EachSubClassesOf(typeof(TypeMembersExclusion)))
-				instances.Add(Activator.CreateInstance(type) as TypeMembersExclusion);
-
-			this.typeExclusions = instances.ToArray();
+			this.typeExclusions = Utility.CreateInstancesOf<TypeMembersExclusion>();
 
 			if (this.targetAsset != null && this.mainAsset == null)
 				this.AssignTargetAndLoadSubAssets(this.targetAsset);
 
 			Utility.LoadEditorPref(this, NGEditorPrefs.GetPerProjectPrefix());
+			Undo.undoRedoPerformed += this.Repaint;
+
+			// Fake null Unity Object creates problem when replacing, raising an invalid cast due to the wrong nature of "null".
+			if (this.replaceAsset == null && object.Equals(this.replaceAsset, null) == false)
+				this.replaceAsset = null;
 		}
 
 		protected virtual void	OnDisable()
 		{
 			Utility.SaveEditorPref(this, NGEditorPrefs.GetPerProjectPrefix());
+			Undo.undoRedoPerformed -= this.Repaint;
 		}
 
 		protected virtual void	OnGUI()
 		{
+			FreeOverlay.First(this, NGAssetsFinderWindow.Title + " is restrained to " + FreeConstants.MaxAssetReplacements + " replacements at once.\n\nYou can replace many times.");
+
+			this.errorPopup.OnGUILayout();
+
+			Undo.RecordObject(this, NGAssetsFinderWindow.Title);
+
 			EditorGUI.BeginDisabledGroup(this.targetAsset == null || this.isSearching == true);
 			{
-				if (GUILayout.Button("Search References") == true)
-					this.FindReferences();
+				using (BgColorContentRestorer.Get(GeneralStyles.HighlightActionButton))
+				{
+					if (GUILayout.Button("Search References") == true)
+						this.FindReferences();
+				}
 			}
 			EditorGUI.EndDisabledGroup();
 
@@ -311,9 +338,9 @@ namespace NGToolsEditor
 							{
 								if (GUILayout.Button("⇅", GeneralStyles.BigFontToolbarButton) == true)
 								{
-									Object	tmp = this.replaceAsset;
-									this.replaceAsset = this.targetAsset;
-									this.targetAsset = tmp;
+									Object	tmp = this.targetAsset;
+									this.AssignTargetAndLoadSubAssets(this.replaceAsset);
+									this.replaceAsset = tmp;
 								}
 							}
 							EditorGUI.EndDisabledGroup();
@@ -323,57 +350,57 @@ namespace NGToolsEditor
 
 					EditorGUILayout.BeginVertical();
 					{
-						EditorGUI.BeginChangeCheck();
-						Object	newTarget = EditorGUILayout.ObjectField("Find Asset", this.targetAsset, typeof(Object), true);
-						if (EditorGUI.EndChangeCheck() == true)
-							this.AssignTargetAndLoadSubAssets(newTarget);
-
-						if (this.targetAsset != null && this.mainAsset != null && this.mainAsset.children.Count > 0)
+						using (LabelWidthRestorer.Get(90F))
 						{
-							Rect	r = GUILayoutUtility.GetLastRect();
+							EditorGUI.BeginChangeCheck();
+							Object	newTarget = EditorGUILayout.ObjectField("Find Asset", this.targetAsset, typeof(Object), true);
+							if (EditorGUI.EndChangeCheck() == true)
+								this.AssignTargetAndLoadSubAssets(newTarget);
 
-							r.y += r.height;
-							r.x = 24F;
-							r.width = 24F;
-							if (GUI.Button(r, this.displayAllAssets == true ? "˄" : "˅", GeneralStyles.ToolbarDropDown) == true)
-								this.displayAllAssets = !this.displayAllAssets;
-
-							r.x += r.width + 4F;
-							r.width = EditorGUIUtility.labelWidth - r.x;
-							GUI.Label(r, "Sub Assets");
-
-							if (this.displayAllAssets == true)
+							if (this.targetAsset != null && this.mainAsset != null && this.mainAsset.children.Count > 0)
 							{
-								this.allAssetsScrollPosition = EditorGUILayout.BeginScrollView(this.allAssetsScrollPosition, GUILayout.Height(Mathf.Clamp(this.mainAsset.CountSubAssets() * 18F, 0F, 18F * 6F)));
+								Rect	r = GUILayoutUtility.GetLastRect();
+
+								r.y += r.height;
+								r.x = 24F;
+								r.width = 24F;
+								if (GUI.Button(r, this.displayAllAssets == true ? "˄" : "˅", GeneralStyles.ToolbarDropDown) == true)
+									this.displayAllAssets = !this.displayAllAssets;
+
+								r.x += r.width + 4F;
+								r.width = EditorGUIUtility.labelWidth - r.x + r.width + 4F;
+								GUI.Label(r, "Sub Assets");
+
+								if (this.displayAllAssets == true)
 								{
-									this.mainAsset.Draw();
+									this.allAssetsScrollPosition = EditorGUILayout.BeginScrollView(this.allAssetsScrollPosition, GUILayout.Height(Mathf.Clamp(this.mainAsset.CountOpenSubAssets() * 18F, 0F, 18F * 6F)));
+									{
+										this.mainAsset.Draw();
+									}
+									EditorGUILayout.EndScrollView();
 								}
-								EditorGUILayout.EndScrollView();
+								else
+								{
+									r.x += r.width;
+									r.width = this.position.width - r.x;
+									GUI.Label(r, this.mainAsset.CountSubAssets() + " objects");
+
+									GUILayoutUtility.GetRect(0F, 14F);
+								}
 							}
-							else
+
+							if (this.canReplace == true)
 							{
-								r.x += r.width + 24F;
-								r.width = this.position.width - r.x;
-								GUI.Label(r, this.mainAsset.CountSubAssets() + " objects");
+								bool	allowSceneObjects = true;
 
-								GUILayoutUtility.GetRect(0F, 14F);
+								if (this.targetAsset != null)
+								{
+									PrefabType	targetPrefabType = PrefabUtility.GetPrefabType(this.targetAsset);
+									allowSceneObjects = targetPrefabType == PrefabType.None || (targetPrefabType != PrefabType.Prefab && targetPrefabType != PrefabType.ModelPrefab);
+								}
+
+								this.replaceAsset = EditorGUILayout.ObjectField("Replace Asset", this.replaceAsset, typeof(Object), allowSceneObjects);
 							}
-						}
-
-						if (this.canReplace == true)
-						{
-							Type	targetType = typeof(Object);
-							bool	allowSceneObjects = true;
-
-							if (this.targetAsset != null)
-							{
-								targetType = this.targetAsset.GetType();
-
-								PrefabType	targetPrefabType = PrefabUtility.GetPrefabType(this.targetAsset);
-								allowSceneObjects = targetPrefabType != PrefabType.Prefab && targetPrefabType != PrefabType.ModelPrefab && targetPrefabType != PrefabType.None;
-							}
-
-							this.replaceAsset = EditorGUILayout.ObjectField("Replace Asset", this.replaceAsset, targetType, allowSceneObjects);
 						}
 
 						GUILayout.Space(4F);
@@ -382,7 +409,7 @@ namespace NGToolsEditor
 				}
 				EditorGUILayout.EndHorizontal();
 
-				EditorGUILayout.BeginHorizontal("Toolbar");
+				EditorGUILayout.BeginHorizontal(GeneralStyles.Toolbar);
 				{
 					GUILayout.Label("Search Options :", GUILayout.Width(NGAssetsFinderWindow.SearchHeaderWidth));
 
@@ -414,216 +441,277 @@ namespace NGToolsEditor
 					GUILayout.Toggle((this.searchOptions & Options.NonPublic) != 0, this.nonPublicContent, GeneralStyles.ToolbarToggle);
 					if (EditorGUI.EndChangeCheck() == true)
 						this.searchOptions ^= Options.NonPublic;
-#if NGT_DEBUG
-					this.debugAnalyzedTypes = GUILayout.Toggle(this.debugAnalyzedTypes, "DBG Types", GeneralStyles.ToolbarToggle);
-#endif
+
+					if (Conf.DebugMode == Conf.DebugModes.Verbose)
+						this.debugAnalyzedTypes = GUILayout.Toggle(this.debugAnalyzedTypes, "DBG Types", GeneralStyles.ToolbarToggle);
 				}
 				EditorGUILayout.EndHorizontal();
 
 				GUILayout.Space(8F);
 
-				EditorGUILayout.BeginHorizontal("Toolbar");
+				EditorGUILayout.BeginVertical("ButtonLeft");
 				{
-					EditorGUI.BeginChangeCheck();
-					GUILayout.Toggle(this.showScene, this.showScene == true ? "˄" : "˅", GeneralStyles.ToolbarDropDown, GUILayout.Width(30F));
-					if (EditorGUI.EndChangeCheck() == true)
-						this.showScene = !this.showScene;
-
-					EditorGUI.BeginChangeCheck();
-					GUILayout.Toggle((this.searchOptions & Options.InCurrentScene) != 0, "Scene", GeneralStyles.ToolbarToggle);
-					if (EditorGUI.EndChangeCheck() == true)
-						this.searchOptions ^= Options.InCurrentScene;
-				}
-				EditorGUILayout.EndHorizontal();
-				
-				if (this.showScene == true)
-				{
-					EditorGUILayout.BeginHorizontal("Toolbar");
+					EditorGUILayout.BeginHorizontal();
 					{
-						this.displaySearchInGameObjects = GUILayout.Toggle(this.displaySearchInGameObjects, (this.displaySearchInGameObjects == true ? "˄" : "˅") + " Search Game Objects :", GeneralStyles.ToolbarDropDown, GUILayout.Width(NGAssetsFinderWindow.SearchHeaderWidth + 34F));
+						Rect	r2 = GUILayoutUtility.GetRect(0F, 16F, GUILayout.Width(20F));
 
-						EditorGUILayout.BeginVertical();
-						{
-							if (this.displaySearchInGameObjects == true)
-							{
-								if (this.searchInGameObjects.Count == 0)
-								{
-									EditorGUILayout.LabelField("Searching in all hierarchy. (Drop Game Object here to filter.)");
-								}
-								else
-								{
-									EditorGUILayout.LabelField("Game Object:");
-									for (int i = 0; i < this.searchInGameObjects.Count; i++)
-									{
-										EditorGUILayout.BeginHorizontal("Toolbar");
-										{
-											EditorGUI.BeginChangeCheck();
-											GameObject	asset = EditorGUILayout.ObjectField(this.searchInGameObjects[i], typeof(GameObject), true) as GameObject;
-											if (EditorGUI.EndChangeCheck() == true)
-											{
-												if (AssetDatabase.GetAssetPath(asset) == string.Empty)
-													this.searchInGameObjects[i] = asset;
-											}
-											if (GUILayout.Button("X", GeneralStyles.ToolbarButton, GUILayout.Width(20F)) == true)
-											{
-												this.searchInGameObjects.RemoveAt(i);
-												break;
-											}
-										}
-										EditorGUILayout.EndHorizontal();
-									}
-								}
-							}
-							else
-							{
-								string[]	paths = this.searchInGameObjects.Where(e => e != null).Select(e => e.name).ToArray();
+						r2.y += 2F;
 
-								if (paths.Length > 0)
-									EditorGUILayout.LabelField(string.Join(", ", paths));
-								else
-									EditorGUILayout.LabelField("Searching in all hierarchy. (Drop Game Object here to filter.)");
-							}
+						EditorGUI.BeginChangeCheck();
+						EditorGUI.Foldout(r2, this.showScene, "");
+						if (EditorGUI.EndChangeCheck() == true)
+							this.showScene = !this.showScene;
 
-							if (DragAndDrop.objectReferences.Length > 0)
-							{
-								int	i = 0;
-								for (; i < DragAndDrop.objectReferences.Length; i++)
-								{
-									if (DragAndDrop.objectReferences[i] is GameObject)
-										break;
-								}
+						r2.y -= 1F;
+						r2.x += 20F;
+						r2.width = this.position.width - r2.x;
 
-								if (i < DragAndDrop.objectReferences.Length)
-								{
-									Rect	rect = GUILayoutUtility.GetLastRect();
-
-									if (this.displaySearchInGameObjects == true)
-										rect.y -= this.searchInGameObjects.Count * rect.height;
-
-									if (Event.current.type == EventType.Repaint)
-									{
-										Utility.DropZone(rect, "Drop Game Object");
-										this.Repaint();
-									}
-									else if (Event.current.type == EventType.DragUpdated &&
-											 rect.Contains(Event.current.mousePosition) == true)
-									{
-										DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
-									}
-									else if (Event.current.type == EventType.DragPerform &&
-											 rect.Contains(Event.current.mousePosition) == true)
-									{
-										DragAndDrop.AcceptDrag();
-
-										for (i = 0; i < DragAndDrop.objectReferences.Length; i++)
-										{
-											if (DragAndDrop.objectReferences[i] is GameObject && this.searchInGameObjects.Contains(DragAndDrop.objectReferences[i] as GameObject) == false)
-												this.searchInGameObjects.Add(DragAndDrop.objectReferences[i] as GameObject);
-										}
-
-										DragAndDrop.PrepareStartDrag();
-										Event.current.Use();
-										this.Repaint();
-									}
-								}
-							}
-						}
-						EditorGUILayout.EndVertical();
+						EditorGUI.BeginChangeCheck();
+						GUI.Toggle(r2, (this.searchOptions & Options.InCurrentScene) != 0, "Scene");
+						if (EditorGUI.EndChangeCheck() == true)
+							this.searchOptions ^= Options.InCurrentScene;
 					}
 					EditorGUILayout.EndHorizontal();
 
-					if (this.displaySearchInGameObjects == true)
-						GUILayoutUtility.GetRect(0F, 5F + (Mathf.Clamp(this.searchInGameObjects.Count, 0, this.searchInGameObjects.Count)) * (EditorGUIUtility.singleLineHeight + 2F));
-				}
-
-				GUILayout.Space(8F);
-
-				EditorGUILayout.BeginHorizontal("Toolbar");
-				{
-					EditorGUI.BeginChangeCheck();
-					GUILayout.Toggle(this.showProject, this.showProject == true ? "˄" : "˅", GeneralStyles.ToolbarDropDown, GUILayout.Width(30F));
-					if (EditorGUI.EndChangeCheck() == true)
-						this.showProject = !this.showProject;
-
-					EditorGUI.BeginChangeCheck();
-					GUILayout.Toggle((this.searchOptions & Options.InProject) != 0, "Project", GeneralStyles.ToolbarToggle);
-					if (EditorGUI.EndChangeCheck() == true)
-						this.searchOptions ^= Options.InProject;
-				}
-				EditorGUILayout.EndHorizontal();
-
-				if (this.showProject == true)
-				{
-					EditorGUILayout.BeginHorizontal("Toolbar");
+					if (this.showScene == true)
 					{
-						GUILayout.Label("Search What :", GUILayout.Width(NGAssetsFinderWindow.SearchHeaderWidth));
+						GUILayout.Space(5F);
 
-						EditorGUI.BeginChangeCheck();
-						GUILayout.Toggle((this.searchOptions & Options.Asset) != 0, "Asset", GeneralStyles.ToolbarToggle);
-						if (EditorGUI.EndChangeCheck() == true)
-							this.searchOptions ^= Options.Asset;
-
-						EditorGUI.BeginChangeCheck();
-						GUILayout.Toggle((this.searchOptions & Options.Prefab) != 0, "Prefab", GeneralStyles.ToolbarToggle);
-						if (EditorGUI.EndChangeCheck() == true)
-							this.searchOptions ^= Options.Prefab;
-
-						if (GUI.enabled == true)
+						if (DragAndDrop.objectReferences.Length > 0)
 						{
-							EditorGUI.BeginDisabledGroup(EditorSettings.serializationMode != SerializationMode.ForceText || (AssetDatabase.GetAssetPath(this.targetAsset) == string.Empty && (this.targetAsset is MonoBehaviour) == false));
+							int	i = 0;
+							for (; i < DragAndDrop.objectReferences.Length; i++)
 							{
-								if (GUI.enabled == false)
+								if (DragAndDrop.objectReferences[i] is GameObject)
+									break;
+							}
+
+							if (i < DragAndDrop.objectReferences.Length)
+							{
+								Rect	rect = GUILayoutUtility.GetRect(0F, NGAssetsFinderWindow.DropZoneHeight);
+
+								if (Event.current.type == EventType.Repaint)
 								{
-									this.searchOptions &= ~Options.Scene;
-									Utility.content.text = "Scene";
-									Utility.content.tooltip = string.Empty;
-									if (EditorSettings.serializationMode != SerializationMode.ForceText)
-										Utility.content.tooltip += "SerializationMode must be set on ForceText to enable this option.\n";
-									if (AssetDatabase.GetAssetPath(this.targetAsset) == string.Empty)
-										Utility.content.tooltip += "Not an asset, but might be a scene asset.";
-									GUILayout.Toggle(false, Utility.content, GeneralStyles.ToolbarToggle);
+									Utility.DropZone(rect, "Drop Game Object");
+									this.Repaint();
 								}
-								else
+								else if (Event.current.type == EventType.DragUpdated &&
+											rect.Contains(Event.current.mousePosition) == true)
 								{
-									EditorGUI.BeginChangeCheck();
-									GUILayout.Toggle((this.searchOptions & Options.Scene) != 0, "Scene", GeneralStyles.ToolbarToggle);
-									if (EditorGUI.EndChangeCheck() == true)
-										this.searchOptions ^= Options.Scene;
+									DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+								}
+								else if (Event.current.type == EventType.DragPerform &&
+											rect.Contains(Event.current.mousePosition) == true)
+								{
+									DragAndDrop.AcceptDrag();
+
+									for (i = 0; i < DragAndDrop.objectReferences.Length; i++)
+									{
+										if (DragAndDrop.objectReferences[i] is GameObject && this.searchInGameObjects.Contains(DragAndDrop.objectReferences[i] as GameObject) == false)
+											this.searchInGameObjects.Add(DragAndDrop.objectReferences[i] as GameObject);
+									}
+
+									DragAndDrop.PrepareStartDrag();
+									Event.current.Use();
+									this.Repaint();
 								}
 							}
-							EditorGUI.EndDisabledGroup();
 						}
+
+						if (this.searchInGameObjects.Count == 0)
+							EditorGUILayout.Foldout(false, "Search Game Objects : Searching in all hierarchy. (Drop Game Object here to filter.)");
 						else
 						{
-							if (EditorSettings.serializationMode != SerializationMode.ForceText)
-								GUILayout.Toggle(false, Utility.content, GeneralStyles.ToolbarToggle);
-							else
-								GUILayout.Toggle((this.searchOptions & Options.Scene) != 0, "Scene", GeneralStyles.ToolbarToggle);
+							string	label = "Search Game Objects :";
+							if (this.displaySearchInGameObjects == false)
+								label += " " + string.Join(", ", this.searchInGameObjects.Where(e => e != null).Select(e => e.name).ToArray());
+
+							this.displaySearchInGameObjects = EditorGUILayout.Foldout(this.displaySearchInGameObjects, label);
+
+							if (this.displaySearchInGameObjects == true)
+							{
+								for (int i = 0; i < this.searchInGameObjects.Count; i++)
+								{
+									EditorGUILayout.BeginHorizontal();
+									{
+										EditorGUI.BeginChangeCheck();
+										GameObject	asset = EditorGUILayout.ObjectField(this.searchInGameObjects[i], typeof(GameObject), true) as GameObject;
+										if (EditorGUI.EndChangeCheck() == true)
+										{
+											if (AssetDatabase.GetAssetPath(asset) == string.Empty)
+												this.searchInGameObjects[i] = asset;
+										}
+
+										if (GUILayout.Button("X", GeneralStyles.ToolbarCloseButton, GUILayout.Width(20F)) == true)
+										{
+											this.searchInGameObjects.RemoveAt(i);
+											return;
+										}
+									}
+									EditorGUILayout.EndHorizontal();
+								}
+							}
 						}
+					}
+				}
+				EditorGUILayout.EndVertical();
+
+				GUILayout.Space(5F);
+
+				if (DragAndDrop.objectReferences.Length > 0)
+				{
+					int	i = 0;
+					for (; i < DragAndDrop.objectReferences.Length; i++)
+					{
+						string	path = AssetDatabase.GetAssetPath(DragAndDrop.objectReferences[i]);
+
+						if (path != string.Empty)
+						{
+							if (Directory.Exists(path) == false)
+								path = Path.GetDirectoryName(path);
+
+							if (this.searchInFolders.Exists((e) => e.path == path) == false)
+								break;
+						}
+					}
+
+					if (i < DragAndDrop.objectReferences.Length)
+					{
+						Rect	rect = GUILayoutUtility.GetRect(0F, NGAssetsFinderWindow.DropZoneHeight);
+
+						if (Event.current.type == EventType.Repaint)
+						{
+							Utility.DropZone(rect, "Drop Folder");
+							this.Repaint();
+						}
+						else if (Event.current.type == EventType.DragUpdated &&
+									rect.Contains(Event.current.mousePosition) == true)
+						{
+							DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+						}
+						else if (Event.current.type == EventType.DragPerform &&
+									rect.Contains(Event.current.mousePosition) == true)
+						{
+							DragAndDrop.AcceptDrag();
+
+							for (i = 0; i < DragAndDrop.objectReferences.Length; i++)
+							{
+								string	path = AssetDatabase.GetAssetPath(DragAndDrop.objectReferences[i]);
+
+								if (Directory.Exists(path) == false)
+									path = Path.GetDirectoryName(path);
+
+								if (this.searchInFolders.Exists((e) => e.path == path) == false)
+									this.searchInFolders.Add(new Folder(path, true));
+							}
+
+							DragAndDrop.PrepareStartDrag();
+							Event.current.Use();
+							this.Repaint();
+						}
+					}
+				}
+
+				EditorGUILayout.BeginVertical("ButtonLeft");
+				{
+					EditorGUILayout.BeginHorizontal();
+					{
+						Rect	r2 = GUILayoutUtility.GetRect(0F, 16F, GUILayout.Width(20F));
+
+						r2.y += 2F;
+
+						EditorGUI.BeginChangeCheck();
+						EditorGUI.Foldout(r2, this.showProject, "");
+						if (EditorGUI.EndChangeCheck() == true)
+							this.showProject = !this.showProject;
+						EditorGUI.BeginChangeCheck();
+
+						r2.y -= 1F;
+						r2.x += 20F;
+						r2.width = this.position.width - r2.x;
+
+						EditorGUI.BeginChangeCheck();
+						GUI.Toggle(r2, (this.searchOptions & Options.InProject) != 0, "Project");
+						if (EditorGUI.EndChangeCheck() == true)
+							this.searchOptions ^= Options.InProject;
 					}
 					EditorGUILayout.EndHorizontal();
 
-					EditorGUILayout.BeginHorizontal("Toolbar");
+					if (this.showProject == true)
 					{
-						this.displaySearchInProject = GUILayout.Toggle(this.displaySearchInProject, (this.displaySearchInProject == true ? "˄" : "˅") + " Search Paths :", GeneralStyles.ToolbarDropDown, GUILayout.Width(NGAssetsFinderWindow.SearchHeaderWidth + 4F));
+						GUILayout.Space(5F);
 
-						EditorGUILayout.BeginVertical();
+						EditorGUILayout.BeginHorizontal();
 						{
+							GUILayout.Label("Search What :", GUILayout.Width(NGAssetsFinderWindow.SearchHeaderWidth));
+
+							EditorGUI.BeginChangeCheck();
+							GUILayout.Toggle((this.searchOptions & Options.Asset) != 0, "Asset", GeneralStyles.ToolbarToggle);
+							if (EditorGUI.EndChangeCheck() == true)
+								this.searchOptions ^= Options.Asset;
+
+							EditorGUI.BeginChangeCheck();
+							GUILayout.Toggle((this.searchOptions & Options.Prefab) != 0, "Prefab", GeneralStyles.ToolbarToggle);
+							if (EditorGUI.EndChangeCheck() == true)
+								this.searchOptions ^= Options.Prefab;
+
+							if (GUI.enabled == true)
+							{
+								EditorGUI.BeginDisabledGroup(EditorSettings.serializationMode != SerializationMode.ForceText || (AssetDatabase.GetAssetPath(this.targetAsset) == string.Empty && (this.targetAsset is MonoBehaviour) == false));
+								{
+									if (GUI.enabled == false)
+									{
+										this.searchOptions &= ~Options.Scene;
+										Utility.content.text = "Scene";
+										Utility.content.tooltip = string.Empty;
+										if (EditorSettings.serializationMode != SerializationMode.ForceText)
+											Utility.content.tooltip += "SerializationMode must be set on ForceText to enable this option.\n";
+										if (AssetDatabase.GetAssetPath(this.targetAsset) == string.Empty)
+											Utility.content.tooltip += "Not an asset, but might be a scene asset.";
+										GUILayout.Toggle(false, Utility.content, GeneralStyles.ToolbarToggle);
+									}
+									else
+									{
+										EditorGUI.BeginChangeCheck();
+										GUILayout.Toggle((this.searchOptions & Options.Scene) != 0, "Scene", GeneralStyles.ToolbarToggle);
+										if (EditorGUI.EndChangeCheck() == true)
+											this.searchOptions ^= Options.Scene;
+									}
+								}
+								EditorGUI.EndDisabledGroup();
+							}
+							else
+							{
+								if (EditorSettings.serializationMode != SerializationMode.ForceText)
+									GUILayout.Toggle(false, Utility.content, GeneralStyles.ToolbarToggle);
+								else
+									GUILayout.Toggle((this.searchOptions & Options.Scene) != 0, "Scene", GeneralStyles.ToolbarToggle);
+							}
+						}
+						EditorGUILayout.EndHorizontal();
+
+						if (this.searchInFolders.Count == 0)
+							 EditorGUILayout.Foldout(false, "Search Paths : Searching in all project. (Drop folders here to filter.)");
+						else
+						{
+							string	label = "Search Paths :";
+							if (this.displaySearchInProject == false)
+								label += " " + string.Join(", ", this.searchInFolders.Where(e => e.active == true).Select(e => e.path).ToArray());
+
+							this.displaySearchInProject = EditorGUILayout.Foldout(this.displaySearchInProject, label);
+
 							if (this.displaySearchInProject == true)
 							{
 								if (this.searchInFolders.Count == 0)
-								{
 									EditorGUILayout.LabelField("Searching in all project. (Drop folders here to filter.)");
-								}
 								else
 								{
-									EditorGUILayout.LabelField("Paths available:");
 									for (int i = 0; i < this.searchInFolders.Count; i++)
 									{
-										EditorGUILayout.BeginHorizontal("Toolbar");
+										EditorGUILayout.BeginHorizontal();
 										{
 											this.searchInFolders[i].active = GUILayout.Toggle(this.searchInFolders[i].active, this.searchInFolders[i].path, GeneralStyles.ToolbarButtonLeft);
-											if (GUILayout.Button("X", GeneralStyles.ToolbarButton, GUILayout.Width(20F)) == true)
+											if (GUILayout.Button("X", GeneralStyles.ToolbarCloseButton, GUILayout.Width(20F)) == true)
 											{
 												this.searchInFolders.RemoveAt(i);
 												break;
@@ -633,79 +721,15 @@ namespace NGToolsEditor
 									}
 								}
 							}
-							else
-							{
-								string[]	paths = this.searchInFolders.Where(e => e.active == true).Select(e => e.path).ToArray();
-
-								if (paths.Length > 0)
-									EditorGUILayout.LabelField(string.Join(", ", paths));
-								else
-									EditorGUILayout.LabelField("Searching in all project. (Drop folders here to filter.)");
-							}
-
-							if (DragAndDrop.objectReferences.Length > 0)
-							{
-								int	i = 0;
-								for (; i < DragAndDrop.objectReferences.Length; i++)
-								{
-									string	path = AssetDatabase.GetAssetPath(DragAndDrop.objectReferences[i]);
-
-									if (path != string.Empty)
-									{
-										if (Directory.Exists(path) == false)
-											path = Path.GetDirectoryName(path);
-
-										if (this.searchInFolders.Exists((e) => e.path == path) == false)
-											break;
-									}
-								}
-
-								if (i < DragAndDrop.objectReferences.Length)
-								{
-									Rect	rect = GUILayoutUtility.GetLastRect();
-
-									if (Event.current.type == EventType.Repaint)
-									{
-										Utility.DropZone(rect, "Drop Folder");
-										this.Repaint();
-									}
-									else if (Event.current.type == EventType.DragUpdated &&
-											 rect.Contains(Event.current.mousePosition) == true)
-									{
-										DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
-									}
-									else if (Event.current.type == EventType.DragPerform &&
-											 rect.Contains(Event.current.mousePosition) == true)
-									{
-										DragAndDrop.AcceptDrag();
-
-										for (i = 0; i < DragAndDrop.objectReferences.Length; i++)
-										{
-											string	path = AssetDatabase.GetAssetPath(DragAndDrop.objectReferences[i]);
-
-											if (Directory.Exists(path) == false)
-												path = Path.GetDirectoryName(path);
-
-											if (this.searchInFolders.Exists((e) => e.path == path) == false)
-												this.searchInFolders.Add(new Folder(path, true));
-										}
-
-										DragAndDrop.PrepareStartDrag();
-										Event.current.Use();
-										this.Repaint();
-									}
-								}
-							}
 						}
-						EditorGUILayout.EndVertical();
 					}
-					EditorGUILayout.EndHorizontal();
-
-					if (this.displaySearchInProject == true && this.searchInFolders.Count > 0)
-						GUILayoutUtility.GetRect(0F, 5F + (Mathf.Clamp(this.searchInFolders.Count, 1, this.searchInFolders.Count)) * (EditorGUIUtility.singleLineHeight + 2F));
 				}
+				EditorGUILayout.EndVertical();
 			}
 			EditorGUI.EndDisabledGroup();
+
+			if ((this.searchOptions & (Options.InProject | Options.InCurrentScene)) == 0)
+				EditorGUILayout.HelpBox("Select search in either Scene or Project.", MessageType.Warning);
 
 			GUILayout.Space(5F);
 
@@ -715,10 +739,13 @@ namespace NGToolsEditor
 				{
 					EditorGUILayout.BeginHorizontal(GeneralStyles.Toolbar);
 					{
-						if (GUILayout.Button("Replace References") == true)
-							this.ReplaceReferences(true);
-						if (GUILayout.Button("Set all References") == true)
-							this.ReplaceReferences(false);
+						using (BgColorContentRestorer.Get(GeneralStyles.HighlightActionButton))
+						{
+							if (GUILayout.Button("Replace References") == true)
+								this.ReplaceReferences(true);
+							if (GUILayout.Button("Set all References") == true)
+								this.ReplaceReferences(false);
+						}
 					}
 					EditorGUILayout.EndHorizontal();
 				}
@@ -730,18 +757,22 @@ namespace NGToolsEditor
 			if (this.hasResult == true)
 			{
 				EditorGUILayout.BeginHorizontal(GeneralStyles.Toolbar);
-				GUILayout.Label("Result");
-				if (GUILayout.Button("Clear", GeneralStyles.ToolbarButton, GUILayout.Width(70F)) == true)
 				{
-					this.ClearResults();
+					GUILayout.Label("Result");
+
+					using (BgColorContentRestorer.Get(GeneralStyles.HighlightResultButton))
+					{
+						if (GUILayout.Button("Clear", GeneralStyles.ToolbarButton, GUILayout.Width(70F)) == true)
+							this.ClearResults();
+					}
 				}
 				EditorGUILayout.EndHorizontal();
 
 				this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
 				{
-#if NGT_DEBUG
-					EditorGUILayout.LabelField("Time:", this.searchTime.ToString());
-#endif
+					if (Conf.DebugMode != Conf.DebugModes.None)
+						EditorGUILayout.LabelField("Time:", this.searchTime.ToString());
+
 					EditorGUILayout.LabelField("Potential Matches:", this.potentialMatchesCount.ToString());
 
 					if (this.effectiveMatchesCount >= 1)
@@ -775,6 +806,8 @@ namespace NGToolsEditor
 
 				GUILayout.FlexibleSpace();
 			}
+
+			FreeOverlay.Last();
 		}
 
 		private void	DrawScenesMatches()
@@ -808,7 +841,7 @@ namespace NGToolsEditor
 									Utility.content.tooltip = "You can not replace prefabs inside a scene.";
 
 								if (GUILayout.Button(Utility.content, GUILayout.ExpandWidth(false)) == true &&
-									(Event.current.shift == true ||
+									((Event.current.modifiers & Constants.ByPassPromptModifier) != 0 ||
 									 EditorUtility.DisplayDialog(NGAssetsFinderWindow.Title, "Replacing references in scene is not cancellable.\nAre you sure you want to replace " + this.matchedScenes[i].count + " reference(s) from " + this.matchedScenes[i].scene.name + "?", "Replace", "Cancel") == true))
 									this.ReplaceReferencesInScene(this.matchedScenes[i]);
 
@@ -817,8 +850,7 @@ namespace NGToolsEditor
 							EditorGUI.EndDisabledGroup();
 						}
 
-						if (GUILayout.Button("Ping", GUILayout.ExpandWidth(false)) == true)
-							EditorGUIUtility.PingObject(this.matchedScenes[i].scene);
+						NGEditorGUILayout.PingObject("Ping", this.matchedScenes[i].scene, GUILayout.ExpandWidth(false));
 					}
 					EditorGUILayout.EndHorizontal();
 				}
@@ -910,20 +942,28 @@ namespace NGToolsEditor
 					}
 				}
 
-				if (this.replaceAsset != null)
-				{
-					Type targetType = this.targetAsset.GetType();
-					Type replaceType = this.replaceAsset.GetType();
-
-					if ((targetType != replaceType && replaceType.IsSubclassOf(targetType) == false) ||
-						PrefabUtility.GetPrefabType(this.targetAsset) != PrefabUtility.GetPrefabType(this.replaceAsset))
-					{
-						this.replaceAsset = null;
-					}
-				}
+				if (this.replaceAsset != null && this.CheckAssetCompatibility() == false)
+					this.replaceAsset = null;
 			}
 			else
 				this.replaceAsset = null;
+		}
+
+		private bool	CheckAssetCompatibility()
+		{
+			if (this.targetAsset == null || this.replaceAsset == null)
+				return true;
+
+			Type	targetType = this.targetAsset.GetType();
+			Type	replaceType = this.replaceAsset.GetType();
+
+			if ((targetType != replaceType && replaceType.IsSubclassOf(targetType) == false) ||
+				PrefabUtility.GetPrefabType(this.targetAsset) != PrefabUtility.GetPrefabType(this.replaceAsset))
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		private void	ReplaceReferences(bool replaceOnTarget)
@@ -933,11 +973,26 @@ namespace NGToolsEditor
 
 			AssetDatabase.StartAssetEditing();
 
-			for (int i = 0; i < this.matchedInstancesInScene.Count; i++)
-				this.ReplaceAssetMatches(this.matchedInstancesInScene[i]);
+			try
+			{
+				for (int i = 0; i < this.matchedInstancesInScene.Count; i++)
+					this.ReplaceAssetMatches(this.matchedInstancesInScene[i]);
 
-			for (int i = 0; i < this.matchedInstancesInProject.Count; i++)
-				this.ReplaceAssetMatches(this.matchedInstancesInProject[i]);
+				for (int i = 0; i < this.matchedInstancesInProject.Count; i++)
+					this.ReplaceAssetMatches(this.matchedInstancesInProject[i]);
+			}
+			catch (MaximumReplacementsReachedException)
+			{
+			}
+			catch (Exception ex)
+			{
+				this.errorPopup.exception = ex;
+			}
+
+#if !UNITY_4 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2 && !UNITY_5_3
+			if ((this.searchOptions & Options.InCurrentScene) != 0)
+				EditorSceneManager.MarkAllScenesDirty();
+#endif
 
 			AssetDatabase.StopAssetEditing();
 
@@ -949,20 +1004,19 @@ namespace NGToolsEditor
 				EditorUtility.DisplayDialog(NGAssetsFinderWindow.Title, updatedReferencesCount + " reference updated.", "OK");
 			else
 				EditorUtility.DisplayDialog(NGAssetsFinderWindow.Title, updatedReferencesCount + " references updated.", "OK");
+
+			this.Focus();
 		}
 
 		private void	ReplaceAssetMatches(AssetMatches assetMatches)
 		{
+			Undo.RecordObject(assetMatches.origin, "Replace Asset");
+
 			for (int j = 0; j < assetMatches.matches.Count; j++)
 				this.ReplaceMatch(assetMatches.matches[j]);
 
 			for (int j = 0; j < assetMatches.children.Count; j++)
 				this.ReplaceAssetMatches(assetMatches.children[j]);
-
-#if !UNITY_4 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
-			if ((this.searchOptions & Options.InCurrentScene) != 0)
-				EditorSceneManager.MarkAllScenesDirty();
-#endif
 
 			EditorUtility.SetDirty(assetMatches.origin);
 		}
@@ -973,10 +1027,8 @@ namespace NGToolsEditor
 			{
 				for (int i = 0; i < match.subMatches.Count; i++)
 					this.ReplaceMatch(match.subMatches[i]);
-				return;
 			}
-
-			if (match.arrayIndexes.Count > 0)
+			else if (match.arrayIndexes.Count > 0)
 			{
 				object	rawArray = match.fieldModifier.GetValue(match.instance);
 
@@ -984,38 +1036,51 @@ namespace NGToolsEditor
 				{
 					ICollectionModifier	collectionModifier = NGTools.Utility.GetCollectionModifier(rawArray);
 
-					for (int i = 0; i < match.arrayIndexes.Count; i++)
+					try
 					{
-						if ((this.replaceOnTarget == true && Object.ReferenceEquals(collectionModifier.Get(match.arrayIndexes[i]), this.targetAsset) == true) ||
-							(this.replaceOnTarget == false && Object.ReferenceEquals(collectionModifier.Get(match.arrayIndexes[i]), this.replaceAsset) == false))
+						for (int i = 0; i < match.arrayIndexes.Count; i++)
 						{
-							collectionModifier.Set(match.arrayIndexes[i], this.replaceAsset);
-							++this.updatedReferencesCount;
+							if (this.CheckTypeCompatibility(this.replaceOnTarget, collectionModifier.Type, collectionModifier.Get(match.arrayIndexes[i])) == true)
+							{
+								collectionModifier.Set(match.arrayIndexes[i], this.replaceAsset);
+								++this.updatedReferencesCount;
+								if (FreeConstants.CheckMaxAssetReplacements(this.updatedReferencesCount) == false)
+									throw new MaximumReplacementsReachedException();
+							}
 						}
 					}
-
-					NGTools.Utility.ReturnCollectionModifier(collectionModifier);
+					finally
+					{
+						NGTools.Utility.ReturnCollectionModifier(collectionModifier);
+					}
 				}
 			}
-			else if ((this.replaceOnTarget == true && Object.ReferenceEquals(match.fieldModifier.GetValue(match.instance), this.targetAsset) == true) ||
-					 (this.replaceOnTarget == false && Object.ReferenceEquals(match.fieldModifier.GetValue(match.instance), this.replaceAsset) == false))
+			else if (this.CheckTypeCompatibility(this.replaceOnTarget, match.fieldModifier.Type, match.fieldModifier.GetValue(match.instance)) == true)
 			{
 				match.fieldModifier.SetValue(match.instance, this.replaceAsset);
 				++this.updatedReferencesCount;
+				if (FreeConstants.CheckMaxAssetReplacements(this.updatedReferencesCount) == false)
+					throw new MaximumReplacementsReachedException();
 			}
+		}
+
+		private bool	CheckTypeCompatibility(bool replaceOnTarget, Type type, object instance)
+		{
+			return ((replaceOnTarget == true && Object.ReferenceEquals(instance, this.targetAsset) == true) ||
+					(replaceOnTarget == false && Object.ReferenceEquals(instance, this.replaceAsset) == false)) &&
+					(this.replaceAsset == null || type.IsAssignableFrom(this.replaceAsset.GetType()) == true);
 		}
 
 		private void	DrawMatches(AssetMatches assetMatches)
 		{
-			if ((assetMatches.type == AssetMatches.Type.Reference &&
-				 assetMatches.matches.Count == 0 &&
-				 assetMatches.children.Count == 0) ||
-				assetMatches.origin == null)
+			if (assetMatches.type == AssetMatches.Type.Reference &&
+				assetMatches.matches.Count == 0 &&
+				assetMatches.children.Count == 0)
 			{
 				return;
 			}
 
-			EditorGUILayout.BeginHorizontal();
+			if (assetMatches.origin == null)
 			{
 				Rect	r = EditorGUILayout.GetControlRect(false);
 
@@ -1025,7 +1090,7 @@ namespace NGToolsEditor
 					assetMatches.children.Count > 0)
 				{
 					EditorGUI.BeginChangeCheck();
-					bool	open = EditorGUI.Foldout(r, assetMatches.Open, assetMatches.content, true);
+					bool	open = EditorGUI.Foldout(r, assetMatches.Open, assetMatches.content.text + " (NULL)", true);
 					if (EditorGUI.EndChangeCheck() == true)
 						assetMatches.Open = open;
 				}
@@ -1033,27 +1098,52 @@ namespace NGToolsEditor
 				{
 					using (LabelWidthRestorer.Get(r.width))
 					{
-						EditorGUI.LabelField(r, new GUIContent(assetMatches.content));
-					}
-				}
-
-				if ((assetMatches.origin is Component) == false)
-				{
-					r.x += r.width;
-					r.width = 40F;
-
-					if (GUI.Button(r, LC.G("Ping")) == true)
-					{
-						if (Event.current.button != 0 || this.lastClick + Constants.DoubleClickTime > EditorApplication.timeSinceStartup)
-							Selection.activeObject = assetMatches.origin;
-						else
-							EditorGUIUtility.PingObject(assetMatches.origin.GetInstanceID());
-
-						this.lastClick = EditorApplication.timeSinceStartup;
+						EditorGUI.LabelField(r, assetMatches.content.text + " (NULL)");
 					}
 				}
 			}
-			EditorGUILayout.EndHorizontal();
+			else
+			{
+				EditorGUILayout.BeginHorizontal();
+				{
+					Rect	r = EditorGUILayout.GetControlRect(false);
+
+					r.width -= 40F;
+
+					if (assetMatches.matches.Count > 0 ||
+						assetMatches.children.Count > 0)
+					{
+						EditorGUI.BeginChangeCheck();
+						bool	open = EditorGUI.Foldout(r, assetMatches.Open, assetMatches.content, true);
+						if (EditorGUI.EndChangeCheck() == true)
+							assetMatches.Open = open;
+					}
+					else
+					{
+						using (LabelWidthRestorer.Get(r.width))
+						{
+							EditorGUI.LabelField(r, assetMatches.content);
+						}
+					}
+
+					if ((assetMatches.origin is Component) == false)
+					{
+						r.x += r.width;
+						r.width = 40F;
+
+						if (GUI.Button(r, LC.G("Ping")) == true)
+						{
+							if (Event.current.button != 0 || this.lastClick + Constants.DoubleClickTime > EditorApplication.timeSinceStartup)
+								Selection.activeObject = assetMatches.origin;
+							else
+								EditorGUIUtility.PingObject(assetMatches.origin.GetInstanceID());
+
+							this.lastClick = EditorApplication.timeSinceStartup;
+						}
+					}
+				}
+				EditorGUILayout.EndHorizontal();
+			}
 
 			if (assetMatches.Open == true)
 			{
@@ -1067,7 +1157,7 @@ namespace NGToolsEditor
 					this.DrawMatches(assetMatches.children[i]);
 				--EditorGUI.indentLevel;
 
-				if (EditorGUI.EndChangeCheck() == true)
+				if (EditorGUI.EndChangeCheck() == true && assetMatches.origin != null)
 					EditorUtility.SetDirty(assetMatches.origin);
 			}
 		}
@@ -1145,8 +1235,6 @@ namespace NGToolsEditor
 						}
 						else
 						{
-							EditorGUI.BeginChangeCheck();
-
 							Object	reference = null;
 
 							try
@@ -1158,18 +1246,25 @@ namespace NGToolsEditor
 								r = EditorGUILayout.GetControlRect(false);
 								float	w = GUI.skin.label.CalcSize(Utility.content).x;
 
-								EditorGUI.PrefixLabel(r, Utility.content);
-								r.x += w;
-								r.width -= w;
-								Object	o = EditorGUI.ObjectField(r, reference, this.targetType, this.workingAssetMatches.allowSceneObject);
-								if (EditorGUI.EndChangeCheck() == true)
+								using (ColorContentRestorer.Get(this.replaceAsset != null && collectionModifier.Type.IsAssignableFrom(this.replaceAsset.GetType()) == false, Color.red))
 								{
-									match.fieldModifier.SetValue(match.instance, o);
+									EditorGUI.PrefixLabel(r, Utility.content);
+
+									r.x += w;
+									r.width -= w;
+									EditorGUI.BeginChangeCheck();
+									Object	o = EditorGUI.ObjectField(r, reference, this.targetType, this.workingAssetMatches.allowSceneObject);
+									if (EditorGUI.EndChangeCheck() == true)
+									{
+										Undo.RecordObject(this.workingAssetMatches.origin, "Match assignment");
+										collectionModifier.Set(match.arrayIndexes[j], o);
+									}
 								}
 							}
-							catch (Exception e)
+							catch (Exception ex)
 							{
-								EditorGUILayout.LabelField("Error " + match.nicifiedPath + "	" + this.workingAssetMatches + " /" + reference + "-" + match.instance + "	" + e.Message + "	" + e.StackTrace);
+								this.errorPopup.exception = ex;
+								EditorGUILayout.LabelField("Error " + match.nicifiedPath + "	" + this.workingAssetMatches + " /" + reference + "-" + match.instance + "	" + ex.Message + "	" + ex.StackTrace);
 							}
 						}
 					}
@@ -1194,8 +1289,6 @@ namespace NGToolsEditor
 			}
 			else
 			{
-				EditorGUI.BeginChangeCheck();
-
 				Object	reference = null;
 
 				try
@@ -1209,18 +1302,25 @@ namespace NGToolsEditor
 					Rect	r = EditorGUILayout.GetControlRect(false);
 					float	w = GUI.skin.label.CalcSize(Utility.content).x;
 
-					EditorGUI.PrefixLabel(r, Utility.content);
-					r.x += w;
-					r.width -= w;
-					Object	o = EditorGUI.ObjectField(r, reference, this.targetType, this.workingAssetMatches.allowSceneObject);
-					if (EditorGUI.EndChangeCheck() == true)
+					using (ColorContentRestorer.Get(this.replaceAsset != null && match.fieldModifier.Type.IsAssignableFrom(this.replaceAsset.GetType()) == false, Color.red))
 					{
-						match.fieldModifier.SetValue(match.instance, o);
+						EditorGUI.PrefixLabel(r, Utility.content);
+
+						r.x += w;
+						r.width -= w;
+						EditorGUI.BeginChangeCheck();
+						Object	o = EditorGUI.ObjectField(r, reference, this.targetType, this.workingAssetMatches.allowSceneObject);
+						if (EditorGUI.EndChangeCheck() == true)
+						{
+							Undo.RecordObject(this.workingAssetMatches.origin, "Match assignment");
+							match.fieldModifier.SetValue(match.instance, o);
+						}
 					}
 				}
-				catch (Exception e)
+				catch (Exception ex)
 				{
-					EditorGUILayout.LabelField("Error " + match.nicifiedPath + "	" + this.workingAssetMatches + " /" + reference + "-" + match.instance + "	" + e.Message + "	" + e.StackTrace);
+					this.errorPopup.exception = ex;
+					EditorGUILayout.LabelField("Error " + match.nicifiedPath + "	" + this.workingAssetMatches + " /" + reference + "-" + match.instance + "	" + ex.Message + "	" + ex.StackTrace);
 				}
 			}
 
@@ -1235,68 +1335,37 @@ namespace NGToolsEditor
 
 			if ((this.searchOptions & Options.InCurrentScene) != 0)
 			{
-#if !UNITY_4 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
-				// The method GetRootGameObjects() appeared in later version...
-				if (Application.unityVersion == "5.3.1f1")
-				{
-					HierarchyProperty	prop = new HierarchyProperty(HierarchyType.GameObjects);
-					int[]				expanded = new int[0];
-					int					maxGameObjects = prop.CountRemaining(expanded);
-					int					i = 1;
+#if !UNITY_4 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2 && !UNITY_5_3
+				int	maxGameObjects = 0;
 
-					while (prop.Next(expanded))
+				for (int j = 0; j < SceneManager.sceneCount; ++j)
+					maxGameObjects += SceneManager.GetSceneAt(j).rootCount;
+
+				for (int j = 0, i = 1; j < SceneManager.sceneCount; ++j)
+				{
+					NGAssetsFinderWindow.GetRootGameObjectsMethod.Invoke(SceneManager.GetSceneAt(j), new object[] { this.roots });
+
+					for (int k = 0; k < roots.Count; ++k, ++i)
 					{
 						try
 						{
-							this.BrowseGameObject(null, (prop.pptrValue as GameObject).transform);
+							this.BrowseGameObject(null, roots[k].transform);
 						}
 						catch (Exception ex)
 						{
+							this.errorPopup.exception = ex;
 							InternalNGDebug.LogException(ex);
 						}
 
-						if (Time.realtimeSinceStartup - lastFrameTime >= NGAssetsFinderWindow.MaxProcessTimePerFrame)
+						if (Time.realtimeSinceStartup - lastFrameTime >= Preferences.MaxProcessTimePerFrame)
 						{
-							lastFrameTime += NGAssetsFinderWindow.MaxProcessTimePerFrame;
+							lastFrameTime += Preferences.MaxProcessTimePerFrame;
 
-							EditorUtility.DisplayProgressBar(NGAssetsFinderWindow.Title + " - Scenes (" + i + " / " + maxGameObjects + ")", (prop.pptrValue as GameObject).name, (float)(i++ / maxGameObjects));
+							EditorUtility.DisplayProgressBar(NGAssetsFinderWindow.Title + " - Scenes (" + i + " / " + maxGameObjects + ")", roots[k].name, (float)(i / maxGameObjects));
+
+							this.Repaint();
 
 							yield return null;
-						}
-					}
-				}
-				else
-				{
-					int	maxGameObjects = 0;
-
-					for (int j = 0; j < SceneManager.sceneCount; ++j)
-						maxGameObjects += SceneManager.GetSceneAt(j).rootCount;
-
-					for (int j = 0, i = 1; j < SceneManager.sceneCount; ++j)
-					{
-						NGAssetsFinderWindow.GetRootGameObjectsMethod.Invoke(SceneManager.GetSceneAt(j), new object[] { this.roots });
-
-						for (int k = 0; k < roots.Count; ++k, ++i)
-						{
-							try
-							{
-								this.BrowseGameObject(null, roots[k].transform);
-							}
-							catch (Exception ex)
-							{
-								InternalNGDebug.LogException(ex);
-							}
-
-							if (Time.realtimeSinceStartup - lastFrameTime >= NGAssetsFinderWindow.MaxProcessTimePerFrame)
-							{
-								lastFrameTime += NGAssetsFinderWindow.MaxProcessTimePerFrame;
-
-								EditorUtility.DisplayProgressBar(NGAssetsFinderWindow.Title + " - Scenes (" + i + " / " + maxGameObjects + ")", roots[k].name, (float)(i / maxGameObjects));
-
-								this.Repaint();
-
-								yield return null;
-							}
 						}
 					}
 				}
@@ -1314,12 +1383,13 @@ namespace NGToolsEditor
 					}
 					catch (Exception ex)
 					{
+						this.errorPopup.exception = ex;
 						InternalNGDebug.LogException(ex);
 					}
 
-					if (Time.realtimeSinceStartup - lastFrameTime >= NGAssetsFinderWindow.MaxProcessTimePerFrame)
+					if (Time.realtimeSinceStartup - lastFrameTime >= Preferences.MaxProcessTimePerFrame)
 					{
-						lastFrameTime += NGAssetsFinderWindow.MaxProcessTimePerFrame;
+						lastFrameTime += Preferences.MaxProcessTimePerFrame;
 
 						EditorUtility.DisplayProgressBar(NGAssetsFinderWindow.Title + " - Scene (" + i + " / " + maxGameObjects + ")", (prop.pptrValue as GameObject).name, (float)(i / maxGameObjects));
 
@@ -1414,9 +1484,7 @@ namespace NGToolsEditor
 								this.BrowseGameObject(assetMatches, prefab.transform);
 						}
 						else if (files[i][k].EndsWith(".unity", StringComparison.CurrentCultureIgnoreCase) == true)
-						{
 							this.BrowseScene(files[i][k], mainAsset);
-						}
 						else
 						{
 							Object[]	assets = AssetDatabase.LoadAllAssetsAtPath(files[i][k]);
@@ -1427,9 +1495,7 @@ namespace NGToolsEditor
 									continue;
 
 								if (assets[j] is GameObject)
-								{
 									this.BrowseGameObject(assetMatches, (assets[j] as GameObject).transform, true);
-								}
 								else
 								{
 									this.BrowseObject(assetMatches, assets[j]);
@@ -1445,12 +1511,13 @@ namespace NGToolsEditor
 					}
 					catch (Exception ex)
 					{
+						this.errorPopup.exception = ex;
 						InternalNGDebug.LogException("Exception thrown on file \"" + files[i][k] + "\".", ex);
 					}
 
-					if (Time.realtimeSinceStartup - lastFrameTime >= NGAssetsFinderWindow.MaxProcessTimePerFrame)
+					if (Time.realtimeSinceStartup - lastFrameTime >= Preferences.MaxProcessTimePerFrame)
 					{
-						lastFrameTime += NGAssetsFinderWindow.MaxProcessTimePerFrame;
+						lastFrameTime += Preferences.MaxProcessTimePerFrame;
 
 						if (k + 1 < files[i].Length)
 							EditorUtility.DisplayProgressBar(NGAssetsFinderWindow.Title + " - Project (" + n + " / " + max + ")", files[i][k + 1], (float)n / (float)max);
@@ -1492,11 +1559,11 @@ namespace NGToolsEditor
 			for (int i = 0; i < lines.Length; i++)
 			{
 				// References in array.
-				int position = lines[i].IndexOf("  - {fileID: ");
+				int	position = lines[i].IndexOf("  - {fileID: ");
 
 				if (position != -1)
 				{
-					int p = position;
+					int	p = position;
 
 					// Check if there is only spaces before, to prevent matching a string.
 					for (; p >= 0; --p)
@@ -1578,9 +1645,7 @@ namespace NGToolsEditor
 								string	prefabGUID = AssetDatabase.AssetPathToGUID(assetPath);
 
 								if (string.IsNullOrEmpty(prefabGUID) == false && lines[i].IndexOf(prefabGUID, "  m_ParentPrefab: {fileID: ".Length) != -1)
-								{
 									++match.count;
-								}
 							}
 						}
 						else
@@ -1620,7 +1685,7 @@ namespace NGToolsEditor
 
 				if (position != -1)
 				{
-					int p = position;
+					int	p = position;
 
 					// Check if there is only spaces before, to prevent matching a string.
 					for (; p >= 0; --p)

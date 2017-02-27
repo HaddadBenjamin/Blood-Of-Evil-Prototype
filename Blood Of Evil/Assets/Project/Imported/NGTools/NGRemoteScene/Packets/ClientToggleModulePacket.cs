@@ -1,14 +1,15 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Camera_ClientToggleModule)]
-	public class ClientToggleModulePacket : Packet
+	internal sealed class ClientToggleModulePacket : Packet
 	{
 		public byte	moduleID;
 		public bool	active;
 
-		protected	ClientToggleModulePacket(ByteBuffer buffer) : base(buffer)
+		private	ClientToggleModulePacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

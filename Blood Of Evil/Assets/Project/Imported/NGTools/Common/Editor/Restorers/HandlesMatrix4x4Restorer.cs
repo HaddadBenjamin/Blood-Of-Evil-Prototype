@@ -5,11 +5,16 @@ using UnityEngine;
 
 namespace NGToolsEditor
 {
-	public class HandlesMatrix4x4Restorer : IDisposable
+	public sealed class HandlesMatrix4x4Restorer : IDisposable
 	{
 		private static Dictionary<Matrix4x4, HandlesMatrix4x4Restorer>	cached = new Dictionary<Matrix4x4, HandlesMatrix4x4Restorer>();
 
 		private Matrix4x4	last;
+
+		public static HandlesMatrix4x4Restorer	Get(bool condition, Matrix4x4 matrix)
+		{
+			return condition ? HandlesMatrix4x4Restorer.Get(matrix) : null;
+		}
 
 		public static HandlesMatrix4x4Restorer	Get(Matrix4x4 matrix)
 		{
@@ -32,20 +37,21 @@ namespace NGToolsEditor
 			this.last = Handles.matrix;
 		}
 
-		private	HandlesMatrix4x4Restorer(Matrix4x4 color)
+		private	HandlesMatrix4x4Restorer(Matrix4x4 matrix)
 		{
 			this.last = Handles.matrix;
-			Handles.matrix = color;
+			Handles.matrix = matrix;
 		}
 
-		public IDisposable	Set(Matrix4x4 color)
+		public IDisposable	Set(Matrix4x4 matrix)
 		{
-			Handles.matrix = color;
+			this.last = Handles.matrix;
+			Handles.matrix = matrix;
 
 			return this;
 		}
 
-		public void Dispose()
+		public void	Dispose()
 		{
 			Handles.matrix = this.last;
 		}

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Reflection;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	/// <summary>
 	/// Class cloned from Unity's editor internal class "UnityEditorInternal.LogEntry". It contains the collapseCount.
 	/// </summary>
-	public class UnityLogEntry
+	public sealed class UnityLogEntry
 	{
 		public object	instance;
 

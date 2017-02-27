@@ -1,15 +1,16 @@
+using NGTools.Network;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Camera_ServerSendRaycastResult)]
-	public class ServerSendRaycastResultPacket : Packet
+	internal sealed class ServerSendRaycastResultPacket : Packet
 	{
 		public int[]	instanceIDs;
 		public string[]	names;
 
-		protected	ServerSendRaycastResultPacket(ByteBuffer buffer) : base(buffer)
+		private	ServerSendRaycastResultPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	using UnityEngine;
 
 	[Serializable]
-	public class RowsDrawer
+	public sealed class RowsDrawer
 	{
 		[Serializable]
-		public class Vars
+		public sealed class Vars
 		{
 			/// <summary>Contains positions in the array RowsDrawer.rows[].</summary>
 			public List<int>	selectedLogs = new List<int>();
 			public int			CountSelection { get { return this.selectedLogs.Count; } }
 
-			[NonSerialized]
-			public Vector2	scrollPosition;
+			public float	scrollX;
+			public float	scrollY;
 			// Update all Vars when lastTotalViewHeight change
 			[NonSerialized]
 			private Rect	lastRect = new Rect();
@@ -32,10 +32,7 @@ namespace NGToolsEditor
 			[NonSerialized]
 			public bool	mustRefreshCachePosition;
 
-			[NonSerialized]
 			public bool		autoScroll;
-			[NonSerialized]
-			public double	lastCopy;
 			[NonSerialized]
 			public bool		updateAutoScroll;
 
@@ -121,9 +118,7 @@ namespace NGToolsEditor
 			public IEnumerable<int>	Each()
 			{
 				for (int i = 0; i < this.selectedLogs.Count; i++)
-				{
 					yield return this.selectedLogs[i];
-				}
 			}
 		}
 
@@ -196,6 +191,9 @@ namespace NGToolsEditor
 		public float	verticalScrollbarWidth;
 
 		[NonSerialized]
+		private Vector2	scrollPosition;
+
+		[NonSerialized]
 		private NGConsoleWindow		editor;
 
 		public PerWindowVars<Vars>	perWindowVars;
@@ -235,6 +233,8 @@ namespace NGToolsEditor
 
 			if (this.perWindowVars == null)
 				this.perWindowVars = new PerWindowVars<Vars>();
+
+			this.UpdateAutoScroll();
 		}
 
 		public void	Uninit()
@@ -314,9 +314,7 @@ namespace NGToolsEditor
 			int		i = 0;
 
 			if (this.currentVars.hasInvalidHeight == false)
-			{
 				rowHeight = this.lastMaxViewHeight;
-			}
 			else
 			{
 				// Preprocess the size.
@@ -353,20 +351,26 @@ namespace NGToolsEditor
 			r.x = 0F;
 			this.bodyRect = r;
 
+			// Use direct scroll values instead of Vector2, because they are serialized and not Vector2.
+			this.scrollPosition.x = this.currentVars.scrollX;
+			this.scrollPosition.y = this.currentVars.scrollY;
+
 			// Width in bodyRect does not represent the sum of all controls. It does not calculate width from events beforeFoldout, beforeLog, and afterLog.
-			this.currentVars.scrollPosition = GUI.BeginScrollView(r, this.currentVars.scrollPosition, this.viewRect);
+			this.scrollPosition = GUI.BeginScrollView(r, this.scrollPosition, this.viewRect);
 			{
-				if (this.currentVars.originalScrollOffset != this.currentVars.scrollPosition.y)
+				this.currentVars.scrollX = this.scrollPosition.x;
+				this.currentVars.scrollY = this.scrollPosition.y;
+				if (this.currentVars.originalScrollOffset != this.currentVars.scrollY)
 				{
 					this.currentVars.abortSmooth = true;
 
 					if (this.currentVars.lastI < this.rowIndexes.Count)
 					{
 						// Seek backward.
-						if (this.currentVars.scrollPosition.y < this.currentVars.originalScrollOffset)
+						if (this.currentVars.scrollY < this.currentVars.originalScrollOffset)
 						{
 							// Just force the process from the beginning if the new offset is lower than the half, due to potentially less calculus. Dichotomy things... You know.
-							if (this.currentVars.scrollPosition.y <= this.currentVars.originalScrollOffset * .5)
+							if (this.currentVars.scrollY <= this.currentVars.originalScrollOffset * .5)
 								this.currentVars.mustRefreshCachePosition = true;
 							else
 							{
@@ -376,7 +380,7 @@ namespace NGToolsEditor
 								rowHeight = row.GetHeight();
 								y += rowHeight;
 
-								while (this.currentVars.lastI >= 0 && y >= this.currentVars.scrollPosition.y)
+								while (this.currentVars.lastI >= 0 && y >= this.currentVars.scrollY)
 								{
 									rowHeight = this.rows.GetRow(this.rowIndexes[this.currentVars.lastI]).GetHeight();
 									y -= rowHeight;
@@ -396,22 +400,23 @@ namespace NGToolsEditor
 					else
 						this.currentVars.mustRefreshCachePosition = true;
 
-					this.currentVars.originalScrollOffset = this.currentVars.scrollPosition.y;
+					this.currentVars.originalScrollOffset = this.currentVars.scrollY;
 				}
 
 				if (this.currentVars.updateAutoScroll == true)
 				{
 					this.currentVars.updateAutoScroll = false;
+
 					if (this.currentVars.autoScroll == true || this.currentVars.smoothingScroll == true)
 					{
 						if (Preferences.Settings.general.smoothScrolling == false)
-							this.currentVars.scrollPosition = new Vector2(this.currentVars.scrollPosition.x, float.MaxValue);
+							this.currentVars.scrollY = float.MaxValue;
 						else
 							this.StartSmoothScroll(this.viewRect.height - r.height);
 					}
 				}
 
-				this.currentVars.autoScroll = (this.viewRect.height - this.currentVars.scrollPosition.y <= r.height);
+				this.currentVars.autoScroll = (this.viewRect.height - this.currentVars.scrollY <= r.height);
 
 				bool	firstFound = false;
 
@@ -433,7 +438,7 @@ namespace NGToolsEditor
 					row = this.rows.GetRow(this.rowIndexes[i]);
 					rowHeight = row.GetHeight();
 
-					if (r.y + rowHeight <= this.currentVars.scrollPosition.y)
+					if (r.y + rowHeight <= this.currentVars.scrollY)
 					{
 						r.y += rowHeight;
 						continue;
@@ -459,7 +464,7 @@ namespace NGToolsEditor
 					r.y += r.height;
 
 					// Check if out of view rect.
-					if (r.y - this.currentVars.scrollPosition.y > this.bodyRect.height)
+					if (r.y - this.currentVars.scrollY > this.bodyRect.height)
 						break;
 				}
 
@@ -557,9 +562,7 @@ namespace NGToolsEditor
 
 			// Prevent reaching non-restorable value.
 			if (this.currentVars.rowContentHeight <= Constants.CriticalMinimumContentHeight)
-			{
 				this.currentVars.rowContentHeight = Constants.CriticalMinimumContentHeight;
-			}
 
 			if (row != null)
 			{
@@ -632,7 +635,7 @@ namespace NGToolsEditor
 					{
 						this.currentVars.AddSelection(0);
 						GUI.FocusControl("L0");
-						this.perWindowVars.Get(Utility.drawingWindow).scrollPosition.y = 0;
+						this.perWindowVars.Get(Utility.drawingWindow).scrollY = 0;
 						Utility.drawingWindow.Repaint();
 					}
 
@@ -646,7 +649,7 @@ namespace NGToolsEditor
 					{
 						this.currentVars.AddSelection(this.rowIndexes.Count - 1);
 						GUI.FocusControl("L" + (this.rowIndexes.Count - 1));
-						this.perWindowVars.Get(Utility.drawingWindow).scrollPosition.y = float.MaxValue;
+						this.perWindowVars.Get(Utility.drawingWindow).scrollY = float.MaxValue;
 						Utility.drawingWindow.Repaint();
 					}
 
@@ -773,12 +776,12 @@ namespace NGToolsEditor
 					 GUI.GetNameOfFocusedControl() != Constants.CopyControlName &&
 					 Event.current.commandName == "Copy")
 			{
-				if (RowUtility.LastClickTime + Constants.DoubleClickTime > EditorApplication.timeSinceStartup)
+				if (RowUtility.LastKeyTime + Constants.DoubleClickTime > EditorApplication.timeSinceStartup)
 					this.MenuCopyLog(null);
 				else
 					this.MenuCopyLine(null);
 
-				RowUtility.LastClickTime = EditorApplication.timeSinceStartup;
+				RowUtility.LastKeyTime = EditorApplication.timeSinceStartup;
 				Event.current.Use();
 			}
 			// Copy full message on Ctr + X.
@@ -823,7 +826,7 @@ namespace NGToolsEditor
 				}
 
 				this.currentVars.yScrollOffset = y;
-				this.currentVars.scrollPosition.y = y;
+				this.currentVars.scrollY = y;
 			}
 			else
 			{
@@ -837,8 +840,8 @@ namespace NGToolsEditor
 					y += this.rows.GetRow(this.rowIndexes[i]).GetHeight();
 				}
 
-				if (y + Preferences.Settings.log.height > this.bodyRect.height + this.currentVars.scrollPosition.y)
-					this.currentVars.scrollPosition.y = y + Preferences.Settings.log.height - (this.bodyRect.height);
+				if (y + Preferences.Settings.log.height > this.bodyRect.height + this.currentVars.scrollY)
+					this.currentVars.scrollY = y + Preferences.Settings.log.height - (this.bodyRect.height);
 			}
 		}
 
@@ -901,7 +904,7 @@ namespace NGToolsEditor
 			Vars	vars = this.perWindowVars.Get(Utility.drawingWindow);
 
 			vars.targetScrollPosition = target;
-			vars.originScrollPosition = vars.scrollPosition.y;
+			vars.originScrollPosition = vars.scrollY;
 			vars.smoothScrollStartTime = Time.realtimeSinceStartup;
 
 			if (vars.smoothingScroll == false)
@@ -924,16 +927,16 @@ namespace NGToolsEditor
 
 					if (rate >= 1F)
 					{
-						vars.scrollPosition = new Vector2(vars.scrollPosition.x, vars.targetScrollPosition);
-						vars.originalScrollOffset = vars.scrollPosition.y;
+						vars.scrollY = vars.targetScrollPosition;
+						vars.originalScrollOffset = vars.scrollY;
 						vars.smoothingScroll = false;
 						vars.autoScroll = true;
 						EditorApplication.update -= smoothScroll;
 					}
 					else
 					{
-						vars.scrollPosition = new Vector2(vars.scrollPosition.x, Mathf.Lerp(vars.originScrollPosition, vars.targetScrollPosition, rate));
-						vars.originalScrollOffset = vars.scrollPosition.y;
+						vars.scrollY = Mathf.Lerp(vars.originScrollPosition, vars.targetScrollPosition, rate);
+						vars.originalScrollOffset = vars.scrollY;
 					}
 
 					Utility.RepaintEditorWindow(typeof(NGConsoleWindow));

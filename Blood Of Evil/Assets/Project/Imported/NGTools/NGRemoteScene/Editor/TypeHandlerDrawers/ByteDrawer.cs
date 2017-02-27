@@ -1,12 +1,12 @@
-using NGTools;
+using NGTools.NGRemoteScene;
 using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[TypeHandlerDrawerFor(typeof(ByteHandler))]
-	public class ByteDrawer : TypeHandlerDrawer
+	internal sealed class ByteDrawer : TypeHandlerDrawer
 	{
 		private BgColorContentAnimator	anim;
 		private ValueMemorizer<Byte>	drag;

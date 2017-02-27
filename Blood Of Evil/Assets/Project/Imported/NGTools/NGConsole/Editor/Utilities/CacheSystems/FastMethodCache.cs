@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class FastMethodCache
+	internal sealed class FastMethodCache
 	{
 		[Serializable]
-		public class HashMethod
+		private sealed class HashMethod
 		{
 			public readonly int	hash;
 			public MethodInfo	methodInfo;

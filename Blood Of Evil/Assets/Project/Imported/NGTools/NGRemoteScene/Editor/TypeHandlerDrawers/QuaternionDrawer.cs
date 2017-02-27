@@ -1,12 +1,12 @@
-﻿using NGTools;
+﻿using NGTools.NGRemoteScene;
 using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[TypeDrawerFor(typeof(Quaternion))]
-	public class QuaternionDrawer : TypeHandlerDrawer
+	internal sealed class QuaternionDrawer : TypeHandlerDrawer
 	{
 		private BgColorContentAnimator	animX;
 		private BgColorContentAnimator	animY;

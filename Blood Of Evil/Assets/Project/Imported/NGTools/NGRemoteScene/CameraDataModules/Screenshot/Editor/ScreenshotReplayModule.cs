@@ -1,11 +1,12 @@
 ﻿using NGTools;
+using NGTools.NGRemoteScene;
 using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
-	public class ScreenshotReplayModule : ReplayDataModule
+	internal sealed class ScreenshotReplayModule : ReplayDataModule
 	{
 		private bool		keepAspectRatio = false;
 		private Texture2D	texture;

@@ -1,14 +1,15 @@
-﻿using UnityEngine;
+﻿using NGTools.Network;
+using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGConsole
 {
 	[PacketLinkTo(PacketId.CLI_ClientSendCommand)]
-	public class ClientSendCommandPacket : Packet
+	internal sealed class ClientSendCommandPacket : Packet
 	{
 		public int		requestId;
 		public string	command;
 
-		protected	ClientSendCommandPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientSendCommandPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

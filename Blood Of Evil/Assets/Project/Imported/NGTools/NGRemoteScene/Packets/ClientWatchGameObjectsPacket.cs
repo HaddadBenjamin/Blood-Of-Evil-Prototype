@@ -1,13 +1,14 @@
-﻿using UnityEngine;
+﻿using NGTools.Network;
+using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Scene_ClientWatchGameObjects)]
-	public class ClientWatchGameObjectsPacket : Packet
+	internal sealed class ClientWatchGameObjectsPacket : Packet
 	{
 		public int[]	instanceIDs;
 
-		protected	ClientWatchGameObjectsPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientWatchGameObjectsPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

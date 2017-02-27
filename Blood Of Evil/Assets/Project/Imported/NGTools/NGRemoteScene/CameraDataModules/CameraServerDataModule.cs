@@ -1,4 +1,4 @@
-﻿namespace NGTools
+﻿namespace NGTools.NGRemoteScene
 {
 	public abstract class CameraServerDataModule : CameraDataModule
 	{

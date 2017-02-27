@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class LogConditionParser : ILogContentGetter
+	public sealed class LogConditionParser : ILogContentGetter
 	{
 		public static readonly Frame[]					nullFrame = {};
 		public static readonly List<Frame>				arrayFrames = new List<Frame>(8);
@@ -285,14 +285,15 @@ namespace NGToolsEditor
 				return;
 			}
 
-			// Exception/Error log, with ScriptingWarning.
+			// Exception/Error/Assert log, with ScriptingWarning.
 			if ((this.log.mode & (Mode.ScriptingWarning | // Strange, but it works well.
 								  Mode.ScriptingException |
 								  Mode.ScriptingError |
 								  Mode.Error |
 								  Mode.Fatal |
 								  Mode.Assert |
-								  Mode.GraphCompileError)) != 0)
+								  Mode.GraphCompileError |
+								  Mode.ScriptingAssertion)) != 0)
 			{
 				// Find first stack frame.
 				i = this.log.condition.LastIndexOf(this.log.file + ":" + this.log.line);
@@ -303,7 +304,7 @@ namespace NGToolsEditor
 					System.Diagnostics.Debug.Assert(i != -1, "EOL not found before first stack frame.");
 					if (i != -1)
 					{
-						var j = this.log.condition.LastIndexOf("UnityEngine.Debug:Log", i);
+						var	j = this.log.condition.LastIndexOf("UnityEngine.Debug:", i);
 						if (j != -1)
 						{
 							// Extract the stack trace and remove the last new line.
@@ -324,18 +325,61 @@ namespace NGToolsEditor
 						}
 						return;
 					}
-					else
-						this.fullMessage = this.log.condition;
 				}
-				else
-					this.fullMessage = this.log.condition;
+
+				int	start = 0;
+
+				while (start != -1)
+				{
+					// Skip a line
+					start = this.log.condition.IndexOf('\n', start + 1);
+					if (start != -1)
+					{
+						// The end of the line if there is.
+						int	end = this.log.condition.IndexOf('\n', start + 1);
+
+						// If this is the last line already.
+						if (end == -1)
+							end = this.log.condition.Length;
+
+						// Verify if the line is a frame with a file:line.
+						int	k = this.log.condition.IndexOf(") (at ", start, end - start);
+						if (k != -1)
+						{
+							if (this.log.condition.IndexOf(":", start, k - start) > 0 && // A colon should be present before the method name.
+								this.log.condition.IndexOf(":", k, end - k) > k) // The line should be present after the file and the method.
+							{
+								this.fullMessage = this.log.condition.Substring(0, start);
+								this.stackTrace = this.log.condition.Substring(start + 1);
+								return;
+							}
+						}
+						else
+						{
+							k = this.log.condition.IndexOf("(", start, end - start);
+							if (k != -1)
+							{
+								// Or verify if the line is just a method.
+								if (this.log.condition.IndexOf(":", start, k - start) > 0 && // A colon should be present before the method name.
+									this.log.condition.IndexOf(")", k, end - k) > k) // The end parenthese should be present at the very end.
+								{
+									this.fullMessage = this.log.condition.Substring(0, start);
+									this.stackTrace = this.log.condition.Substring(start + 1);
+									return;
+								}
+							}
+						}
+					}
+				}
+
+				this.fullMessage = this.log.condition;
 
 				this.frames = LogConditionParser.nullFrame;
 				return;
 			}
 
 			// Find the exact first stack frame of Debug.Log*().
-			i = this.log.condition.LastIndexOf("UnityEngine.Debug:Log");
+			i = this.log.condition.LastIndexOf("UnityEngine.Debug:");
 			if (i != -1)
 			{
 				// Extract the stack trace and remove the last new line.
@@ -478,7 +522,7 @@ namespace NGToolsEditor
 				}
 
 				// Split namespace from class.
-				n = FrameBuilder.classType.IndexOf('.');
+				n = FrameBuilder.classType.LastIndexOf('.');
 				if (n != -1)
 				{
 					FrameBuilder.namespaceName = FrameBuilder.classType.Substring(0, n);
@@ -529,7 +573,7 @@ namespace NGToolsEditor
 					(Preferences.Settings.stackTrace.displayReturnValue == true ||
 					 Preferences.Settings.stackTrace.displayArgumentName == true))
 				{
-					FastClassCache.HashClass	classType = Utility.classes.GetType((string.IsNullOrEmpty(FrameBuilder.namespaceName) == false ? FrameBuilder.namespaceName + '.' : string.Empty) + FrameBuilder.classType);
+					FastClassCache.HashClass	classType = Utility.classes.GetType(FrameBuilder.namespaceName, FrameBuilder.classType);
 
 					if (classType != null)
 					{
@@ -673,7 +717,7 @@ namespace NGToolsEditor
 		{
 			for (int i = 0; i < parameters.Length; i++)
 			{
-				string paramTrim = parameters[i].Trim();
+				string	paramTrim = parameters[i].Trim();
 				string[] paramData = paramTrim.Split(' ');
 
 				if (paramData.Length == 2)

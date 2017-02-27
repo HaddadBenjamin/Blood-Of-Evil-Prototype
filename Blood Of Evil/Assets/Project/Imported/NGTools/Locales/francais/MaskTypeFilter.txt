@@ -1,3 +1,0 @@
-MaskTypeFilter=Par type
-AcceptedTypes=Types acceptés
-ByType=Par type

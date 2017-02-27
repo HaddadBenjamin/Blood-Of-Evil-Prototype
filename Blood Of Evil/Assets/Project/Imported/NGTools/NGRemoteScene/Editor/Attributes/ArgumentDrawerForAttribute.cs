@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-	public class ArgumentDrawerFor : Attribute
+	public sealed class ArgumentDrawerFor : Attribute
 	{
 		public readonly Type	type;
 

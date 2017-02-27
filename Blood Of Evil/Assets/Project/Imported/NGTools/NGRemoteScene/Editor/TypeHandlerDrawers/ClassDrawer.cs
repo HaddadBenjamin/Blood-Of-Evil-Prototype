@@ -1,10 +1,11 @@
 ﻿using NGTools;
+using NGTools.NGRemoteScene;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
-	public class ClassDrawer : TypeHandlerDrawer
+	internal sealed class ClassDrawer : TypeHandlerDrawer
 	{
 		private readonly GenericClass	genericClass;
 		private TypeHandlerDrawer[]		fieldDrawers;

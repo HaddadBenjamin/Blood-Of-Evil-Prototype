@@ -1,15 +1,16 @@
-﻿using UnityEngine;
+﻿using NGTools.Network;
+using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGConsole
 {
 	[PacketLinkTo(PacketId.Logger_ServerSendLog)]
-	public class LogPacket : Packet
+	internal sealed class LogPacket : Packet
 	{
 		public string	condition;
 		public string	stackTrace;
 		public LogType	logType;
 
-		protected	LogPacket(ByteBuffer buffer) : base(buffer)
+		private	LogPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

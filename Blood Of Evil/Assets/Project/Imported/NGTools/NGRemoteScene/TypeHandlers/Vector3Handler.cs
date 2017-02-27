@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[Priority(35)]
-	public class Vector3Handler : TypeHandler
+	internal sealed class Vector3Handler : TypeHandler
 	{
 		public	Vector3Handler() : base(typeof(Vector3))
 		{

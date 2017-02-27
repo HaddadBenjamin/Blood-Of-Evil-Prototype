@@ -1,17 +1,17 @@
 ﻿using System;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGHierarchyEnhancer
 {
 	using UnityEngine;
 
-	public class GameObjectMenu : DynamicObjectMenu
+	internal sealed class GameObjectMenu : DynamicObjectMenu
 	{
 		public const float	Spacing = 3F;
 
-		public static Color	AudioSourceBackgroundColor = new Color(45F / 255F, 45F / 255F, 45F / 255F, 1F);
-		public static Color	RendererBackgroundColor = new Color(200F / 255F, 155F / 255F, 125F / 255F, 1F);
-		public static Color	ParticleSystemBackgroundColor = new Color(100F / 255F, 125F / 255F, 85F / 255F, 1F);
+		public static Color	AudioSourceBackgroundColor = new Color(45F / 255F, 45F / 255F, 45F / 255F);
+		public static Color	RendererBackgroundColor = new Color(200F / 255F, 155F / 255F, 125F / 255F);
+		public static Color	ParticleSystemBackgroundColor = new Color(100F / 255F, 125F / 255F, 85F / 255F);
 
 		private static Type	inspectorWindowType = typeof(Editor).Assembly.GetType("UnityEditor.InspectorWindow");
 
@@ -27,6 +27,25 @@ namespace NGToolsEditor
 			EditorGUI.Toggle(r, go.activeSelf);
 			if (EditorGUI.EndChangeCheck() == true)
 			{
+				if (Preferences.Settings.hierarchy.selectionHoldModifiers > 0 &&
+					((int)Event.current.modifiers & ((int)Preferences.Settings.hierarchy.selectionHoldModifiers >> 1)) != 0)
+				{
+					for (int i = 0; i < Selection.gameObjects.Length; i++)
+					{
+						if (Selection.gameObjects[i] == go ||
+							AssetDatabase.Contains(Selection.gameObjects[i]) == true)
+						{
+							continue;
+						}
+
+						if (Selection.gameObjects[i].activeSelf == go.activeSelf)
+						{
+							Undo.RecordObject(Selection.gameObjects[i], "Toggle Game Object");
+							Selection.gameObjects[i].SetActive(!go.activeSelf);
+						}
+					}
+				}
+
 				Undo.RecordObject(go, "Toggle Game Object");
 				go.SetActive(!go.activeSelf);
 			}

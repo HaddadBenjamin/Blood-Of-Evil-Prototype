@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	public static class ComponentExposersManager
 	{

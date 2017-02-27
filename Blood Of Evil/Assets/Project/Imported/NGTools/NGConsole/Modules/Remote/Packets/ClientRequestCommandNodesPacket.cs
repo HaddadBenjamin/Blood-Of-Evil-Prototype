@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using NGTools.Network;
+using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGConsole
 {
 	[PacketLinkTo(PacketId.CLI_ClientRequestCommandNodes)]
-	public class ClientRequestCommandNodesPacket : Packet
+	internal sealed class ClientRequestCommandNodesPacket : Packet
 	{
-		protected	ClientRequestCommandNodesPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientRequestCommandNodesPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

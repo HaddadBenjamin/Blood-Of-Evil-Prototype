@@ -16,7 +16,8 @@ namespace NGToolsEditor
 			protected override void	InitGUI()
 			{
 				this.commandInputStyle = new GUIStyle(GUI.skin.textField);
-				this.execButtonStyle = new GUIStyle(GUI.skin.button);
+				this.execButtonStyle = new GUIStyle("ToolbarButton");
+				this.execButtonStyle.fontStyle = FontStyle.Bold;
 			}
 		}
 		public RemoteModuleSettings	remoteModule = new RemoteModuleSettings();

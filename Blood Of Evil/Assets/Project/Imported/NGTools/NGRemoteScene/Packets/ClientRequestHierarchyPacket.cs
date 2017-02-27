@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using NGTools.Network;
+using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Scene_ClientRequestHierarchy)]
-	public class ClientRequestHierarchyPacket : Packet
+	internal sealed class ClientRequestHierarchyPacket : Packet
 	{
-		protected	ClientRequestHierarchyPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientRequestHierarchyPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

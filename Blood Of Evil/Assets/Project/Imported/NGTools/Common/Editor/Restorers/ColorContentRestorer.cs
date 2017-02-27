@@ -4,11 +4,16 @@ using UnityEngine;
 
 namespace NGToolsEditor
 {
-	public class ColorContentRestorer : IDisposable
+	public sealed class ColorContentRestorer : IDisposable
 	{
 		private static Dictionary<Color, ColorContentRestorer>	cached = new Dictionary<Color, ColorContentRestorer>();
 
 		private Color	last;
+
+		public static ColorContentRestorer	Get(bool condition, Color color)
+		{
+			return condition ? ColorContentRestorer.Get(color) : null;
+		}
 
 		public static ColorContentRestorer	Get(Color color)
 		{
@@ -39,6 +44,7 @@ namespace NGToolsEditor
 
 		public IDisposable	Set(Color color)
 		{
+			this.last = GUI.contentColor;
 			GUI.contentColor = color;
 
 			return this;
@@ -53,12 +59,13 @@ namespace NGToolsEditor
 			c.b = b;
 			c.a = a;
 
+			this.last = GUI.contentColor;
 			GUI.contentColor = c;
 
 			return this;
 		}
 
-		public void Dispose()
+		public void	Dispose()
 		{
 			GUI.contentColor = this.last;
 		}

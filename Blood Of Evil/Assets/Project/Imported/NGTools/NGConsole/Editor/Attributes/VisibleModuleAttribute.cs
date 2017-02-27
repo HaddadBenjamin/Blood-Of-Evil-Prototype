@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	/// <summary>
 	/// Exposes the module in a tab in the main menu bar.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-	public class VisibleModuleAttribute : Attribute
+	public sealed class VisibleModuleAttribute : Attribute
 	{
 		public readonly int	position;
 

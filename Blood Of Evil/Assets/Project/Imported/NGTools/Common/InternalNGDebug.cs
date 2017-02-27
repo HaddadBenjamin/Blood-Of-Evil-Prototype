@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using UnityEngine;
 
 namespace NGTools
 {
@@ -18,18 +18,18 @@ namespace NGTools
 		}
 
 		#region Loggers' variables
-		public const char	MultiContextsStartChar = (char)1;
-		public const char	MultiContextsEndChar = (char)4;
-		public const char	MultiContextsSeparator = ';';
+		internal const char	MultiContextsStartChar = (char)1;
+		internal const char	MultiContextsEndChar = (char)4;
+		internal const char	MultiContextsSeparator = ';';
 
-		public const char	DataStartChar = (char)2;
-		public const char	DataEndChar = (char)4;
-		public const char	DataSeparator = '\n';
-		public const char	DataSeparatorReplace = (char)5;
+		internal const char	DataStartChar = (char)2;
+		internal const char	DataEndChar = (char)4;
+		internal const char	DataSeparator = '\n';
+		internal const char	DataSeparatorReplace = (char)5;
 
-		public const char	MultiTagsStartChar = (char)3;
-		public const char	MultiTagsEndChar = (char)4;
-		public const char	MultiTagsSeparator = ';';
+		internal const char	MultiTagsStartChar = (char)3;
+		internal const char	MultiTagsEndChar = (char)4;
+		internal const char	MultiTagsSeparator = ';';
 		#endregion
 
 		private static EventWaitHandle	waitHandle;
@@ -123,175 +123,202 @@ namespace NGTools
 
 		public static void	LogException(int error, Exception exception)
 		{
-			UnityEngine.Debug.LogException(new NGTools(error + "#" + exception.GetType().Name + ": " + exception.Message + Environment.NewLine + exception.StackTrace));
+			UnityEngine.Debug.LogException(new NGTools("[E" + error + "] " + exception.GetType().Name + ": " + exception.Message + Environment.NewLine + exception.StackTrace));
 		}
 
 		public static void	LogException(int error, Exception exception, UnityEngine.Object context)
 		{
-			UnityEngine.Debug.LogException(new NGTools(error + "#" + exception.GetType().Name + ": " + exception.Message + Environment.NewLine + exception.StackTrace), context);
+			UnityEngine.Debug.LogException(new NGTools("[E" + error + "] " + exception.GetType().Name + ": " + exception.Message + Environment.NewLine + exception.StackTrace), context);
 		}
 
 		public static void	LogException(int error, string message, Exception exception)
 		{
-			UnityEngine.Debug.LogException(new NGTools(error + "# " + message + Environment.NewLine + exception.GetType().Name + ": " + exception.Message + Environment.NewLine + exception.StackTrace));
+			UnityEngine.Debug.LogException(new NGTools("[E" + error + "] " + message + Environment.NewLine + exception.GetType().Name + ": " + exception.Message + Environment.NewLine + exception.StackTrace));
 		}
 
 		public static void	LogException(int error, string message, Exception exception, UnityEngine.Object context)
 		{
-			UnityEngine.Debug.LogException(new NGTools(error + "# " + message + Environment.NewLine + exception.GetType().Name + ": " + exception.Message + Environment.NewLine + exception.StackTrace), context);
+			UnityEngine.Debug.LogException(new NGTools("[E" + error + "] " + message + Environment.NewLine + exception.GetType().Name + ": " + exception.Message + Environment.NewLine + exception.StackTrace), context);
 		}
 
-		[Conditional(Constants.DebugSymbol)]
 		public static void	InternalLog(object message)
 		{
+			if (Conf.DebugMode == Conf.DebugModes.None)
+				return;
+
 			UnityEngine.Debug.Log("[" + Constants.PackageTitle + "] " + message);
 		}
 
-		[Conditional(Constants.DebugSymbol)]
 		public static void	InternalLogWarning(object message)
 		{
+			if (Conf.DebugMode == Conf.DebugModes.None)
+				return;
+
 			UnityEngine.Debug.LogWarning("[" + Constants.PackageTitle + "] " + message);
 		}
 
-		[Conditional(Constants.DebugSymbol)]
 		public static void	Assert(bool assertion, object message, UnityEngine.Object context)
 		{
+			if (Conf.DebugMode == Conf.DebugModes.None)
+				return;
+
 			if (assertion == false)
 				UnityEngine.Debug.LogError("[" + Constants.PackageTitle + "] " + message, context);
 		}
 
-		[Conditional(Constants.DebugSymbol)]
 		public static void	Assert(bool assertion, object message)
 		{
-			if (assertion == false)
-				UnityEngine.Debug.LogError("[" + Constants.PackageTitle + "] " + message);
+			if (Conf.DebugMode != Conf.DebugModes.None)
+				if (assertion == false)
+					UnityEngine.Debug.LogError("[" + Constants.PackageTitle + "] " + message);
 		}
 
 		private static int	lastLogHash;
 		private static int	lastLogCounter;
 
-		[Conditional(Constants.DebugSymbol)]
 		public static void	LogFile(object log)
 		{
+			if (Conf.DebugMode == Conf.DebugModes.None)
+				return;
+
 			InternalNGDebug.waitHandle.WaitOne();
 			{
-#if UNITY_EDITOR && !UNITY_WEBPLAYER
-				InternalNGDebug.VerboseLog(log);
-
-				int	logHash = log.GetHashCode();
-				if (logHash != InternalNGDebug.lastLogHash)
+				if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.OSXEditor)
 				{
-					InternalNGDebug.lastLogHash = logHash;
-					InternalNGDebug.lastLogCounter = 0;
-					File.AppendAllText(InternalNGDebug.LogPath, log + Environment.NewLine);
+					InternalNGDebug.VerboseLog(log);
+
+					int	logHash = log.GetHashCode();
+					if (logHash != InternalNGDebug.lastLogHash)
+					{
+						InternalNGDebug.lastLogHash = logHash;
+						InternalNGDebug.lastLogCounter = 0;
+						File.AppendAllText(InternalNGDebug.LogPath, log + Environment.NewLine);
+					}
+					else
+					{
+						++InternalNGDebug.lastLogCounter;
+						if (InternalNGDebug.lastLogCounter <= 2)
+							File.AppendAllText(InternalNGDebug.LogPath, log + Environment.NewLine);
+						else if (InternalNGDebug.lastLogCounter == 3)
+							File.AppendAllText(InternalNGDebug.LogPath, "…" + Environment.NewLine);
+					}
 				}
 				else
 				{
-					++InternalNGDebug.lastLogCounter;
-					if (InternalNGDebug.lastLogCounter <= 2)
-						File.AppendAllText(InternalNGDebug.LogPath, log + Environment.NewLine);
-					else if (InternalNGDebug.lastLogCounter == 3)
-						File.AppendAllText(InternalNGDebug.LogPath, "…" + Environment.NewLine);
+					UnityEngine.Debug.Log("[" + Constants.PackageTitle + "] " + log);
 				}
-#else
-				UnityEngine.Debug.Log("[" + Constants.PackageTitle + "] " + log);
-#endif
 			}
 			InternalNGDebug.waitHandle.Set();
 		}
 
-		[Conditional(Constants.DebugSymbol)]
 		public static void	LogFileException(string message, Exception exception)
 		{
+			if (Conf.DebugMode == Conf.DebugModes.None)
+				return;
+
 			InternalNGDebug.waitHandle.WaitOne();
 			{
-#if UNITY_EDITOR && !UNITY_WEBPLAYER
-				InternalNGDebug.VerboseLog(message);
-				InternalNGDebug.VerboseLogException(exception);
-
-				int	logHash = message.GetHashCode() + exception.GetHashCode();
-				if (logHash != InternalNGDebug.lastLogHash)
+				if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.OSXEditor)
 				{
-					InternalNGDebug.lastLogHash = logHash;
-					InternalNGDebug.lastLogCounter = 0;
-					File.AppendAllText(InternalNGDebug.LogPath, message + Environment.NewLine + exception.Message + Environment.NewLine + exception.StackTrace + Environment.NewLine);
+					InternalNGDebug.VerboseLog(message);
+					InternalNGDebug.VerboseLogException(exception);
+
+					int	logHash = message.GetHashCode() + exception.GetHashCode();
+					if (logHash != InternalNGDebug.lastLogHash)
+					{
+						InternalNGDebug.lastLogHash = logHash;
+						InternalNGDebug.lastLogCounter = 0;
+						File.AppendAllText(InternalNGDebug.LogPath, message + Environment.NewLine + exception.Message + Environment.NewLine + exception.StackTrace + Environment.NewLine);
+					}
+					else
+					{
+						++InternalNGDebug.lastLogCounter;
+						if (InternalNGDebug.lastLogCounter <= 2)
+							File.AppendAllText(InternalNGDebug.LogPath, message + Environment.NewLine + exception.Message + Environment.NewLine + exception.StackTrace + Environment.NewLine);
+						else if (InternalNGDebug.lastLogCounter == 3)
+							File.AppendAllText(InternalNGDebug.LogPath, "…" + Environment.NewLine);
+					}
 				}
 				else
 				{
-					++InternalNGDebug.lastLogCounter;
-					if (InternalNGDebug.lastLogCounter <= 2)
-						File.AppendAllText(InternalNGDebug.LogPath, message + Environment.NewLine + exception.Message + Environment.NewLine + exception.StackTrace + Environment.NewLine);
-					else if (InternalNGDebug.lastLogCounter == 3)
-						File.AppendAllText(InternalNGDebug.LogPath, "…" + Environment.NewLine);
+					UnityEngine.Debug.LogError("[" + Constants.PackageTitle + "] " + message);
+					UnityEngine.Debug.LogError("[" + Constants.PackageTitle + "] " + exception.Message + Environment.NewLine + exception.StackTrace);
 				}
-#else
-				UnityEngine.Debug.LogError("[" + Constants.PackageTitle + "] " + message);
-				UnityEngine.Debug.LogError("[" + Constants.PackageTitle + "] " + exception.Message + Environment.NewLine + exception.StackTrace);
-#endif
 			}
 			InternalNGDebug.waitHandle.Set();
 		}
 
-		[Conditional(Constants.DebugSymbol)]
 		public static void	LogFileException(Exception exception)
 		{
+			if (Conf.DebugMode == Conf.DebugModes.None)
+				return;
+
 			InternalNGDebug.waitHandle.WaitOne();
 			{
-#if UNITY_EDITOR && !UNITY_WEBPLAYER
-				InternalNGDebug.VerboseLogException(exception);
-
-				int	logHash = exception.GetHashCode();
-				if (logHash != InternalNGDebug.lastLogHash)
+				if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.OSXEditor)
 				{
-					InternalNGDebug.lastLogHash = logHash;
-					InternalNGDebug.lastLogCounter = 0;
-					File.AppendAllText(InternalNGDebug.LogPath, exception.Message + Environment.NewLine + exception.StackTrace + Environment.NewLine);
+					InternalNGDebug.VerboseLogException(exception);
+
+					int	logHash = exception.GetHashCode();
+					if (logHash != InternalNGDebug.lastLogHash)
+					{
+						InternalNGDebug.lastLogHash = logHash;
+						InternalNGDebug.lastLogCounter = 0;
+						File.AppendAllText(InternalNGDebug.LogPath, exception.Message + Environment.NewLine + exception.StackTrace + Environment.NewLine);
+					}
+					else
+					{
+						++InternalNGDebug.lastLogCounter;
+						if (InternalNGDebug.lastLogCounter <= 2)
+							File.AppendAllText(InternalNGDebug.LogPath, exception.Message + Environment.NewLine + exception.StackTrace + Environment.NewLine);
+						else if (InternalNGDebug.lastLogCounter == 3)
+							File.AppendAllText(InternalNGDebug.LogPath, "…" + Environment.NewLine);
+					}
 				}
 				else
-				{
-					++InternalNGDebug.lastLogCounter;
-					if (InternalNGDebug.lastLogCounter <= 2)
-						File.AppendAllText(InternalNGDebug.LogPath, exception.Message + Environment.NewLine + exception.StackTrace + Environment.NewLine);
-					else if (InternalNGDebug.lastLogCounter == 3)
-						File.AppendAllText(InternalNGDebug.LogPath, "…" + Environment.NewLine);
-				}
-#else
-				UnityEngine.Debug.LogError("[" + Constants.PackageTitle + "] " + exception.Message + Environment.NewLine + exception.StackTrace);
-#endif
+					UnityEngine.Debug.LogError("[" + Constants.PackageTitle + "] " + exception.Message + Environment.NewLine + exception.StackTrace);
 			}
 			InternalNGDebug.waitHandle.Set();
 		}
 
-		[Conditional(Constants.DebugSymbol)]
 		public static void	AssertFile(bool assertion, object message)
 		{
+			if (Conf.DebugMode == Conf.DebugModes.None)
+				return;
+
 			if (assertion == false)
 			{
-#if UNITY_EDITOR && !UNITY_WEBPLAYER
-				InternalNGDebug.VerboseAssert((message ?? "NULL").ToString());
-				InternalNGDebug.LogFile((message ?? "NULL").ToString());
-#else
-				UnityEngine.Debug.LogError("[" + Constants.PackageTitle + "] " + (message ?? "NULL").ToString());
-#endif
+				if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.OSXEditor)
+				{
+					InternalNGDebug.VerboseAssert((message ?? "NULL").ToString());
+					InternalNGDebug.LogFile((message ?? "NULL").ToString());
+				}
+				else
+					UnityEngine.Debug.LogError("[" + Constants.PackageTitle + "] " + (message ?? "NULL").ToString());
 			}
 		}
 
-		[Conditional(Constants.VerboseDebugSymbol)]
 		private static void	VerboseAssert(object message)
 		{
+			if (Conf.DebugMode != Conf.DebugModes.Verbose)
+				return;
+
 			InternalNGDebug.LogError(message);
 		}
 
-
-		[Conditional(Constants.VerboseDebugSymbol)]
 		private static void	VerboseLog(object message)
 		{
+			if (Conf.DebugMode != Conf.DebugModes.Verbose)
+				return;
+
 			InternalNGDebug.Log(message);
 		}
 
-		[Conditional(Constants.VerboseDebugSymbol)]
 		private static void	VerboseLogException(Exception exception)
 		{
+			if (Conf.DebugMode != Conf.DebugModes.Verbose)
+				return;
+
 			InternalNGDebug.LogException(exception);
 		}
 	}

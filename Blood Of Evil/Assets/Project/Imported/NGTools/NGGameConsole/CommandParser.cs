@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	public enum ExecResult
 	{
@@ -31,7 +31,6 @@ namespace NGTools
 		protected List<string>	historic;
 		protected int			currentHistoric;
 		protected string		backupCommand;
-		protected string		lastCompletion;
 		protected string		lastCommand;
 
 		protected string[]	matchingCommands;
@@ -67,7 +66,7 @@ namespace NGTools
 		/// <returns></returns>
 		public ExecResult	Exec(string input, ref string result)
 		{
-			for (int j = 0; j < CommandParser.DefaultHelpCommands.Length ; j++)
+			for (int j = 0; j < CommandParser.DefaultHelpCommands.Length; j++)
 			{
 				if (CommandParser.DefaultHelpCommands[j].Equals(input) == true)
 				{
@@ -81,9 +80,7 @@ namespace NGTools
 					Utility.sharedBuffer.AppendLine("Commands available:");
 
 					for (int k = 0; k < this.root.children.Count; k++)
-					{
 						Utility.sharedBuffer.AppendLine(this.root.children[k].name);
-					}
 
 					Utility.sharedBuffer.Length -= Environment.NewLine.Length;
 
@@ -163,17 +160,19 @@ namespace NGTools
 								if (rawArguments != string.Empty)
 								{
 									command = string.Join(NGCLI.CommandsSeparator.ToString(), commands) + NGCLI.CommandsArgumentsSeparator + rawArguments;
-									this.SetCursor(command.Length - rawArguments.Length - 1);
+									this.SetCursor(command, command.Length - rawArguments.Length - 1);
 								}
 								else
 								{
 									command = string.Join(NGCLI.CommandsSeparator.ToString(), commands);
-									this.SetCursor(command.Length);
+									this.SetCursor(command, command.Length);
 								}
 							}
 						}
+						else if (this.matchingCommands.Length == 1)
+							this.SetCursor(this.matchingCommands[0], this.matchingCommands[0].Length);
 						else
-							this.SetCursor(command.Length);
+							this.SetCursor(command, command.Length);
 
 						this.matchingCommands = null;
 
@@ -203,13 +202,13 @@ namespace NGTools
 							this.currentHistoric = this.historic.Count - 1;
 							this.backupCommand = command;
 							command = this.historic[this.currentHistoric];
-							this.SetCursor(command.Length);
+							this.SetCursor(command, command.Length);
 						}
 						else if (this.currentHistoric > 0)
 						{
 							--this.currentHistoric;
 							command = this.historic[this.currentHistoric];
-							this.SetCursor(command.Length);
+							this.SetCursor(command, command.Length);
 						}
 
 						Event.current.Use();
@@ -221,13 +220,13 @@ namespace NGTools
 						{
 							this.currentHistoric = -1;
 							command = this.backupCommand;
-							this.SetCursor(command.Length);
+							this.SetCursor(command, command.Length);
 						}
 						else if (this.currentHistoric + 1 < this.historic.Count)
 						{
 							++this.currentHistoric;
 							command = this.historic[this.currentHistoric];
-							this.SetCursor(command.Length);
+							this.SetCursor(command, command.Length);
 						}
 
 						Event.current.Use();
@@ -239,8 +238,6 @@ namespace NGTools
 
 						Event.current.Use();
 					}
-
-					this.matchingCommands = null;
 				}
 			}
 
@@ -324,12 +321,12 @@ namespace NGTools
 						if (rawArguments != string.Empty)
 						{
 							command = string.Join(NGCLI.CommandsSeparator.ToString(), commands) + NGCLI.CommandsArgumentsSeparator + rawArguments;
-							this.SetCursor(command.Length - rawArguments.Length - 1);
+							this.SetCursor(command, command.Length - rawArguments.Length - 1);
 						}
 						else
 						{
 							command = string.Join(NGCLI.CommandsSeparator.ToString(), commands);
-							this.SetCursor(command.Length);
+							this.SetCursor(command, command.Length);
 						}
 					}
 
@@ -420,16 +417,16 @@ namespace NGTools
 			return result.ToArray();
 		}
 
-		public void	SetCursor(int position)
+		public void	SetCursor(string text, int position)
 		{
-			TextEditor editor = (TextEditor)GUIUtility.GetStateObject(typeof(TextEditor), GUIUtility.keyboardControl);
+			TextEditor	editor = (TextEditor)GUIUtility.GetStateObject(typeof(TextEditor), GUIUtility.keyboardControl);
 
-#if UNITY_4 || UNITY_5_0 || UNITY_5_1
-			editor.selectPos = position;
-			editor.pos = position;
+#if UNITY_4 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
+			editor.content = new GUIContent(text);
 #else
-			editor.cursorIndex = position;
+			editor.text = text;
 #endif
+			editor.MoveTextEnd();
 		}
 
 		public void		ParseInput(string input, out string[] commands, out string[] arguments)
@@ -489,9 +486,7 @@ namespace NGTools
 				if (input[i] == '"')
 				{
 					if (Utility.sharedBuffer.Length == 0)
-					{
 						quoted = true;
-					}
 					else if (quoted == true &&
 							 i + 1 < input.Length &&
 							 this.IsCharIn(input[i + 1], NGCLI.ArgumentsSeparator) == true)

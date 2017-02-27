@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Flags]
 	public enum Mode
@@ -24,6 +24,7 @@ namespace NGToolsEditor
 		ScriptingException = 131072,
 		DontExtractStacktrace = 262144,
 		ShouldClearOnPlay = 524288,
-		GraphCompileError = 1048576
+		GraphCompileError = 1048576,
+		ScriptingAssertion = 2097152
 	}
 }

@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using NGTools.Network;
+using System.Collections.Generic;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Scene_ServerSendHierarchy)]
-	public class ServerSendHierarchyPacket : Packet
+	internal sealed class ServerSendHierarchyPacket : Packet
 	{
 		public readonly List<ServerGameObject>	serverRoot;
 		public NetGameObject[]					clientRoot;
 
-		protected	ServerSendHierarchyPacket(ByteBuffer buffer) : base(buffer)
+		private	ServerSendHierarchyPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 
@@ -32,9 +33,7 @@ namespace NGTools
 			this.clientRoot = new NetGameObject[length];
 
 			for (int i = 0; i < length; i++)
-			{
 				this.clientRoot[i] = new NetGameObject(buffer);
-			}
 		}
 
 		private void	BrowseOut(ServerGameObject node, ByteBuffer buffer)
@@ -45,9 +44,7 @@ namespace NGTools
 			buffer.Append(node.children.Count);
 
 			for (int i = 0; i < node.children.Count; i++)
-			{
 				this.BrowseOut(node.children[i], buffer);
-			}
 		}
 	}
 }

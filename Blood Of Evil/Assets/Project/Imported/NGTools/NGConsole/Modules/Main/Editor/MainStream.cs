@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
 	[Exportable(ExportableAttribute.ArrayOptions.Overwrite | ExportableAttribute.ArrayOptions.Immutable)]
@@ -38,9 +38,7 @@ namespace NGToolsEditor
 			if (EditorGUI.EndChangeCheck() == true)
 			{
 				if (Event.current.button == 0)
-				{
 					this.container.FocusStream(i);
-				}
 			}
 		}
 

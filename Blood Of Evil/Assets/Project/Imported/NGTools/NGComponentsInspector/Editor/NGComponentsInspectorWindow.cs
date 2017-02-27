@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGComponentsInspector
 {
 	using UnityEngine;
 
@@ -10,7 +10,7 @@ namespace NGToolsEditor
 	public class NGComponentsInspectorWindow : EditorWindow, IHasCustomMenu
 	{
 		[Serializable]
-		public class ComponentContainer
+		public sealed class ComponentContainer
 		{
 			public Component		component;
 			[NonSerialized]
@@ -52,9 +52,7 @@ namespace NGToolsEditor
 				for (int i = 0; i < components.Length; i++)
 				{
 					if (components[i] == null)
-					{
 						this.componentNames[i] = (i + 1) + " - NULL";
-					}
 					else
 					{
 						this.componentNames[i] = (i + 1) + " - " + components[i].GetType().Name;
@@ -67,8 +65,8 @@ namespace NGToolsEditor
 			}
 		}
 
-		public const string	Title = "NG Components Inspector";
-		public const string	ShortTitle = "NG Com' Insp'";
+		public const string	Title = "ƝƓ Ҁomponents Ɨnspector";
+		public const string	ShortTitle = "ƝƓ Ҁom' Ɨnsp'";
 
 		public List<ComponentContainer>	history = new List<ComponentContainer>();
 
@@ -78,9 +76,8 @@ namespace NGToolsEditor
 		private HorizontalScrollbar	scrollbar;
 		private Vector2				scrollPositionMaster;
 		private Vector2				scrollPositionSlave;
-		private Vector2				scrollPositionHistory;
+		[NonSerialized]
 		private GUIStyle			button;
-		private double				lastClick;
 
 		static	NGComponentsInspectorWindow()
 		{
@@ -88,12 +85,12 @@ namespace NGToolsEditor
 		}
 
 		[MenuItem(Constants.MenuItemPath + NGComponentsInspectorWindow.Title, priority = Constants.MenuItemPriority + 340)]
-		private static void	Open()
+		public static void	Open()
 		{
 			EditorWindow.GetWindow<NGComponentsInspectorWindow>(NGComponentsInspectorWindow.ShortTitle);
 		}
 
-		[MenuItem("CONTEXT/Component/Add to NG Components Inspector")]
+		[MenuItem("CONTEXT/Component/Add to " + NGComponentsInspectorWindow.Title)]
 		private static void	ContextAddComponent(MenuCommand command)
 		{
 			NGComponentsInspectorWindow.AddComponent(command.context as Component);
@@ -102,9 +99,8 @@ namespace NGToolsEditor
 		public static void	AddComponent(Component component)
 		{
 			NGComponentsInspectorWindow	instance = EditorWindow.GetWindow<NGComponentsInspectorWindow>(NGComponentsInspectorWindow.ShortTitle);
-			ComponentContainer	container = new ComponentContainer(component);
 
-			instance.history.Add(container);
+			instance.history.Add(new ComponentContainer(component));
 			
 			if (instance.master == -1)
 				instance.master = instance.history.Count - 1;
@@ -123,6 +119,13 @@ namespace NGToolsEditor
 				else
 					this.history.RemoveAt(i--);
 			}
+
+			Undo.undoRedoPerformed += this.Repaint;
+		}
+
+		protected virtual void	OnDisable()
+		{
+			Undo.undoRedoPerformed -= this.Repaint;
 		}
 
 		protected virtual void	OnGUI()
@@ -173,11 +176,14 @@ namespace NGToolsEditor
 
 			GUILayout.Space(this.scrollbar.maxHeight);
 
+			Rect	r2 = GUILayoutUtility.GetLastRect();
+			float	half = this.position.width * .5F;
+
 			EditorGUI.DrawRect(GUILayoutUtility.GetRect(this.position.width, 2F), Color.black);
 
 			EditorGUILayout.BeginHorizontal();
 			{
-				this.scrollPositionMaster = GUILayout.BeginScrollView(this.scrollPositionMaster, GUILayout.Width(this.position.width * .5F));
+				this.scrollPositionMaster = GUILayout.BeginScrollView(this.scrollPositionMaster, GUILayout.Width(half));
 				{
 					if (0 <= this.master && this.master < this.history.Count)
 					{
@@ -196,7 +202,7 @@ namespace NGToolsEditor
 
 				EditorGUI.DrawRect(GUILayoutUtility.GetRect(1F, 1F, 0F, float.MaxValue), Color.black);
 
-				this.scrollPositionSlave = EditorGUILayout.BeginScrollView(this.scrollPositionSlave, GUILayout.Width(this.position.width * .5F));
+				this.scrollPositionSlave = EditorGUILayout.BeginScrollView(this.scrollPositionSlave, GUILayout.Width(half));
 				{
 					if (0 <= this.slave && this.slave < this.history.Count)
 					{
@@ -212,6 +218,46 @@ namespace NGToolsEditor
 						EditorGUILayout.LabelField("Add a Component here from a Component's context menu or right click on the history above.", GeneralStyles.BigCenterText);
 				}
 				EditorGUILayout.EndScrollView();
+
+				r2.height = 48F;
+				r2.width = this.position.width;
+
+				if (Event.current.type == EventType.DragUpdated &&
+					r2.Contains(Event.current.mousePosition) == true)
+				{
+					if (typeof(Component).IsAssignableFrom(DragAndDrop.objectReferences[0].GetType()) == true)
+						DragAndDrop.visualMode = DragAndDropVisualMode.Move;
+					else
+						DragAndDrop.visualMode = DragAndDropVisualMode.Rejected;
+					Event.current.Use();
+				}
+				else if (Event.current.type == EventType.DragPerform &&
+						 r2.Contains(Event.current.mousePosition) == true)
+				{
+					DragAndDrop.AcceptDrag();
+
+					ComponentContainer	container = new ComponentContainer(DragAndDrop.objectReferences[0] as Component);
+
+					this.history.Add(container);
+
+					if (Event.current.mousePosition.x < half)
+						this.master = this.history.Count - 1;
+					else
+						this.slave = this.history.Count - 1;
+
+					DragAndDrop.PrepareStartDrag();
+					Event.current.Use();
+				}
+
+				if (Event.current.type == EventType.Repaint &&
+					DragAndDrop.objectReferences.Length > 0)
+				{
+					r2.width = half;
+					Utility.DropZone(r2, "Drop here");
+
+					r2.x = r2.width;
+					Utility.DropZone(r2, "Drop here");
+				}
 			}
 			EditorGUILayout.EndHorizontal();
 		}
@@ -228,22 +274,9 @@ namespace NGToolsEditor
 
 				GUI.DrawTexture(r, container.gameObjectIcon);
 
-				if (GUILayout.Button(container.component.name, GUILayout.Height(16F)) == true)
-				{
-					if (Event.current.button == 0)
-					{
-						if (this.lastClick + Constants.DoubleClickTime > EditorApplication.timeSinceStartup)
-							Selection.activeObject = container.component.gameObject;
-						else
-							EditorGUIUtility.PingObject(container.component.gameObject);
-					}
-					else
-						Selection.activeObject = container.component.gameObject;
+				NGEditorGUILayout.PingObject(container.component.name, container.component.gameObject, GUILayout.Height(16F));
 
-					this.lastClick = EditorApplication.timeSinceStartup;
-				}
-
-				container.useDefaultEditor = GUILayout.Toggle(container.useDefaultEditor, new GUIContent("No Custom Editor", "Use default editor."), GeneralStyles.ToolbarButton, GUILayout.ExpandWidth(false));
+				container.useDefaultEditor = GUILayout.Toggle(container.useDefaultEditor, new GUIContent("No Custom Editor", "Use default editor."), GeneralStyles.ToolbarToggle, GUILayout.ExpandWidth(false));
 			}
 			EditorGUILayout.EndHorizontal();
 

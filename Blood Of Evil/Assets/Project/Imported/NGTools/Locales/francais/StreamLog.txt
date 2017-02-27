@@ -1,1 +1,0 @@
-StreamLog_ConsumeLogTooltip=Absorbe les logs entrants.

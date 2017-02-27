@@ -67,14 +67,16 @@ namespace NGToolsEditor
 			GUILayout.BeginHorizontal();
 			{
 				GUILayout.FlexibleSpace();
-				if (GUILayout.Button("Ping") == true)
-				{
-					EditorGUIUtility.PingObject(this.instance);
-				}
+
+				NGEditorGUILayout.PingObject("Ping", this.instance);
 			}
 			GUILayout.EndHorizontal();
 
+#if UNITY_5_6 || UNITY_5_6_OR_NEWER
+			this.serializedObject.UpdateIfRequiredOrScript();
+#else
 			this.serializedObject.UpdateIfDirtyOrScript();
+#endif
 
 			for (int i = 0; i < this.serializedProperties.Length; i++)
 				EditorGUILayout.PropertyField(this.serializedProperties[i], true);
@@ -88,9 +90,7 @@ namespace NGToolsEditor
 			string[]	fieldNames = new string[fi.Length];
 
 			for (int i = 0; i < fi.Length; i++)
-			{
 				fieldNames[i] = fi[i].Name;
-			}
 
 			return fieldNames;
 		}

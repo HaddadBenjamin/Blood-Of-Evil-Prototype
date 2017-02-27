@@ -3,51 +3,27 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGDraggableObject
 {
 	using UnityEngine;
 
 	[InitializeOnLoad]
-#if ACTIVE_NG_DRAGGABLE_OBJECT
 	[CustomPropertyDrawer(typeof(Object), true)]
-#endif
-	public class NGDraggableObjectDrawer : PropertyDrawer
+	internal sealed class NGDraggableObjectDrawer : PropertyDrawer
 	{
-#if ACTIVE_NG_DRAGGABLE_OBJECT
 		private class DataMenu
 		{
 			public SerializedProperty	property;
 			public Object				component;
 		}
-#endif
 
-		private static bool		enable = true;
-#if ACTIVE_NG_DRAGGABLE_OBJECT
 		private static Object	copiedObject;
-#endif
 
 		static	NGDraggableObjectDrawer()
 		{
-			NGSettingsWindow.AddSection("NG Draggable Object", NGDraggableObjectDrawer.OnGUISettings);
-
-			NGDraggableObjectDrawer.enable = Utility.ExistSymbol("ACTIVE_NG_DRAGGABLE_OBJECT");
+			new SectionDrawer("ƝƓ Ðraggable Øbject", typeof(NGSettings.NGDraggableObjectSettings));
 		}
 
-		private static void	OnGUISettings()
-		{
-			EditorGUI.BeginChangeCheck();
-			EditorGUILayout.Space();
-			EditorGUILayout.LabelField(LC.G("NGDraggableObject_EnableDescription"), GeneralStyles.WrapLabel);
-			NGDraggableObjectDrawer.enable = EditorGUILayout.Toggle(LC.G("Enable"), NGDraggableObjectDrawer.enable);
-			if (EditorGUI.EndChangeCheck() == true)
-			{
-				Utility.RemoveSymbol("ACTIVE_NG_DRAGGABLE_OBJECT");
-				if (NGDraggableObjectDrawer.enable == true)
-					Utility.AppendSymbol("ACTIVE_NG_DRAGGABLE_OBJECT");
-			}
-		}
-
-#if ACTIVE_NG_DRAGGABLE_OBJECT
 		private bool	CanDrop(SerializedProperty property, Object asset)
 		{
 			PrefabType	type = PrefabUtility.GetPrefabType(property.serializedObject.targetObject);
@@ -83,9 +59,11 @@ namespace NGToolsEditor
 			Object[]	assets;
 			string		assetPath = AssetDatabase.GetAssetPath(asset);
 
+#if !UNITY_4_5 && !UNITY_4_6 && !UNITY_4_7
 			// Avoid Unity scenes. They throw error "Do not use ReadObjectThreaded on scene objects!".
 			if (assetPath.EndsWith(".unity") && asset.GetType() == typeof(DefaultAsset))
 				return false;
+#endif
 
 			if (string.IsNullOrEmpty(assetPath) == true)
 				assets = new Object[] { asset };
@@ -293,9 +271,14 @@ namespace NGToolsEditor
 
 		public override void	OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
-			Type	realType = this.fieldInfo.FieldType;
+			if (Preferences.Settings != null && Preferences.Settings.drag.enable == false)
+			{
+				EditorGUI.PropertyField(position, property, label);
+				return;
+			}
 
-			Color restore = GUI.backgroundColor;
+			Type	realType = this.fieldInfo.FieldType;
+			Color	restore = GUI.backgroundColor;
 
 			if (this.fieldInfo.FieldType.IsUnityArray() == true)
 				realType = Utility.GetArraySubType(this.fieldInfo.FieldType);
@@ -336,17 +319,18 @@ namespace NGToolsEditor
 			{
 				Utility.position2D = Event.current.mousePosition;
 
-				if (Event.current.button == 0 &&
-					position.Contains(Event.current.mousePosition) == true)
+				if (Event.current.button == 0)
 				{
-					if (property.objectReferenceInstanceIDValue != 0)
+					DragAndDrop.PrepareStartDrag();
+
+					if (position.Contains(Event.current.mousePosition) == true)
 					{
-						DragAndDrop.PrepareStartDrag();
-						DragAndDrop.objectReferences = new Object[] { property.objectReferenceValue };
-						DragAndDrop.SetGenericData(Utility.DragObjectDataName, property.objectReferenceInstanceIDValue);
+						if (property.objectReferenceInstanceIDValue != 0)
+						{
+							DragAndDrop.objectReferences = new Object[] { property.objectReferenceValue };
+							DragAndDrop.SetGenericData(Utility.DragObjectDataName, property.objectReferenceInstanceIDValue);
+						}
 					}
-					else
-						DragAndDrop.PrepareStartDrag();
 				}
 			}
 			else if (Event.current.type == EventType.MouseUp)
@@ -356,17 +340,23 @@ namespace NGToolsEditor
 				{
 					Component	cc = property.objectReferenceValue as Component;
 
-					if (cc != null)
+					if (cc != null && cc.gameObject != null)
 						this.TryDropDownComponents(realType, property, cc.gameObject);
 					else
 						this.DefaultMenu(property);
 
 					Event.current.Use();
 				}
+
+				DragAndDrop.PrepareStartDrag();
 			}
 
 			GUI.SetNextControlName(property.serializedObject.GetHashCode() + property.propertyPath);
+#if !UNITY_4_5 && !UNITY_4_6 && !UNITY_4_7
 			EditorGUI.ObjectField(position, property, this.fieldInfo.FieldType, label);
+#else
+			EditorGUI.PropertyField(position, property, label);
+#endif
 
 			if (Event.current.type == EventType.ValidateCommand &&
 				(Event.current.commandName == "Copy" ||
@@ -405,7 +395,7 @@ namespace NGToolsEditor
 			// Display the position of the Component in its GameObject if there is many.
 			Component	c = property.objectReferenceValue as Component;
 
-			if (c != null)
+			if (c != null && c.gameObject != null)
 			{
 				Component[]	cs = c.gameObject.GetComponents(typeof(Component));
 
@@ -504,10 +494,13 @@ namespace NGToolsEditor
 		{
 			DataMenu	data = _data as DataMenu;
 
+#if UNITY_5_6 || UNITY_5_6_OR_NEWER
+			data.property.serializedObject.UpdateIfRequiredOrScript();
+#else
 			data.property.serializedObject.UpdateIfDirtyOrScript();
+#endif
 			data.property.objectReferenceValue = data.component;
 			data.property.serializedObject.ApplyModifiedProperties();
 		}
-#endif
 	}
 }

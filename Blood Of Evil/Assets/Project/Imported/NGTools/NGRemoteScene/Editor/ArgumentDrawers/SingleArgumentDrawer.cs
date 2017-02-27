@@ -1,12 +1,12 @@
 using System;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[ArgumentDrawerFor(typeof(Single))]
-	public class SingleArgumentDrawer : ArgumentDrawer
+	internal sealed class SingleArgumentDrawer : ArgumentDrawer
 	{
-		public SingleArgumentDrawer(string name) : base(name, typeof(Single))
+		public SingleArgumentDrawer(string name, Type type) : base(name, typeof(Single))
 		{
 		}
 
@@ -15,12 +15,12 @@ namespace NGToolsEditor
 			this.value = EditorGUILayout.FloatField(this.name, (Single)this.value);
 		}
 
-		public override void	Serialize(string path)
+		public override void	Save(string path)
 		{
 			NGEditorPrefs.SetFloat(path, (Single)this.value);
 		}
 
-		public override void	Deserialize(string path)
+		public override void	Load(string path)
 		{
 			this.value = (Single)NGEditorPrefs.GetFloat(path);
 		}

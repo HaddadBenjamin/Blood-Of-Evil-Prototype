@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace NGToolsEditor
 {
-	public class SectionDrawer
+	public sealed class SectionDrawer
 	{
 		public readonly string	sectionName;
 		public readonly Type	typeSetting;
@@ -77,6 +77,21 @@ namespace NGToolsEditor
 			}
 			else
 				this.so.Update();
+
+			GUILayout.BeginHorizontal();
+			GUILayout.FlexibleSpace();
+			if (GUILayout.Button("Reset", GUILayout.ExpandWidth(false)) == true &&
+				((Event.current.modifiers & Constants.ByPassPromptModifier) != 0 || EditorUtility.DisplayDialog(NGSettingsWindow.Title, LC.G("ConsoleSettings_ResetConfirm"), LC.G("Yes"), LC.G("No")) == true))
+			{
+				object	settings = Activator.CreateInstance(this.fieldInfo.FieldType);
+
+				this.settings = settings as NGSettings.Settings;
+
+				if (this.settings != null)
+					this.settings.InternalInitGUI();
+				this.fieldInfo.SetValue(Preferences.Settings, settings);
+			}
+			GUILayout.EndHorizontal();
 
 			SerializedProperty	iterator = this.so.FindProperty(this.fieldInfo.Name);
 			SerializedProperty	end = iterator.GetEndProperty();

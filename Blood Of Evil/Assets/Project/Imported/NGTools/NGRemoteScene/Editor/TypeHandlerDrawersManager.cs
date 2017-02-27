@@ -1,13 +1,13 @@
 ﻿using NGTools;
+using NGTools.NGRemoteScene;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[InitializeOnLoad]
-	public static class TypeHandlerDrawersManager
+	internal static class TypeHandlerDrawersManager
 	{
 		private static readonly Dictionary<Type, Type>	typeHandlerDrawers;
 		private static readonly Dictionary<Type, Type>	typeDrawers;
@@ -23,7 +23,7 @@ namespace NGToolsEditor
 				TypeHandlerDrawerForAttribute[]	typeHandlerAttributes = t.GetCustomAttributes(typeof(TypeHandlerDrawerForAttribute), false) as TypeHandlerDrawerForAttribute[];
 
 				if (typeHandlerAttributes.Length >= 1)
-					TypeHandlerDrawersManager.typeHandlerDrawers.Add(typeHandlerAttributes [0].type, t);
+					TypeHandlerDrawersManager.typeHandlerDrawers.Add(typeHandlerAttributes[0].type, t);
 				else
 				{
 					TypeDrawerForAttribute[]	typeAttributes = t.GetCustomAttributes(typeof(TypeDrawerForAttribute), false) as TypeDrawerForAttribute[];

@@ -1,13 +1,14 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Camera_ClientSendCameraTransformPosition)]
-	public class ClientSendCameraTransformPositionPacket : Packet
+	internal sealed class ClientSendCameraTransformPositionPacket : Packet
 	{
 		public Vector3	position;
 
-		protected	ClientSendCameraTransformPositionPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientSendCameraTransformPositionPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

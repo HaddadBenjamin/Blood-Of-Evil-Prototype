@@ -1,6 +1,6 @@
-﻿namespace NGToolsEditor
+﻿namespace NGToolsEditor.NGConsole
 {
-	public class UselessFrameFilter : IStackFrameFilter
+	internal sealed class UselessFrameFilter : IStackFrameFilter
 	{
 		public bool	Filter(string frame)
 		{
@@ -11,8 +11,8 @@
 			}
 
 			return frame.StartsWith("NGDebug:") == true ||
-				   frame.StartsWith("NGTools.InternalNGDebug:") == true ||
-				   frame.StartsWith("UnityEngine.Debug:Log") == true ||
+				   frame.Contains(".InternalNGDebug:") == true ||
+				   frame.StartsWith("UnityEngine.Debug:") == true ||
 				   frame.StartsWith("UnityEditor.DockArea:OnGUI") == true;
 		}
 	}

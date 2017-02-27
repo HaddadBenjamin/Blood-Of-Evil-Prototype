@@ -1,3 +1,4 @@
+using NGToolsEditor.NGConsole;
 using System;
 using System.Collections.Generic;
 using UnityEngine;

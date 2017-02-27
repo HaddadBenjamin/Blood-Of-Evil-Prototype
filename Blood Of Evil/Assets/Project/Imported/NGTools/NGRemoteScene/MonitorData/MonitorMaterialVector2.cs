@@ -1,23 +1,24 @@
+using NGTools.Network;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	public class MonitorMaterialVector2 : MonitorData
+	internal sealed class MonitorMaterialVector2 : MonitorData
 	{
-		private Material								material;
-		private NGShaderProperty						propertyInfo;
-		private ClientUpdateMaterialVector2Packet.Type	type;
+		private Material			material;
+		private NGShaderProperty	propertyInfo;
+		private MaterialVector2Type	type;
 
-		public	MonitorMaterialVector2(Material material, NGShaderProperty propertyInfo, ClientUpdateMaterialVector2Packet.Type type) : base(null, null)
+		public	MonitorMaterialVector2(Material material, NGShaderProperty propertyInfo, MaterialVector2Type type) : base(null, null)
 		{
 			this.material = material;
 			this.propertyInfo = propertyInfo;
 			this.type = type;
 
-			if (this.type == ClientUpdateMaterialVector2Packet.Type.Offset)
+			if (this.type == MaterialVector2Type.Offset)
 				this.value = this.material.GetTextureOffset(this.propertyInfo.name);
-			else if (this.type == ClientUpdateMaterialVector2Packet.Type.Scale)
+			else if (this.type == MaterialVector2Type.Scale)
 				this.value = this.material.GetTextureScale(this.propertyInfo.name);
 		}
 
@@ -30,12 +31,12 @@ namespace NGTools
 				return;
 			}
 
-			if (this.type == ClientUpdateMaterialVector2Packet.Type.Offset)
+			if (this.type == MaterialVector2Type.Offset)
 			{
 				if (object.Equals(this.value, this.material.GetTextureOffset(this.propertyInfo.name)) == false)
 					updates.Add(this);
 			}
-			else if (this.type == ClientUpdateMaterialVector2Packet.Type.Scale)
+			else if (this.type == MaterialVector2Type.Scale)
 			{
 				if (object.Equals(this.value, this.material.GetTextureScale(this.propertyInfo.name)) == false)
 					updates.Add(this);
@@ -47,9 +48,9 @@ namespace NGTools
 			if (this.ToDelete == true)
 				return;
 
-			if (this.type == ClientUpdateMaterialVector2Packet.Type.Offset)
+			if (this.type == MaterialVector2Type.Offset)
 				this.value = this.material.GetTextureOffset(this.propertyInfo.name);
-			else if (this.type == ClientUpdateMaterialVector2Packet.Type.Scale)
+			else if (this.type == MaterialVector2Type.Scale)
 				this.value = this.material.GetTextureScale(this.propertyInfo.name);
 		}
 

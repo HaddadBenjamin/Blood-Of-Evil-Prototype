@@ -6,7 +6,7 @@ namespace NGToolsEditor
 	/// Explicitly excludes this class from array export.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false, Inherited = true)]
-	public class ExcludeFromExportAttribute : Attribute
+	public sealed class ExcludeFromExportAttribute : Attribute
 	{
 	}
 }

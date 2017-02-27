@@ -1,2 +1,0 @@
-AddMarker=Ajouter un marqueur
-Marker=Marqueur

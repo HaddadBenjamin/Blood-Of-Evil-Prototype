@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[Priority(0)]
-	public class SingleHandler : TypeHandler
+	internal sealed class SingleHandler : TypeHandler
 	{
 		public	SingleHandler() : base(typeof(Single))
 		{

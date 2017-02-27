@@ -1,12 +1,13 @@
 ﻿using NGTools;
+using NGTools.NGRemoteScene;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
-	public class KeyboardModuleEditor : CameraDataModuleEditor
+	internal sealed class KeyboardModuleEditor : CameraDataModuleEditor
 	{
-		public class KeyInput : CameraData
+		internal sealed class KeyInput : CameraData
 		{
 			public KeyCode[]	keys;
 		}

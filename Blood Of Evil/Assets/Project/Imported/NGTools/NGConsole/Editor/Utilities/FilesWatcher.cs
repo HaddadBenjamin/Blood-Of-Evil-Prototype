@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	public static class FilesWatcher
+	internal static class FilesWatcher
 	{
 		private static Dictionary<int, FileSystemWatcher>	watchers;
 

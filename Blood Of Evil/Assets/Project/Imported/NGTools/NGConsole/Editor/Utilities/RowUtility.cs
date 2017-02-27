@@ -4,12 +4,13 @@ using System.IO;
 using System.Text;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	using UnityEngine;
 
 	public static class RowUtility
 	{
+		public static double	LastKeyTime;
 		public static double	LastClickTime;
 		public static int		LastClickIndex;
 
@@ -18,6 +19,19 @@ namespace NGToolsEditor
 		private static Rect			previewRect;
 		private static Frame		previewFrame;
 		private static string[]		previewLines;
+		private static RowsDrawer	rowsDrawer;
+
+		public static void	ClearPreview()
+		{
+			if (RowUtility.previewLines == null)
+				return;
+
+			RowUtility.previewEditorWindow = null;
+			RowUtility.previewLines = null;
+			RowUtility.previewFrame = null;
+			RowUtility.rowsDrawer.AfterAllRows -= RowUtility.DrawPreview;
+			RowUtility.rowsDrawer = null;
+		}
 
 		public static void	PreviewStackFrame(RowsDrawer rowsDrawer, Rect r, Frame frame)
 		{
@@ -27,31 +41,26 @@ namespace NGToolsEditor
 				try
 				{
 					RowUtility.previewLines = Utility.files.GetFile(frame.fileName);
+					RowUtility.rowsDrawer = rowsDrawer;
 					RowUtility.previewFrame = frame;
 					RowUtility.previewRect = r;
 
 					FilesWatcher.Watch(frame.fileName);
 
 					RowUtility.previewEditorWindow = Utility.drawingWindow;
-					rowsDrawer.AfterAllRows -= RowUtility.DrawPreview;
-					rowsDrawer.AfterAllRows += RowUtility.DrawPreview;
+					RowUtility.rowsDrawer.AfterAllRows -= RowUtility.DrawPreview;
+					RowUtility.rowsDrawer.AfterAllRows += RowUtility.DrawPreview;
 				}
 				catch (Exception ex)
 				{
 					InternalNGDebug.LogException(ex);
-					RowUtility.previewEditorWindow = null;
-					RowUtility.previewLines = null;
-					RowUtility.previewFrame = null;
-					rowsDrawer.AfterAllRows -= RowUtility.DrawPreview;
+					RowUtility.ClearPreview();
 				}
 			}
 		}
 
 		private static void	DrawPreview(Rect bodyRect)
 		{
-			if (RowUtility.previewLines == null)
-				return;
-
 			Rect	r = RowUtility.previewRect;
 
 			r.x += bodyRect.x;
@@ -60,21 +69,15 @@ namespace NGToolsEditor
 			// Out of window.
 			if (EditorWindow.mouseOverWindow != RowUtility.previewEditorWindow)
 			{
-				RowUtility.previewEditorWindow = null;
-				RowUtility.previewLines = null;
-				RowUtility.previewFrame = null;
+				RowUtility.ClearPreview();
 				return;
 			}
 			// Out of stacktrace.
 			//else if (Event.current.type == EventType.MouseMove)
-			if (Event.current.type == EventType.MouseMove)
+			if (Event.current.type == EventType.MouseMove && r.Contains(Event.current.mousePosition) == false)
 			{
-				if (r.Contains(Event.current.mousePosition) == false)
-				{
-					RowUtility.previewLines = null;
-					RowUtility.previewFrame = null;
-					return;
-				}
+				RowUtility.ClearPreview();
+				return;
 			}
 
 			if (RowUtility.previewFrame.line <= RowUtility.previewLines.Length)
@@ -130,7 +133,7 @@ namespace NGToolsEditor
 				if (sourceFile != null)
 					AssetDatabase.OpenAsset(sourceFile, line);
 				else
-					Debug.LogWarning(LC.G("Console_AssetNotFound"));
+					Debug.LogWarning(string.Format(LC.G("Console_AssetNotText"), @"Assets\" + file.Substring(Application.dataPath.Length + 1)));
 			}
 			else if (Preferences.Settings.general.openMode == NGSettings.ModeOpen.NGConsoleOpener)
 			{
@@ -165,9 +168,7 @@ namespace NGToolsEditor
 				{
 					Object	sourceFile = AssetDatabase.LoadAssetAtPath(@"Assets\" + file.Substring(Application.dataPath.Length + 1), typeof(Object));
 					if (sourceFile != null)
-					{
 						EditorApplication.delayCall += () => AssetDatabase.OpenAsset(sourceFile, line);
-					}
 					else
 					{
 						EditorApplication.delayCall += () => EditorUtility.OpenWithDefaultApp(file);
@@ -202,7 +203,7 @@ namespace NGToolsEditor
 			foreach (var frame in log.Frames)
 			{
 				// Hide invisible frames.
-				if (r.y - rowsDrawer.currentVars.scrollPosition.y > rowsDrawer.bodyRect.height)
+				if (r.y - rowsDrawer.currentVars.scrollY > rowsDrawer.bodyRect.height)
 					break;
 
 				r.x = 0F;
@@ -210,26 +211,29 @@ namespace NGToolsEditor
 				GUI.SetNextControlName("SF" + i + j);
 				if (GUI.Button(r, frame.frameString, Preferences.Settings.stackTrace.style) == true)
 				{
-					GUI.FocusControl("SF" + i + j);
+					if (FreeConstants.CheckLowestRowGoToLineAllowed(j) == true)
+					{
+						GUI.FocusControl("SF" + i + j);
 
-					r.x -= rowsDrawer.currentVars.scrollPosition.x;
-					r.y -= rowsDrawer.currentVars.scrollPosition.y;
-					RowUtility.GoToLine(r, frame);
-					r.x += rowsDrawer.currentVars.scrollPosition.x;
-					r.y += rowsDrawer.currentVars.scrollPosition.y;
+						r.x -= rowsDrawer.currentVars.scrollX;
+						r.y -= rowsDrawer.currentVars.scrollY;
+						RowUtility.GoToLine(r, frame);
+						r.x += rowsDrawer.currentVars.scrollX;
+						r.y += rowsDrawer.currentVars.scrollY;
+					}
 				}
 
 				// Handle hover overflow.
-				if (r.y - rowsDrawer.currentVars.scrollPosition.y + r.height > rowsDrawer.bodyRect.height)
-					r.height = rowsDrawer.bodyRect.height - r.y + rowsDrawer.currentVars.scrollPosition.y;
+				if (r.y - rowsDrawer.currentVars.scrollY + r.height > rowsDrawer.bodyRect.height)
+					r.height = rowsDrawer.bodyRect.height - r.y + rowsDrawer.currentVars.scrollY;
 
 				if (Event.current.type == EventType.MouseMove && r.Contains(Event.current.mousePosition) == true)
 				{
-					r.x -= rowsDrawer.currentVars.scrollPosition.x;
-					r.y -= rowsDrawer.currentVars.scrollPosition.y;
+					r.x -= rowsDrawer.currentVars.scrollX;
+					r.y -= rowsDrawer.currentVars.scrollY;
 					RowUtility.PreviewStackFrame(rowsDrawer, r, frame);
-					r.x += rowsDrawer.currentVars.scrollPosition.x;
-					r.y += rowsDrawer.currentVars.scrollPosition.y;
+					r.x += rowsDrawer.currentVars.scrollX;
+					r.y += rowsDrawer.currentVars.scrollY;
 				}
 
 				r.x = r.width;
@@ -277,7 +281,7 @@ namespace NGToolsEditor
 			string	frame = data as string;
 
 			// Fetch "namespace.class[:.]method(".
-			int n = frame.IndexOf("(");
+			int	n = frame.IndexOf("(");
 			if (n == -1)
 				return;
 
@@ -346,7 +350,7 @@ namespace NGToolsEditor
 			string	frame = data as string;
 
 			// Fetch "namespace.class[:.]method(".
-			int n = frame.IndexOf("(");
+			int	n = frame.IndexOf("(");
 			if (n == -1)
 				return null;
 
@@ -479,7 +483,7 @@ namespace NGToolsEditor
 			// Try to reach the object, it might not be a TextAsset.
 			if (logEntry.instanceID != 0)
 			{
-				string path = AssetDatabase.GetAssetPath(logEntry.instanceID);
+				string	path = AssetDatabase.GetAssetPath(logEntry.instanceID);
 				if (string.IsNullOrEmpty(path) == false)
 				{
 					RowUtility.GoToFileLine(path,

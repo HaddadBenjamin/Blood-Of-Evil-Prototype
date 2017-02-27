@@ -1,10 +1,11 @@
-﻿using System;
+﻿using NGTools.Network;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	public class MonitorProperty : MonitorData
+	internal sealed class MonitorProperty : MonitorData
 	{
 		private PropertyInfo	propertyInfo;
 		private TypeHandler		typeHandler;

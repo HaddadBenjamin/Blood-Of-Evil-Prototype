@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	using System.Collections.Generic;
-	using System.Globalization;
-	using System.Text.RegularExpressions;
 	using UnityEngine;
 
 	[Serializable]
-	public class ContentFilter : ILogFilter
+	internal sealed class ContentFilter : ILogFilter
 	{
 		private enum SearchMode
 		{
@@ -159,13 +159,20 @@ namespace NGToolsEditor
 			{
 				using (LabelWidthRestorer.Get(120F))
 				{
-					this.searchMode = (SearchMode)EditorGUILayout.EnumPopup(LC.G("SearchMode"), this.searchMode, GeneralStyles.ToolbarDropDown, GUILayout.Width(200F));
+					EditorGUI.BeginChangeCheck();
+					SearchMode	mode = (SearchMode)EditorGUILayout.EnumPopup(LC.G("SearchMode"), this.searchMode, GeneralStyles.ToolbarDropDown, GUILayout.Width(200F));
+					if (EditorGUI.EndChangeCheck() == true)
+					{
+						Undo.RecordObject(Preferences.Settings, "Alter content filter");
+						this.searchMode = mode;
+					}
 				}
 
 				EditorGUI.BeginChangeCheck();
-				GUILayout.Toggle(this.caseSensitive == CompareOptions.None, this.cs, GeneralStyles.ToolbarButton, GUILayout.Width(30F));
+				GUILayout.Toggle(this.caseSensitive == CompareOptions.None, this.cs, GeneralStyles.ToolbarToggle, GUILayout.Width(30F));
 				if (EditorGUI.EndChangeCheck() == true)
 				{
+					Undo.RecordObject(Preferences.Settings, "Alter content filter");
 					if (this.caseSensitive == CompareOptions.IgnoreCase)
 						this.caseSensitive = CompareOptions.None;
 					else
@@ -173,33 +180,38 @@ namespace NGToolsEditor
 				}
 
 				EditorGUI.BeginChangeCheck();
-				GUILayout.Toggle(this.wholeWord, this.whole, GeneralStyles.ToolbarButton, GUILayout.Width(40F));
+				GUILayout.Toggle(this.wholeWord, this.whole, GeneralStyles.ToolbarToggle, GUILayout.Width(40F));
 				if (EditorGUI.EndChangeCheck() == true)
 				{
+					Undo.RecordObject(Preferences.Settings, "Alter content filter");
 					this.wholeWord = !this.wholeWord;
 				}
 
 				EditorGUI.BeginChangeCheck();
-				GUILayout.Toggle(this.useRegex, this.regex, GeneralStyles.ToolbarButton, GUILayout.Width(30F));
+				GUILayout.Toggle(this.useRegex, this.regex, GeneralStyles.ToolbarToggle, GUILayout.Width(30F));
 				if (EditorGUI.EndChangeCheck() == true)
 				{
+					Undo.RecordObject(Preferences.Settings, "Alter content filter");
 					this.useRegex = !this.useRegex;
 					this.CheckRegex();
 				}
 
 				using (LabelWidthRestorer.Get(70F))
 				{
-					using (BgColorContentRestorer.Get(string.IsNullOrEmpty(this.regexSyntaxError) == false ? Color.red : GUI.backgroundColor))
+					using (BgColorContentRestorer.Get(string.IsNullOrEmpty(this.regexSyntaxError) == false, Color.red))
 					{
 						EditorGUI.BeginChangeCheck();
-						this.keyword = EditorGUILayout.TextField(this.keyword, GeneralStyles.ToolbarSeachTextField);
+						string	keyword = EditorGUILayout.TextField(this.keyword, GeneralStyles.ToolbarSearchTextField);
 						if (EditorGUI.EndChangeCheck() == true)
 						{
+							//Undo.RecordObject(Preferences.Settings, "Alter content filter");
+							this.keyword = keyword;
 							this.CheckRegex();
 						}
 
-						if (GUILayout.Button(GUIContent.none, GeneralStyles.ToolbarSeachCancelButton) == true)
+						if (GUILayout.Button(GUIContent.none, GeneralStyles.ToolbarSearchCancelButton) == true)
 						{
+							//Undo.RecordObject(Preferences.Settings, "Alter content filter");
 							this.keyword = string.Empty;
 							this.regexSyntaxError = null;
 							GUI.FocusControl(null);

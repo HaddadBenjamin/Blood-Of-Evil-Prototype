@@ -1,49 +1,17 @@
-﻿using UnityEngine;
+﻿using NGTools.Network;
+using UnityEngine;
 
-namespace NGTools
+namespace NGTools.Network
 {
-	public partial class PacketId
+	internal partial class PacketId
 	{
 		public const int	Camera_ClientModuleSetUseJPG = 10000;
 	}
+}
 
-	[PacketLinkTo(PacketId.Camera_ClientModuleSetUseJPG)]
-	public class ClientModulesetUseJPG : Packet
-	{
-		public bool	useJPG;
-
-		protected	ClientModulesetUseJPG(ByteBuffer buffer) : base(buffer)
-		{
-		}
-
-		public	ClientModulesetUseJPG(bool useJPG)
-		{
-			this.useJPG = useJPG;
-		}
-
-		public override bool	AggregateInto(Packet pendingPacket)
-		{
-			ClientModulesetUseJPG	packet = pendingPacket as ClientModulesetUseJPG;
-
-			if (packet != null)
-			{
-				packet.useJPG = this.useJPG;
-				return true;
-			}
-
-			return false;
-		}
-
-		public override void	OnGUI(IUnityData unityData)
-		{
-			if (this.useJPG == true)
-				GUILayout.Label("Camera selected JPG format.");
-			else
-				GUILayout.Label("Camera selected PNG format.");
-		}
-	}
-
-	public class ScreenshotModule : CameraServerDataModule
+namespace NGTools.NGRemoteScene
+{
+	internal sealed class ScreenshotModule : CameraServerDataModule
 	{
 		public const byte	ModuleID = 1;
 		public const int	Priority = 1000;
@@ -74,16 +42,16 @@ namespace NGTools
 			if (t <= this.nextTime)
 				return;
 
-			float timeOverflow = 0F;
+			float	timeOverflow = 0F;
 			if (t - this.nextTime <= (1F / data.TargetRefresh) * 2F)
 				timeOverflow = t - this.nextTime;
 
 			this.nextTime = t + (1F / data.TargetRefresh) - timeOverflow;
 
-			RenderTexture restore = data.TargetCamera.targetTexture;
+			RenderTexture	restore = data.TargetCamera.targetTexture;
 			data.TargetCamera.targetTexture = data.RenderTexture;
 
-			bool restoreWire = GL.wireframe;
+			bool	restoreWire = GL.wireframe;
 			GL.wireframe = data.Wireframe;
 
 			data.TargetCamera.Render();
@@ -107,7 +75,7 @@ namespace NGTools
 
 		private void	SetUseJPG(Client client, Packet _packet)
 		{
-			ClientModulesetUseJPG	packet = _packet as ClientModulesetUseJPG;
+			ClientModuleSetUseJPGPacket	packet = _packet as ClientModuleSetUseJPGPacket;
 
 			this.useJPG = packet.useJPG;
 		}

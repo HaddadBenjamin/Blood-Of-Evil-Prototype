@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	public interface IReplaySettings
 	{

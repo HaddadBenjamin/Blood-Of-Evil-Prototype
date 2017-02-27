@@ -2,6 +2,7 @@
 #define UNITY_4
 #endif
 
+using NGToolsEditor.NGFav;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGNavSelection
 {
 	using UnityEngine;
 
@@ -540,38 +541,34 @@ namespace NGToolsEditor
 			VK_OEM_CLEAR = 0xFE,
 		}
 
-		public const string	Title = "NG Nav Selection";
+		public const string	Title = "ƝƓ Ɲav Ȿelection";
 		public const string	LastHashPrefKey = "NGNavSelection_lastHash";
 		public const string	AutoSavePrefKey = "NGNavSelection_historic";
 		public const int	MaxHistoric = 1000;
 		public const float	HighlightCursorWidth = 5F;
-		public static Color	HighlightCursorBackgroundColor = new Color(.3F, .3F, .3F, 1F);
-		public static Color	HighlightFocusedHistoricBackgroundColor = new Color(.7F, .7F, .1F, 1F);
+		public static Color	HighlightCursorBackgroundColor = new Color(.3F, .3F, .3F);
+		public static Color	HighlightFocusedHistoricBackgroundColor = new Color(.7F, .7F, .1F);
 
-#if UNITY_EDITOR_WIN
 		[DllImport("user32.dll")]
-		public static extern short	GetAsyncKeyState(UInt16 virtualKeyCode);
+		internal static extern Int16	GetAsyncKeyState(Int32 virtualKeyCode);
 		[DllImport("user32.dll")]
-		public static extern short	GetActiveWindow();
-#endif
+		internal static extern IntPtr	GetActiveWindow();
 
 		// Does not handle null entries in historic.
 		public static bool	CanSelectNext { get { return NGNavSelectionWindow.historicCursor != -1 && NGNavSelectionWindow.historic.Count > 0; } }
 		public static bool	CanSelectPrevious { get { return (NGNavSelectionWindow.historicCursor == -1 || NGNavSelectionWindow.historicCursor > 0) && NGNavSelectionWindow.historic.Count > 0; } }
 
-		public static Action	SelectionChanged;
+		public static event Action	SelectionChanged;
 
-		private static List<NGFavWindow.Selection>	historic = new List<NGFavWindow.Selection>();
-		private static int							historicCursor = -1;
-		private static int							lastHash = 0;
-		private static int							lastFocusedHistoric = -1;
-		private static bool							editorState = false;
-		private static bool							savedOnCompile = false;
-#if UNITY_EDITOR_WIN
-		private static bool							buttonWasDown = false;
-#endif
+		private static List<AssetsSelection>	historic = new List<AssetsSelection>();
+		private static int						historicCursor = -1;
+		private static int						lastHash = 0;
+		private static int						lastFocusedHistoric = -1;
+		private static bool						editorState = false;
+		private static bool						savedOnCompile = false;
+		private static bool						buttonWasDown = false;
 
-		private GUIListDrawer<NGFavWindow.Selection>	listDrawer;
+		private GUIListDrawer<AssetsSelection>	listDrawer;
 		private Vector2		dragOriginPosition;
 		private double		lastClick;
 
@@ -579,17 +576,16 @@ namespace NGToolsEditor
 		private Vector2	initialMin;
 		private Vector2	initialMax;
 
+		private ErrorPopup	errorPopup = new ErrorPopup("An error occured, try to reopen " + NGNavSelectionWindow.Title + ".");
+
 		static	NGNavSelectionWindow()
 		{
 			Utility.AddMenuItemPicker(Constants.MenuItemPath + NGNavSelectionWindow.Title);
 
-			NGNavSelectionWindow.editorState = EditorApplication.isPlaying;
-
 			try
 			{
-#if UNITY_EDITOR_WIN
-				EditorApplication.update += NGNavSelectionWindow.HandleMouseInputs;
-#endif
+				if (Application.platform == RuntimePlatform.WindowsEditor)
+					EditorApplication.update += NGNavSelectionWindow.HandleMouseInputs;
 				NGEditorApplication.EditorExit += NGNavSelectionWindow.SaveHistoric;
 				Preferences.SettingsChanged += NGNavSelectionWindow.Preferences_SettingsChanged;
 
@@ -610,7 +606,7 @@ namespace NGToolsEditor
 							for (int j = 0; j < IDs.Length; j++)
 								array[j] = int.Parse(IDs[j]);
 
-							NGFavWindow.Selection	selection = new NGFavWindow.Selection(array);
+							AssetsSelection	selection = new AssetsSelection(array);
 
 							if (selection.refs.Count > 0)
 							{
@@ -624,6 +620,10 @@ namespace NGToolsEditor
 							}
 						}
 					}
+
+					NGNavSelectionWindow.editorState = EditorApplication.isPlaying;
+
+					NGNavSelectionWindow.lastHash = NGEditorPrefs.GetInt(NGNavSelectionWindow.LastHashPrefKey, NGNavSelectionWindow.lastHash);
 				};
 
 				Marshal.PrelinkAll(typeof(NGNavSelectionWindow));
@@ -631,12 +631,10 @@ namespace NGToolsEditor
 			catch
 			{
 			}
-
-			NGNavSelectionWindow.lastHash = NGEditorPrefs.GetInt(NGNavSelectionWindow.LastHashPrefKey, NGNavSelectionWindow.lastHash);
 		}
 
 		[MenuItem(Constants.MenuItemPath + NGNavSelectionWindow.Title, priority = Constants.MenuItemPriority + 315)]
-		private static void	Open()
+		public static void	Open()
 		{
 			EditorWindow.GetWindow<NGNavSelectionWindow>(NGNavSelectionWindow.Title);
 		}
@@ -669,9 +667,9 @@ namespace NGToolsEditor
 
 		private static void	OnGUISettings()
 		{
-#if !UNITY_EDITOR_WIN
-			EditorGUILayout.LabelField(LC.G("NGNavSelection_OnlyAvailableOnWindows"), GeneralStyles.WrapLabel);
-#else
+			if (Application.platform != RuntimePlatform.WindowsEditor)
+				EditorGUILayout.LabelField(LC.G("NGNavSelection_OnlyAvailableOnWindows"), GeneralStyles.WrapLabel);
+
 			EditorGUI.BeginChangeCheck();
 			EditorGUILayout.Space();
 			EditorGUILayout.LabelField(LC.G("NGNavSelection_EnableDescription"), GeneralStyles.WrapLabel);
@@ -708,7 +706,6 @@ namespace NGToolsEditor
 				Preferences.Settings.nav.maxHistoric = Mathf.Clamp(Preferences.Settings.nav.maxHistoric, 1, NGNavSelectionWindow.MaxHistoric);
 				Preferences.InvalidateSettings();
 			}
-#endif
 
 			EditorGUI.BeginChangeCheck();
 			EditorGUILayout.Space();
@@ -745,7 +742,7 @@ namespace NGToolsEditor
 		{
 			int	hash = NGNavSelectionWindow.GetCurrentSelectionHash();
 
-			if (NGNavSelectionWindow.lastHash == hash)
+			if (NGNavSelectionWindow.lastHash == hash || hash == 0)
 				return;
 
 			if (Selection.objects.Length > 0)
@@ -763,9 +760,9 @@ namespace NGToolsEditor
 
 				// Detect a change in the selection only if user selects ONE Object.
 				if (Selection.objects.Length == 1)
-					NGNavSelectionWindow.historic.Add(new NGFavWindow.Selection(Selection.objects));
+					NGNavSelectionWindow.historic.Add(new AssetsSelection(Selection.objects));
 				else if (NGNavSelectionWindow.historic.Count >= 1)
-					NGNavSelectionWindow.historic[NGNavSelectionWindow.historic.Count - 1] = new NGFavWindow.Selection(Selection.objects);
+					NGNavSelectionWindow.historic[NGNavSelectionWindow.historic.Count - 1] = new AssetsSelection(Selection.objects);
 
 				if (Preferences.Settings.nav.maxHistoric > 0 && NGNavSelectionWindow.historic.Count > Preferences.Settings.nav.maxHistoric)
 					NGNavSelectionWindow.historic.RemoveRange(0, NGNavSelectionWindow.historic.Count - Preferences.Settings.nav.maxHistoric);
@@ -780,7 +777,6 @@ namespace NGToolsEditor
 				NGNavSelectionWindow.SelectionChanged();
 		}
 
-#if UNITY_EDITOR_WIN
 		private static void	HandleMouseInputs()
 		{
 			if (EditorApplication.isCompiling == true && NGNavSelectionWindow.savedOnCompile == false)
@@ -790,12 +786,12 @@ namespace NGToolsEditor
 				return;
 			}
 
-			short	activeWindow = NGNavSelectionWindow.GetActiveWindow();
+			IntPtr	activeWindow = NGNavSelectionWindow.GetActiveWindow();
 
-			if (activeWindow != 0)
+			if (activeWindow != IntPtr.Zero)
 			{
 				// Go to previous selection.
-				if (NGNavSelectionWindow.GetAsyncKeyState((ushort)WindowsVirtualKey.VK_XBUTTON1) != 0)
+				if (NGNavSelectionWindow.GetAsyncKeyState((Int32)WindowsVirtualKey.VK_XBUTTON1) != 0)
 				{
 					if (NGNavSelectionWindow.buttonWasDown == false)
 					{
@@ -804,7 +800,7 @@ namespace NGToolsEditor
 					}
 				}
 				// Go to next selection.
-				else if (NGNavSelectionWindow.GetAsyncKeyState((ushort)WindowsVirtualKey.VK_XBUTTON2) != 0)
+				else if (NGNavSelectionWindow.GetAsyncKeyState((Int32)WindowsVirtualKey.VK_XBUTTON2) != 0)
 				{
 					if (NGNavSelectionWindow.buttonWasDown == false)
 					{
@@ -816,7 +812,6 @@ namespace NGToolsEditor
 					NGNavSelectionWindow.buttonWasDown = false;
 			}
 		}
-#endif
 
 		public static void	SelectPreviousSelection()
 		{
@@ -942,18 +937,20 @@ namespace NGToolsEditor
 		{
 			this.minSize = new Vector2(140F, EditorGUIUtility.singleLineHeight);
 
-			this.listDrawer = new GUIListDrawer<NGFavWindow.Selection>();
+			this.listDrawer = new GUIListDrawer<AssetsSelection>();
 			this.listDrawer.list = NGNavSelectionWindow.historic;
 			this.listDrawer.ElementGUI = this.DrawSelection;
 			this.listDrawer.reverseList = true;
 
 			this.wantsMouseMove = true;
 
+			Preferences.SettingsChanged += this.Repaint;
 			NGNavSelectionWindow.SelectionChanged += this.Repaint;
 		}
 
 		protected virtual void	OnDestroy()
 		{
+			Preferences.SettingsChanged -= this.Repaint;
 			NGNavSelectionWindow.SelectionChanged -= this.Repaint;
 		}
 
@@ -963,9 +960,7 @@ namespace NGToolsEditor
 			{
 				GUILayout.Label(string.Format(LC.G("RequiringConfigurationFile"), NGNavSelectionWindow.Title));
 				if (GUILayout.Button(LC.G("ShoWPreferencesWindow")) == true)
-				{
 					Utility.ShowPreferencesWindowAt(Constants.PreferenceTitle);
-				}
 				return;
 			}
 
@@ -974,7 +969,23 @@ namespace NGToolsEditor
 			r.x = 0F;
 			r.y = 0F;
 
-			this.listDrawer.OnGUI(r);
+			if (this.errorPopup.exception != null)
+			{
+				r.height = this.errorPopup.boxHeight;
+				this.errorPopup.OnGUIRect(r);
+				r.y += r.height;
+
+				r.height = this.position.height - r.height;
+			}
+
+			try
+			{
+				this.listDrawer.OnGUI(r);
+			}
+			catch (Exception ex)
+			{
+				this.errorPopup.exception = ex;
+			}
 		}
 
 		public static int	GetHistoricCursor()
@@ -993,7 +1004,7 @@ namespace NGToolsEditor
 			}
 		}
 
-		private void	DrawSelection(Rect r, NGFavWindow.Selection selection, int i)
+		private void	DrawSelection(Rect r, AssetsSelection selection, int i)
 		{
 			if (selection.refs[0].@object == null)
 			{
@@ -1050,6 +1061,7 @@ namespace NGToolsEditor
 				else
 					Utility.content.text = "(" + selection.refs.Count + ") " + this.GetHierarchy(selection.refs[0].@object);
 				Utility.content.image = Utility.GetIcon(selection.refs[0].@object.GetInstanceID());
+
 				if (GUI.Button(r, Utility.content, GeneralStyles.ToolbarButtonLeft))
 				{
 					if (Event.current.button == 1 || this.lastClick + Constants.DoubleClickTime > EditorApplication.timeSinceStartup)

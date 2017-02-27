@@ -1,86 +1,13 @@
-﻿using System;
+﻿using NGTools.Network;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	using UnityEngine;
 
-	public partial class PacketId
-	{
-		public const int	ServerHasDisconnect = 1;
-		public const int	ClientHasDisconnect = 2;
-		public const int	Server_ErrorNotification = 3;
-
-		public const int	Scene_ClientRequestHierarchy = 3000;
-		public const int	Scene_ServerSendHierarchy = 3001;
-		public const int	Scene_ClientRequestLayers = 3002;
-		public const int	Scene_ServerSendLayers = 3003;
-
-		public const int	Scene_ClientRequestResources = 3004;
-		public const int	Scene_ServerSendResources = 3005;
-
-		public const int	Scene_ClientSetSibling = 3008;
-
-		public const int	Scene_ClientRequestGameObjectData = 3100;
-		public const int	Scene_ServerSendGameObjectData = 3101;
-
-		public const int	Scene_ServerSendComponent = 3102;
-
-		public const int	Scene_ClientUpdateFieldValue = 3103;
-		public const int	Scene_ServerUpdateFieldValue = 3104;
-
-		public const int	Scene_ClientInvokeBehaviourMethod = 3105;
-
-		public const int	Scene_ClientWatchGameObjects = 3106;
-		public const int	Scene_ClientWatchMaterials = 3107;
-		public const int	Scene_ClientDeleteGameObjects = 3108;
-		public const int	Scene_ServerDeleteGameObjects = 3109;
-		public const int	Scene_ClientDeleteComponents = 3110;
-		public const int	Scene_ServerDeleteComponents = 3111;
-
-		public const int	Scene_ClientRequestMaterialData = 3112;
-		public const int	Scene_ServerSendMaterialData = 3113;
-		public const int	Scene_ClientUpdateMaterialProperty = 3114;
-		public const int	Scene_ServerUpdateMaterialProperty = 3115;
-		public const int	Scene_ClientUpdateMaterialVector2 = 3116;
-		public const int	Scene_ServerUpdateMaterialVector2 = 3117;
-		public const int	Scene_ClientChangeMaterialShader = 3118;
-
-		public const int	Scene_ClientRequestEnumData = 3119;
-		public const int	Scene_ServerSendEnumData = 3120;
-
-		public const int	Scene_ClientLoadBigArray = 3121;
-
-		public const int	Scene_ClientRequestProject = 3200;
-		public const int	Scene_ServerSendProject = 3201;
-
-		public const int	Camera_ClientConnect = 3300;
-		public const int	Camera_ClientDisconnect = 3317;
-		public const int	Camera_ServerIsInitialized = 3301;
-		public const int	Camera_ClientRequestAllCameras = 3302;
-		public const int	Camera_ServerSendAllCameras = 3303;
-		public const int	Camera_ClientPickCamera = 3304;
-		public const int	Camera_ClientPickGhostCameraAtCamera = 3305;
-		public const int	Camera_ClientStickGhostCamera = 3318;
-		public const int	Camera_ServerStickGhostCamera = 3319;
-		public const int	Camera_ClientSetSetting = 3306;
-		public const int	Camera_ServerSendTexture = 3307;
-		public const int	Camera_ServerSendCameraTransform = 3308;
-		public const int	Camera_ClientSendCameraInput = 3309;
-		public const int	Camera_ClientSendCameraTransformPosition = 3310;
-		public const int	Camera_ClientSendCameraTransformRotation = 3311;
-		public const int	Camera_ClientSendCameraZoom = 3312;
-
-		public const int	Camera_ClientRaycastScene = 3313;
-		public const int	Camera_ServerSendRaycastResult = 3314;
-		
-		public const int	Camera_ServerSendCameraData = 3315;
-
-		public const int	Camera_ClientToggleModule = 3316;
-	}
-
-	public class ServerSceneExecuter : PacketExecuter
+	internal sealed class ServerSceneExecuter : PacketExecuter
 	{
 		private NGServerScene		ssm;
 		private List<GameObject>	cameraRaycastResult = new List<GameObject>();
@@ -229,10 +156,14 @@ namespace NGTools
 		private void	Handle_Scene_ClientInvokeBehaviourMethod(Client sender, Packet _packet)
 		{
 			ClientInvokeBehaviourMethodPacket	packet = _packet as ClientInvokeBehaviourMethodPacket;
-			ReturnInvokeComponentMethod			r = this.ssm.InvokeComponentMethod(packet.gameObjectInstanceID, packet.instanceID, packet.method, packet.arguments);
+			string								result = string.Empty;
+			ReturnInvokeComponentMethod			r = this.ssm.InvokeComponentMethod(packet.gameObjectInstanceID, packet.instanceID, packet.methodSignature, packet.arguments, ref result);
 
 			switch (r)
 			{
+				case ReturnInvokeComponentMethod.Success:
+					sender.AddPacket(new ServerReturnInvokeResultPacket(result));
+					break;
 				case ReturnInvokeComponentMethod.GameObjectNotFound:
 					sender.AddPacket(new ErrorNotificationPacket(Errors.Server_GameObjectNotFound, this.PrepareGameObjectNotFoundMessage(packet, packet.gameObjectInstanceID.ToString())));
 					break;
@@ -240,10 +171,13 @@ namespace NGTools
 					sender.AddPacket(new ErrorNotificationPacket(Errors.Server_ComponentNotFound, this.PrepareComponentNotFoundMessage(packet, packet.instanceID.ToString())));
 					break;
 				case ReturnInvokeComponentMethod.MethodNotFound:
-					sender.AddPacket(new ErrorNotificationPacket(Errors.Server_MethodNotFound, this.PrepareMethodNotFoundMessage(packet, packet.method)));
+					sender.AddPacket(new ErrorNotificationPacket(Errors.Server_MethodNotFound, this.PrepareMethodNotFoundMessage(packet, packet.methodSignature)));
 					break;
 				case ReturnInvokeComponentMethod.InvalidArgument:
 					sender.AddPacket(new ErrorNotificationPacket(Errors.Server_InvalidArgument, this.PrepareInvalidArgumentMessage(packet)));
+					break;
+				case ReturnInvokeComponentMethod.InvocationFailed:
+					sender.AddPacket(new ErrorNotificationPacket(Errors.Server_InvocationFailed, this.PrepareInvocationFailedMessage(packet, packet.methodSignature)));
 					break;
 			}
 		}
@@ -431,7 +365,7 @@ namespace NGTools
 			// Initialize modules.
 			if (this.modulesRunner == null)
 			{
-				GameObject modulesGameObject = new GameObject("NG Camera Modules");
+				GameObject	modulesGameObject = new GameObject("NG Camera Modules");
 				this.modules = new List<CameraServerDataModule>();
 
 				this.modulesRunner = modulesGameObject.AddComponent<CameraModulesRunner>();
@@ -539,38 +473,43 @@ namespace NGTools
 			InternalNGDebug.Assert(mustSucceed, "Picking a camera while the server has not been initialized.");
 			ClientSetSettingPacket	packet = _packet as ClientSetSettingPacket;
 
-			if (packet.setting == ClientSetSettingPacket.Settings.TargetRefresh)
+			if (packet.setting == Setting.TargetRefresh)
 				cam.targetRefresh = Mathf.Clamp((int)packet.value, NGServerCamera.TargetRefreshMin, NGServerCamera.TargetRefreshMax);
-			else if (packet.setting == ClientSetSettingPacket.Settings.Wireframe)
+			else if (packet.setting == Setting.Wireframe)
 				cam.wireframe = (bool)packet.value;
-			else if (packet.setting == ClientSetSettingPacket.Settings.CameraClearFlags)
+			else if (packet.setting == Setting.CameraClearFlags)
 				cam.ghostCamera.clearFlags = (CameraClearFlags)packet.value;
-			else if (packet.setting == ClientSetSettingPacket.Settings.CameraBackground)
+			else if (packet.setting == Setting.CameraBackground)
 				cam.ghostCamera.backgroundColor = (Color)packet.value;
-			else if (packet.setting == ClientSetSettingPacket.Settings.CameraCullingMask)
+			else if (packet.setting == Setting.CameraCullingMask)
 				cam.ghostCamera.cullingMask = (int)packet.value;
-			else if (packet.setting == ClientSetSettingPacket.Settings.CameraProjection)
+			else if (packet.setting == Setting.CameraProjection)
 				cam.ghostCamera.orthographic = (int)packet.value == 1;
-			else if (packet.setting == ClientSetSettingPacket.Settings.CameraFieldOfView)
+			else if (packet.setting == Setting.CameraFieldOfView)
 				cam.ghostCamera.fieldOfView = (float)packet.value;
-			else if (packet.setting == ClientSetSettingPacket.Settings.CameraSize)
+			else if (packet.setting == Setting.CameraSize)
 				cam.ghostCamera.orthographicSize = (float)packet.value;
-			else if (packet.setting == ClientSetSettingPacket.Settings.CameraClippingPlanesFar)
+			else if (packet.setting == Setting.CameraClippingPlanesFar)
 				cam.ghostCamera.farClipPlane = (float)packet.value;
-			else if (packet.setting == ClientSetSettingPacket.Settings.CameraClippingPlanesNear)
+			else if (packet.setting == Setting.CameraClippingPlanesNear)
 				cam.ghostCamera.nearClipPlane = (float)packet.value;
-			else if (packet.setting == ClientSetSettingPacket.Settings.CameraViewportRect)
+			else if (packet.setting == Setting.CameraViewportRect)
 				cam.ghostCamera.rect = (Rect)packet.value;
-			else if (packet.setting == ClientSetSettingPacket.Settings.CameraDepth)
+			else if (packet.setting == Setting.CameraDepth)
 				cam.ghostCamera.depth = (float)packet.value;
-			else if (packet.setting == ClientSetSettingPacket.Settings.CameraRenderingPath)
+			else if (packet.setting == Setting.CameraRenderingPath)
 				cam.ghostCamera.renderingPath = (RenderingPath)packet.value;
-			else if (packet.setting == ClientSetSettingPacket.Settings.CameraOcclusionCulling)
+			else if (packet.setting == Setting.CameraOcclusionCulling)
 				cam.ghostCamera.useOcclusionCulling = (bool)packet.value;
-			else if (packet.setting == ClientSetSettingPacket.Settings.CameraHDR)
+#if !UNITY_4_5 && !UNITY_4_6 && !UNITY_4_7 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2 && !UNITY_5_3 && !UNITY_5_4 && !UNITY_5_5
+			else if (packet.setting == Setting.CameraHDR)
+				cam.ghostCamera.allowHDR = (bool)packet.value;
+#else
+			else if (packet.setting == Setting.CameraHDR)
 				cam.ghostCamera.hdr = (bool)packet.value;
+#endif
 #if UNITY_5
-			else if (packet.setting == ClientSetSettingPacket.Settings.CameraTargetDisplay)
+			else if (packet.setting == Setting.CameraTargetDisplay)
 				cam.ghostCamera.targetDisplay = (int)packet.value;
 #endif
 		}
@@ -709,6 +648,11 @@ namespace NGTools
 		private string	PrepareInvalidArgumentMessage(Packet packet)
 		{
 			return "An argument is invalid for packet " + packet.GetType().Name + ".";
+		}
+
+		private string	PrepareInvocationFailedMessage(Packet packet, string methodSignature)
+		{
+			return "An method invocation (\"" + methodSignature + "\") has failed for packet " + packet.GetType().Name + ".";
 		}
 
 		private string	PrepareMaterialNotFoundMessage(Packet packet, string instanceID)

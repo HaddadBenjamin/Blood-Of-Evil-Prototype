@@ -1,6 +1,6 @@
-﻿namespace NGToolsEditor
+﻿namespace NGToolsEditor.NGConsole
 {
-	public class SublimeOpener : IEditorOpener
+	internal sealed class SublimeOpener : IEditorOpener
 	{
 		public string	defaultArguments { get { return "\"$(File):$(Line)\""; } }
 

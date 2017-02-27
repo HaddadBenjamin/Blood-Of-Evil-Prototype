@@ -18,15 +18,17 @@ namespace NGToolsEditor
 			w.minSize = new Vector2(1F, 1F);
 			w.callback += callback;
 		}
+
 		protected virtual void	OnGUI()
 		{
-			if (this.forceClose == false)
+			// Callback can be null in the rare case the window is still alive.
+			if (this.forceClose == false && this.callback != null)
 				this.callback();
 
 			this.forceClose = true;
 		}
 
-		protected virtual void Update()
+		protected virtual void	Update()
 		{
 			if (this.forceClose == true)
 				this.Close();

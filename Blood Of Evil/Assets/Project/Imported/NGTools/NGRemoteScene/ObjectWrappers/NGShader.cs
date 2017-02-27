@@ -1,4 +1,4 @@
-﻿namespace NGTools
+﻿namespace NGTools.NGRemoteScene
 {
 	public sealed class NGShader
 	{
@@ -20,9 +20,7 @@
 			this.properties = new NGShaderProperty[buffer.ReadInt32()];
 
 			for (int i = 0; i < this.properties.Length; i++)
-			{
 				this.properties[i] = new NGShaderProperty(buffer);
-			}
 		}
 
 		public NGShaderProperty	GetProperty(string name)

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace NGToolsEditor
 {
 	[CustomPropertyDrawer(typeof(GRangeAttribute), true)]
-	public class GRangeDrawer : PropertyDrawer
+	internal sealed class GRangeDrawer : PropertyDrawer
 	{
 		public override float	GetPropertyHeight(SerializedProperty property, GUIContent label)
 		{

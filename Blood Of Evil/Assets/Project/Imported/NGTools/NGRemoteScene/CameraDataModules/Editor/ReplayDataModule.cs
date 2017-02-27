@@ -1,14 +1,15 @@
 ﻿using NGTools;
+using NGTools.NGRemoteScene;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	public abstract class ReplayDataModule : CameraDataModule
 	{
 		public List<CameraData>	data = new List<CameraData>();
 
-		protected int		index = -1;
+		protected int	index = -1;
 
 		protected	ReplayDataModule(byte moduleID, int priority, string name) : base(moduleID, priority, name)
 		{
@@ -22,6 +23,10 @@ namespace NGToolsEditor
 		{
 		}
 
+		/// <summary>
+		/// Set the index on the most recent data before the given <paramref name="time"/>.
+		/// </summary>
+		/// <param name="time"></param>
 		public virtual void	SetTime(float time)
 		{
 			if (this.index == -1 || time > this.data[this.index].time)
@@ -51,5 +56,9 @@ namespace NGToolsEditor
 
 		public abstract void	Export(ByteBuffer writer);
 		public abstract void	Import(Replay settings, ByteBuffer reader);
+
+		public virtual void	OnGUIDBG()
+		{
+		}
 	}
 }

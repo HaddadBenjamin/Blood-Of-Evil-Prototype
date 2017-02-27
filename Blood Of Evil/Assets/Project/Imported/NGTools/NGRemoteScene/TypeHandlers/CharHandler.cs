@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[Priority(40)]
-	public class CharHandler : TypeHandler
+	internal sealed class CharHandler : TypeHandler
 	{
 		public	CharHandler() : base(typeof(Char))
 		{

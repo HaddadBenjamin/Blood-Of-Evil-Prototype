@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGAssetsFinder
 {
-	public class RendererExclusion : TypeMembersExclusion
+	internal sealed class RendererExclusion : TypeMembersExclusion
 	{
 		public	RendererExclusion()
 		{

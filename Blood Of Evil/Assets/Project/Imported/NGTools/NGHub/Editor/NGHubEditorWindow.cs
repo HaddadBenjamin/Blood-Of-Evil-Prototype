@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGHub
 {
 	public class NGHubEditorWindow : EditorWindow
 	{
@@ -16,10 +16,16 @@ namespace NGToolsEditor
 		private int					closeComponentWindowFrameIndex;
 		private Vector2				scrollPosition;
 
+		protected virtual void	OnEnable()
+		{
+			Undo.undoRedoPerformed += this.Repaint;
+		}
+
 		protected virtual void	OnDestroy()
 		{
 			if (this.componentWindow != null)
 				this.componentWindow.Close();
+			Undo.undoRedoPerformed -= this.Repaint;
 		}
 
 		public void	Init(NGHubWindow hub)
@@ -33,6 +39,8 @@ namespace NGToolsEditor
 #endif
 			this.list.drawElementCallback = this.DrawComponent;
 			this.list.onAddCallback = this.OpenAddComponentWizard;
+			this.list.onRemoveCallback = (l) => { l.list.RemoveAt(l.index); this.hub.SaveComponents(); };
+			this.list.onReorderCallback = (l) => this.hub.SaveComponents();
 			this.list.onChangedCallback = (l) => this.hub.Repaint();
 		}
 
@@ -168,7 +176,8 @@ namespace NGToolsEditor
 
 		private void	OpenAddComponentWizard(ReorderableList list)
 		{
-			this.hub.OpenAddComponentWizard();
+			if (FreeConstants.CheckMaxHubComponents(this.hub.components.Count) == true)
+				this.hub.OpenAddComponentWizard();
 		}
 
 		private void	DeleteComponent(object i)

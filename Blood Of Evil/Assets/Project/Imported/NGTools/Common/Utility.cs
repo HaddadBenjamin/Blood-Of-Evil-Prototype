@@ -8,42 +8,52 @@ namespace NGTools
 {
 	using UnityEngine;
 
-	public static class Utility
+	public static partial class Utility
 	{
-		public const BindingFlags	ExposedBindingFlags = BindingFlags.Public/* | BindingFlags.NonPublic*/ | BindingFlags.Instance;
+		public const BindingFlags	ExposedBindingFlags = BindingFlags.Public | BindingFlags.Instance;
 
 		public static ByteBuffer	sharedBBuffer = new ByteBuffer(128);
 		public static StringBuilder	sharedBuffer = new StringBuilder(128);
 
-		private static Type[]	assemblyTypes;
+		private static Dictionary<Assembly, Type[]>	assemblyTypes = new Dictionary<Assembly, Type[]>();
 
 		public static IEnumerable<Type>	EachAssignableFrom(Type baseType, Func<Type, bool> match = null)
 		{
-			if (Utility.assemblyTypes == null)
-				Utility.assemblyTypes = Assembly.GetExecutingAssembly().GetTypes();
+			Type[]	types;
 
-			for (int i = 0; i < Utility.assemblyTypes.Length; i++)
+			if (Utility.assemblyTypes.TryGetValue(baseType.Assembly, out types) == false)
 			{
-				if (baseType.IsAssignableFrom(Utility.assemblyTypes[i]) == true &&
-					Utility.assemblyTypes[i].UnderlyingSystemType != baseType &&
-					(match == null || match(Utility.assemblyTypes[i]) == true))
+				types = baseType.Assembly.GetTypes();
+				Utility.assemblyTypes[baseType.Assembly] = types;
+			}
+
+			for (int i = 0; i < types.Length; i++)
+			{
+				if (baseType.IsAssignableFrom(types[i]) == true &&
+					types[i].UnderlyingSystemType != baseType &&
+					(match == null || match(types[i]) == true))
 				{
-					yield return Utility.assemblyTypes[i];
+					yield return types[i];
 				}
 			}
 		}
 
 		public static IEnumerable<Type>	EachSubClassesOf(Type baseType, Func<Type, bool> match = null)
 		{
-			if (Utility.assemblyTypes == null)
-				Utility.assemblyTypes = Assembly.GetExecutingAssembly().GetTypes();
+			Type[]	types;
 
-			for (int i = 0; i < Utility.assemblyTypes.Length; i++)
+			if (Utility.assemblyTypes.TryGetValue(baseType.Assembly, out types) == false)
 			{
-				if (Utility.assemblyTypes[i].IsSubclassOf(baseType) == true &&
-					(match == null || match(Utility.assemblyTypes[i]) == true))
+				types = baseType.Assembly.GetTypes();
+				Utility.assemblyTypes[baseType.Assembly] = types;
+			}
+
+			for (int i = 0; i < types.Length; i++)
+			{
+				if (types[i].IsSubclassOf(baseType) == true &&
+					(match == null || match(types[i]) == true))
 				{
-					yield return Utility.assemblyTypes[i];
+					yield return types[i];
 				}
 			}
 		}
@@ -115,117 +125,6 @@ namespace NGTools
 				return @interface.GetGenericArguments()[0];
 
 			return null;
-		}
-
-		/// <summary>
-		/// Gets all fields exposable in Inspector.
-		/// </summary>
-		/// <param name="type"></param>
-		/// <param name="exposers"></param>
-		/// <returns></returns>
-		public static FieldInfo[]		GetExposedFields(Type type, ComponentExposer[] exposers)
-		{
-			Stack<Type>		inheritances = new Stack<Type>();
-			List<FieldInfo>	fields = new List<FieldInfo>();
-
-			inheritances.Push(type);
-			while (type.BaseType != typeof(Component) && type.BaseType != typeof(object))
-			{
-				inheritances.Push(type.BaseType);
-				type = type.BaseType;
-			}
-
-			foreach (Type ty in inheritances)
-			{
-				if (exposers != null)
-				{
-					int	j = 0;
-
-					for (; j < exposers.Length; j++)
-					{
-						if (exposers[j].type == ty)
-						{
-							fields.AddRange(exposers[j].GetFieldInfos());
-							break;
-						}
-					}
-
-					if (j < exposers.Length)
-						continue;
-				}
-
-				FieldInfo[]	fis = ty.GetFields(Utility.ExposedBindingFlags | BindingFlags.DeclaredOnly);
-
-				for (int i = 0; i < fis.Length; i++)
-				{
-					if (fis[i].GetCustomAttributes(typeof(HideInInspector), false).Length > 0 ||
-						Utility.CanExposeTypeInInspector(fis[i].FieldType) == false)
-					{
-						continue;
-					}
-
-					fields.Add(fis[i]);
-				}
-			}
-
-			return fields.ToArray();
-		}
-
-		/// <summary>
-		/// Gets all properties exposable in Inspector.
-		/// </summary>
-		/// <param name="type"></param>
-		/// <param name="exposers"></param>
-		/// <returns></returns>
-		public static PropertyInfo[]	GetExposedProperties(Type type, ComponentExposer[] exposers)
-		{
-			Stack<Type>			inheritances = new Stack<Type>();
-			List<PropertyInfo>	properties = new List<PropertyInfo>();
-
-			inheritances.Push(type);
-			while (type.BaseType != typeof(Component) && type.BaseType != typeof(object))
-			{
-				inheritances.Push(type.BaseType);
-				type = type.BaseType;
-			}
-
-			foreach (Type ty in inheritances)
-			{
-				if (exposers != null)
-				{
-					int	j = 0;
-
-					for (; j < exposers.Length; j++)
-					{
-						if (exposers[j].type == ty)
-						{
-							properties.AddRange(exposers[j].GetPropertyInfos());
-							break;
-						}
-					}
-
-					if (j < exposers.Length)
-						continue;
-				}
-
-				PropertyInfo[]	pis = ty.GetProperties(Utility.ExposedBindingFlags | BindingFlags.DeclaredOnly);
-
-				for (int i = 0; i < pis.Length; i++)
-				{
-					if (pis[i].GetCustomAttributes(typeof(HideInInspector), false).Length > 0 ||
-						pis[i].GetIndexParameters().Length != 0 || // Skip indexer.
-						pis[i].CanRead == false || // Skip prop without both get/set.
-						pis[i].CanWrite == false ||
-						Utility.CanExposeTypeInInspector(pis[i].PropertyType) == false)
-					{
-						continue;
-					}
-
-					properties.Add(pis[i]);
-				}
-			}
-
-			return properties.ToArray();
 		}
 
 		public static List<FieldInfo>	GetFieldsHierarchyOrdered(Type t, Type stopType, BindingFlags flags)
@@ -318,7 +217,7 @@ namespace NGTools
 		{
 			Vector3	perp = Vector3.Cross(new Vector3(fwd.x, 0f, fwd.y),
 										 new Vector3(targetDir.x, 0f, targetDir.y));
-			float dir = Vector3.Dot(perp, up);
+			float	dir = Vector3.Dot(perp, up);
 
 			if (dir > 0F)
 				return 1F;
@@ -345,8 +244,6 @@ namespace NGTools
 
 		public static string	GetShortAssemblyType(this Type t)
 		{
-			// TODO Check if types from external plugins work.
-			// TODO Test in Unix.
 			if (t.Assembly.FullName.StartsWith("mscorlib") == false)
 				return t.FullName + "," + t.Assembly.FullName.Substring(0, t.Assembly.FullName.IndexOf(','));
 			return t.FullName;
@@ -422,6 +319,31 @@ namespace NGTools
 		public static void	ReturnCollectionModifier(ICollectionModifier modifier)
 		{
 			Utility.cachedCollectionModifiers.Add(modifier);
+		}
+
+		public static bool	IsComponentEnableable(Component component)
+		{
+			Type	componentType = component.GetType();
+
+			if (component is Behaviour)
+			{
+				if (componentType.GetMethod("Start", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null ||
+					componentType.GetMethod("Update", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null ||
+					componentType.GetMethod("FixedUpdate", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null ||
+					componentType.GetMethod("OnGUI", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null)
+				{
+					return true;
+				}
+				else
+					return false;
+			}
+			else
+			{
+				if (componentType.GetProperty("enabled", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null)
+					return true;
+				else
+					return false;
+			}
 		}
 	}
 }

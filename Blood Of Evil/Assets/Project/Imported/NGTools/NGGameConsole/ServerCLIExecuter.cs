@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using NGTools.Network;
+using NGTools.NGConsole;
+using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
-	public class ServerCLIExecuter : PacketExecuter
+	internal class ServerCLIExecuter : PacketExecuter
 	{
 		private NGCLI	cli;
 
@@ -25,9 +27,7 @@ namespace NGTools
 		private void	HandleClientRequestCommandNodesPacket(Client sender, Packet command)
 		{
 			if (this.cli == null)
-			{
 				Debug.Log("Command has been requested but there is no CommandLineInterpreter. Aborted.");
-			}
 			else
 			{
 				RemoteCommand					remoteCommand = new RemoteCommand(cli.parser.root);
@@ -40,9 +40,7 @@ namespace NGTools
 		private void	HandleClientSendCommandPacket(Client sender, Packet command)
 		{
 			if (cli == null)
-			{
 				Debug.Log("Command has been requested but there is no CommandLineInterpreter. Aborted.");
-			}
 			else
 			{
 				ClientSendCommandPacket	clientSendCommand = command as ClientSendCommandPacket;

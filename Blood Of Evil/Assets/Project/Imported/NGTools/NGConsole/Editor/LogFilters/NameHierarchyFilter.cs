@@ -1,12 +1,12 @@
 ﻿using System;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	using UnityEngine;
 
 	[Serializable]
-	public class NameHierarchyFilter : ILogFilter
+	internal sealed class NameHierarchyFilter : ILogFilter
 	{
 		[Exportable]
 		private bool	enabled;
@@ -44,9 +44,7 @@ namespace NGToolsEditor
 		public void	ContextMenu(GenericMenu menu, Row row, int i)
 		{
 			if (row.log.instanceID != 0)
-			{
 				menu.AddItem(new GUIContent("#" + i + " " + LC.G("FilterByThisObjectName")), false, this.ActiveFilter, row);
-			}
 		}
 
 		private void	ActiveFilter(object data)

@@ -6,9 +6,8 @@ namespace NGToolsEditor
 {
 	using UnityEngine;
 
-	public class GUIListDrawer<T>
+	public sealed class GUIListDrawer<T>
 	{
-		public static Color	HighlightBackgroundColor = new Color(.2421875F, .37109375F, .5859375F, 1F);
 		public const string	GenericDataKey = "key";
 
 		public float		elementHeight = EditorGUIUtility.singleLineHeight;
@@ -21,6 +20,7 @@ namespace NGToolsEditor
 		public bool		handleDrag = false;
 		public bool		handleSelection = false;
 		public bool		drawBackgroundColor = false;
+		public Color	highlightBackgroundColor;
 		public Color	backgroundColor;
 
 		public Action<Rect, T, int>		ElementGUI;
@@ -37,15 +37,10 @@ namespace NGToolsEditor
 		private Rect	viewRect = new Rect();
 		private float	scrollHeight;
 
-		private Vector2	dragPosition;
-		private double	lastClick;
-
 		public	GUIListDrawer()
 		{
-			if (EditorGUIUtility.isProSkin == true)
-				this.backgroundColor = new Color(61F / 255F, 61F / 255F, 61F / 255F, 1F);
-			else
-				this.backgroundColor = new Color(220F / 255F, 220F / 255F, 220F / 255F, 1F);
+			this.highlightBackgroundColor = EditorGUIUtility.isProSkin == true ? new Color(.2421875F, .37109375F, .5859375F) : new Color(.3421875F, .47109375F, .8859375F);
+			this.backgroundColor = EditorGUIUtility.isProSkin == true ? new Color(61F / 255F, 61F / 255F, 61F / 255F) : new Color(220F / 255F, 220F / 255F, 220F / 255F);
 		}
 
 		public void	OnGUI(Rect r)
@@ -81,7 +76,7 @@ namespace NGToolsEditor
 					if (this.handleSelection == true && Event.current.type == EventType.Repaint &&
 						this.selection.Contains(j) == true)
 					{
-						EditorGUI.DrawRect(r, GUIListDrawer<T>.HighlightBackgroundColor);
+						EditorGUI.DrawRect(r, this.highlightBackgroundColor);
 					}
 
 					this.ElementGUI(r, this[j], j);
@@ -173,20 +168,27 @@ namespace NGToolsEditor
 			if (Event.current.type == EventType.Used)
 				return;
 
-			if (Event.current.type == EventType.MouseDrag &&
-				(Utility.position2D - Event.current.mousePosition).sqrMagnitude >= Constants.MinStartDragDistance)
+			if (Event.current.type == EventType.MouseDrag)
 			{
-				DragAndDrop.StartDrag("Drag Element");
-				Event.current.Use();
+				if ((Utility.position2D - Event.current.mousePosition).sqrMagnitude >= Constants.MinStartDragDistance &&
+					DragAndDrop.GetGenericData(GUIListDrawer<T>.GenericDataKey) != null)
+				{
+					DragAndDrop.StartDrag("Drag Element");
+					Event.current.Use();
+				}
 			}
-			else if (Event.current.type == EventType.MouseDown &&
-					 r.Contains(Event.current.mousePosition) == true)
+			else if (Event.current.type == EventType.MouseDown)
 			{
-				Utility.position2D = Event.current.mousePosition;
-				DragAndDrop.PrepareStartDrag();
-				DragAndDrop.paths = new string[0];
-				DragAndDrop.objectReferences = new Object[0];
-				DragAndDrop.SetGenericData(GUIListDrawer<T>.GenericDataKey, i);
+				if (r.Contains(Event.current.mousePosition) == true)
+				{
+					Utility.position2D = Event.current.mousePosition;
+					DragAndDrop.PrepareStartDrag();
+					DragAndDrop.paths = new string[0];
+					DragAndDrop.objectReferences = new Object[0];
+					DragAndDrop.SetGenericData(GUIListDrawer<T>.GenericDataKey, i);
+				}
+				else
+					DragAndDrop.SetGenericData(GUIListDrawer<T>.GenericDataKey, null);
 			}
 
 			if (DragAndDrop.GetGenericData(GUIListDrawer<T>.GenericDataKey) == null)
@@ -218,6 +220,7 @@ namespace NGToolsEditor
 			}
 			else if (Event.current.type == EventType.DragPerform && r.Contains(Event.current.mousePosition) == true)
 			{
+				DragAndDrop.SetGenericData(GUIListDrawer<T>.GenericDataKey, null);
 				DragAndDrop.AcceptDrag();
 
 				if (this.array != null)

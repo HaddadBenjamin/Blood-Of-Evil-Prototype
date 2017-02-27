@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	public interface ILogExporter
 	{
 		/// <summary>Called when the wizard select this exporter.</summary>
-		void	OnFocus();
+		void	OnEnable();
 
 		/// <summary>Called when the wizard focus another exporter.</summary>
-		void	OnBlur();
+		void	OnDestroy();
 
 		/// <summary>Called right after wizard GUI</summary>
 		void	OnGUI();

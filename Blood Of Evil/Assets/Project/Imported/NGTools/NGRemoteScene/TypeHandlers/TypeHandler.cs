@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	/// <summary>
 	/// <para>Defines a behaviour for a type that MUST be known in both server and client sides.</para>
@@ -8,7 +8,7 @@ namespace NGTools
 	/// <para>All primary types from .NET and most common types from UnityEngine are implemented.</para>
 	/// <remarks>
 	/// <para>If you define a TypeHandler for your custom class Foo, it will only work if this type is present in the project.</para>
-	/// <para>NG Remote has been thought to work from an empty project, therefore implementation of custom classes should be avoid.</para>
+	/// <para>NG Remote has been thought to work from an empty project, therefore implementation of custom classes should be avoided.</para>
 	/// </remarks>
 	/// </summary>
 	/// <seealso cref="NGToolsEditor.TypeHandlerDrawer"/>

@@ -1,6 +1,6 @@
-﻿namespace NGToolsEditor
+﻿namespace NGToolsEditor.NGConsole
 {
-	public class FastestPreset : Preset
+	internal sealed class FastestPreset : Preset
 	{
 		public override void	SetSettings(NGSettings instance)
 		{

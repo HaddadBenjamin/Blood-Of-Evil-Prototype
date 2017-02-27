@@ -2,10 +2,10 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class TimeStartMode : StartMode
+	internal sealed class TimeStartMode : StartMode
 	{
 		[Exportable]
 		private float	time;

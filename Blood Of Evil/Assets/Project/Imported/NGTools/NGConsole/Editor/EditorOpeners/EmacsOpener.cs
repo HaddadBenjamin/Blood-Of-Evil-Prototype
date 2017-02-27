@@ -1,6 +1,6 @@
-﻿namespace NGToolsEditor
+﻿namespace NGToolsEditor.NGConsole
 {
-	public class EmacsOpener : IEditorOpener
+	internal sealed class EmacsOpener : IEditorOpener
 	{
 		public string	defaultArguments { get { return "+$(Line) \"$(File)\" "; } }
 

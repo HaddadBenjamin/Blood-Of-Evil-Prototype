@@ -1,15 +1,16 @@
-﻿using UnityEngine;
+﻿using NGTools.Network;
+using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Scene_ClientSetSibling)]
-	public class ClientSetSiblingPacket : Packet
+	internal sealed class ClientSetSiblingPacket : Packet
 	{
 		public int	instanceID;
 		public int	instanceIDParent;
 		public int	siblingIndex;
 
-		protected	ClientSetSiblingPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientSetSiblingPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

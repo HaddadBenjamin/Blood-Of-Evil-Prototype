@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	using UnityEngine;
 
@@ -17,7 +17,7 @@ namespace NGTools
 		ArrayUnityObject
 	}
 
-	public static class TypeHandlersManager
+	internal static class TypeHandlersManager
 	{
 		private static readonly TypeHandler[]	typeHandlers;
 		private static readonly ClassHandler	refTypeHandlers;

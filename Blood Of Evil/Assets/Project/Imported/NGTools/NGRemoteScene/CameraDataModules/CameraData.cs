@@ -1,4 +1,4 @@
-﻿namespace NGToolsEditor
+﻿namespace NGTools.NGRemoteScene
 {
 	public abstract class CameraData
 	{

@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-	public class MaxAttribute : PropertyConstraintAttribute
+	public sealed class MaxAttribute : PropertyConstraintAttribute
 	{
 		public readonly decimal	max;
 

@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using UnityEditor;
-using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	public class XMLExporter : ILogExporter
+	internal sealed class XMLExporter : ILogExporter
 	{
 		private StringBuilder	buffer;
 
-		public void	OnFocus()
+		public void	OnEnable()
 		{
 		}
 
-		public void	OnBlur()
+		public void	OnDestroy()
 		{
 		}
 

@@ -15,7 +15,7 @@ namespace NGToolsEditor
 	{
 		public const BindingFlags	SearchFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
-		public class Node
+		public sealed class Node
 		{
 			public enum Options
 			{
@@ -82,7 +82,7 @@ namespace NGToolsEditor
 		}
 
 		[Serializable]
-		public class ExportNode
+		public sealed class ExportNode
 		{
 			public string		name;
 			public string		value;
@@ -334,7 +334,7 @@ namespace NGToolsEditor
 				root.Deserialize(br);
 			}
 
-			ImportSettingsWizard isw = ScriptableWizard.GetWindow<ImportSettingsWizard>(true, "Import Settings", true);
+			ImportSettingsWizard	isw = ScriptableWizard.GetWindow<ImportSettingsWizard>(true, "Import Settings", true);
 
 			isw.Init(root);
 			//OutputNode(root);
@@ -345,9 +345,7 @@ namespace NGToolsEditor
 			Debug.Log(new string('	', depth) + node.name + "=" + node.value);
 
 			for (int i = 0; i < node.children.Length; i++)
-			{
 				OutputNode(node.children[i], depth + 1);
-			}
 		}
 
 		private static void	OutputNode(SettingsExporter.Node node, int depth = 0)
@@ -355,9 +353,7 @@ namespace NGToolsEditor
 			Debug.Log(new string('	', depth) + node.name + "=" + node.value);
 
 			for (int i = 0; i < node.children.Count; i++)
-			{
 				OutputNode(node.children[i], depth + 1);
-			}
 		}
 
 		private static void	StringifyNode(StringBuilder buffer, SettingsExporter.Node node, int depth = 0)
@@ -374,9 +370,7 @@ namespace NGToolsEditor
 			}
 
 			for (int i = 0; i < node.children.Count; i++)
-			{
 				SettingsExporter.StringifyNode(buffer, node.children[i], depth + 1);
-			}
 		}
 	}
 }

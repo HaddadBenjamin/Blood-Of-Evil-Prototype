@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	using UnityEngine;
 
 	[Serializable]
-	public class ToggleTagsFilter : ILogFilter
+	internal sealed class ToggleTagsFilter : ILogFilter
 	{
 		[Exportable]
 		private bool	enabled;

@@ -1,15 +1,15 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Camera_ClientRaycastScene)]
-	public class ClientRaycastScenePacket : Packet
+	internal sealed class ClientRaycastScenePacket : Packet
 	{
-		public bool a;
 		public float	viewportX;
 		public float	viewportY;
 
-		protected	ClientRaycastScenePacket(ByteBuffer buffer) : base(buffer)
+		private	ClientRaycastScenePacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 
@@ -23,7 +23,7 @@ namespace NGTools
 		{
 			ClientRaycastScenePacket	packet = pendingPacket as ClientRaycastScenePacket;
 
-			if (packet != null && packet.a == false && (packet.viewportX != this.viewportX || packet.viewportY != this.viewportY))
+			if (packet != null && (packet.viewportX != this.viewportX || packet.viewportY != this.viewportY))
 			{
 				packet.viewportX = this.viewportX;
 				packet.viewportY = this.viewportY;

@@ -1,19 +1,22 @@
 ﻿using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	public class LightTheme : Theme
+	internal sealed class LightTheme : Theme
 	{
+		/// <summary></summary>
+		/// <remarks>Test your Color in Unity 4, because rich text is buggy over there.</remarks>
+		/// <param name="instance"></param>
 		public override void	SetTheme(NGSettings instance)
 		{
-			Color	defaultNormalColor = new Color(0F / 255F, 0F / 255F, 0F / 255F, 1F);
+			Color	defaultNormalColor = new Color(0F / 255F, 0F / 255F, 0F / 255F);
 
 			instance.general.menuButtonStyle = new GUIStyle("ToolbarButton");
 			instance.general.menuButtonStyle.clipping = TextClipping.Overflow;
 
-			instance.log.selectedBackground = new Color(62F / 255F, 125F /231F, 231F / 255F, 1F);
-			instance.log.evenBackground = new Color(216F / 255F, 216F / 255F, 216F / 255F, 1F);
-			instance.log.oddBackground = new Color(222F / 255F, 222F / 255F, 222F / 255F, 1F);
+			instance.log.selectedBackground = new Color(62F / 255F, 125F /231F, 231F / 255F);
+			instance.log.evenBackground = new Color(216F / 255F, 216F / 255F, 216F / 255F);
+			instance.log.oddBackground = new Color(222F / 255F, 222F / 255F, 222F / 255F);
 
 			instance.log.style = new GUIStyle(GUI.skin.label);
 			instance.log.style.alignment = TextAnchor.MiddleLeft;
@@ -28,7 +31,7 @@ namespace NGToolsEditor
 
 			instance.log.timeStyle = new GUIStyle(GUI.skin.label);
 			instance.log.timeStyle.alignment = TextAnchor.MiddleLeft;
-			instance.log.timeStyle.normal.textColor = new Color(111F / 255F, 85F / 255F, 0F / 255F, 1F);
+			instance.log.timeStyle.normal.textColor = new Color(111F / 255F, 85F / 255F, 0F / 255F);
 
 			instance.log.collapseLabelStyle = new GUIStyle("CN CountBadge");
 			instance.log.collapseLabelStyle.alignment = TextAnchor.MiddleLeft;
@@ -52,19 +55,19 @@ namespace NGToolsEditor
 			instance.stackTrace.style.margin.left = 0;
 			instance.stackTrace.style.margin.right = 0;
 
-			instance.stackTrace.returnValueColor = new Color(78F / 255F, 50F / 255F, 255F / 255F, 1F);
-			instance.stackTrace.reflectedTypeColor = new Color(62F / 255F, 49F / 255F, 49F / 255F, 1F);
-			instance.stackTrace.methodNameColor = new Color(49F / 255F, 68F / 255F, 84F / 255F, 1F);
-			instance.stackTrace.argumentTypeColor = new Color(84F / 255F, 40F / 255, 250F / 255F, 1F);
-			instance.stackTrace.argumentNameColor = new Color(170F / 255F, 115F / 255F, 114F / 255F, 1F);
-			instance.stackTrace.filepathColor = new Color(107F / 255F, 72F / 255F, 142F / 255F, 1F);
-			instance.stackTrace.lineColor = new Color(63F / 255F, 42F / 255F, 214F / 255F, 1F);
+			instance.stackTrace.returnValueColor = new Color(78F / 255F, 50F / 255F, 255F / 255F);
+			instance.stackTrace.reflectedTypeColor = new Color(103F / 255F, 103F / 255F, 103F / 255F);
+			instance.stackTrace.methodNameColor = new Color(49F / 255F, 68F / 255F, 84F / 255F);
+			instance.stackTrace.argumentTypeColor = new Color(84F / 255F, 40F / 255, 250F / 255F);
+			instance.stackTrace.argumentNameColor = new Color(170F / 255F, 115F / 255F, 114F / 255F);
+			instance.stackTrace.filepathColor = new Color(69F / 255F, 69F / 255F, 69F / 255F);
+			instance.stackTrace.lineColor = new Color(44F / 255F, 6F / 255F, 199F / 255F);
 
-			instance.stackTrace.previewTextColor = new Color(42F / 255F, 51F / 255F, 51F / 255F, 1F);
-			instance.stackTrace.previewLineColor = new Color(63F / 255F, 42F / 255F, 214F / 255F, 1F);
+			instance.stackTrace.previewTextColor = new Color(68F / 255F, 69F / 255F, 69F / 255F);
+			instance.stackTrace.previewLineColor = instance.stackTrace.lineColor;
 
-			instance.stackTrace.previewSourceCodeBackgroundColor = new Color(216F / 255F, 219F / 255F, 219F / 255F, 1F);
-			instance.stackTrace.previewSourceCodeMainLineBackgroundColor = new Color(208F / 255F, 203F / 255F, 203F / 255F, 1F);
+			instance.stackTrace.previewSourceCodeBackgroundColor = new Color(174F / 255F, 177F / 255F, 177F / 255F);
+			instance.stackTrace.previewSourceCodeMainLineBackgroundColor = new Color(161F / 255F, 161F / 255F, 161F / 255F);
 			instance.stackTrace.previewSourceCodeStyle = new GUIStyle(instance.log.style);
 			instance.stackTrace.previewSourceCodeStyle.margin = new RectOffset();
 
@@ -73,17 +76,17 @@ namespace NGToolsEditor
 				if (instance.stackTrace.keywords[0].keywords.Length > 0 &&
 					instance.stackTrace.keywords[0].keywords[0] == ";")
 				{
-					instance.stackTrace.keywords[0].color = new Color(255F / 255F, 82F / 255F, 4F / 255F, 1F);
+					instance.stackTrace.keywords[0].color = new Color(96F / 255F, 69F / 255F, 0F / 255F);
 				}
 				if (instance.stackTrace.keywords[1].keywords.Length > 0 &&
 					instance.stackTrace.keywords[1].keywords[0] == "this")
 				{
-					instance.stackTrace.keywords[1].color = new Color(141F / 255F, 47F / 255F, 212F / 255F, 1F);
+					instance.stackTrace.keywords[1].color = new Color(141F / 255F, 47F / 255F, 212F / 255F);
 				}
 				if (instance.stackTrace.keywords[2].keywords.Length > 0 &&
 					instance.stackTrace.keywords[2].keywords[0] == "var")
 				{
-					instance.stackTrace.keywords[2].color = new Color(186F / 255F, 99F / 255F, 218F / 255F, 1F);
+					instance.stackTrace.keywords[2].color = new Color(186F / 255F, 99F / 255F, 218F / 255F);
 				}
 			}
 

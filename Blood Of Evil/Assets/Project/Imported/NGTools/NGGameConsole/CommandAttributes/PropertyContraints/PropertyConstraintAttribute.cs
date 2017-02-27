@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	public abstract class PropertyConstraintAttribute : Attribute
 	{

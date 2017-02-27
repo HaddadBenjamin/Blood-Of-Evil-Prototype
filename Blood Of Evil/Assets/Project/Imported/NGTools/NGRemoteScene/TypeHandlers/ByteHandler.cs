@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[Priority(0)]
-	public class ByteHandler : TypeHandler
+	internal sealed class ByteHandler : TypeHandler
 	{
 		public	ByteHandler() : base(typeof(Byte))
 		{

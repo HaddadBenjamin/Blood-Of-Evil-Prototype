@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-	public class MinAttribute : PropertyConstraintAttribute
+	public sealed class MinAttribute : PropertyConstraintAttribute
 	{
 		public readonly decimal	min;
 

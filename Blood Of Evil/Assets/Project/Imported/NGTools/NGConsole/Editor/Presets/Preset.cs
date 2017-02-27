@@ -1,4 +1,4 @@
-﻿namespace NGToolsEditor
+﻿namespace NGToolsEditor.NGConsole
 {
 	public abstract class Preset
 	{

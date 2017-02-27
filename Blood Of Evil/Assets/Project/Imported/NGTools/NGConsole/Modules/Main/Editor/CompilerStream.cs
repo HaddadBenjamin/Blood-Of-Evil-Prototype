@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
 	[Exportable(ExportableAttribute.ArrayOptions.Overwrite | ExportableAttribute.ArrayOptions.Immutable)]
-	public class CompilerStream : StreamLog, IRows
+	internal sealed class CompilerStream : StreamLog, IRows
 	{
 		private const float	SpeedWarning = 2.5F;
 
@@ -75,9 +75,7 @@ namespace NGToolsEditor
 			EditorGUI.BeginChangeCheck();
 
 			if (this.aware == true)
-			{
 				GUILayout.Toggle(i == this.container.WorkingStream, this.name + " (" + this.totalCount + ")", Preferences.Settings.general.menuButtonStyle);
-			}
 			else
 			{
 				using (this.restorer.Set(1F,
@@ -93,9 +91,7 @@ namespace NGToolsEditor
 			if (EditorGUI.EndChangeCheck() == true)
 			{
 				if (Event.current.button == 0)
-				{
 					this.container.FocusStream(i);
-				}
 			}
 		}
 
@@ -186,9 +182,7 @@ namespace NGToolsEditor
 
 			// Reimport all logs.
 			for (int i = 0; i < this.console.rows.Count; i++)
-			{
 				this.AddLog(i, this.console.rows[i]);
-			}
 
 			int	logIndex = 0;
 			// Try to restore selected logs.
@@ -225,9 +219,7 @@ namespace NGToolsEditor
 			{
 				this.CountLog(row);
 				if (this.CanDisplay(row) == true)
-				{
 					this.AppendLogToRow(row);
-				}
 			}
 		}
 
@@ -279,9 +271,7 @@ namespace NGToolsEditor
 		private void	DetectCompile()
 		{
 			if (EditorApplication.isCompiling == true)
-			{
 				this.isCompiling = true;
-			}
 			else
 			{
 				this.isCompiling = false;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	public class CommandNode
 	{
@@ -10,7 +10,7 @@ namespace NGTools
 			Children = 1
 		}
 
-		public virtual bool		IsLeaf { get { return false; }}
+		public virtual bool		IsLeaf { get { return false; } }
 
 		public readonly string	name;
 		public readonly string	description;

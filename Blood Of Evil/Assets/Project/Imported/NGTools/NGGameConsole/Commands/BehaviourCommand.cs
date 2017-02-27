@@ -1,7 +1,8 @@
-﻿using System;
+﻿using NGTools.NGRemoteScene;
+using System;
 using System.Reflection;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	public class BehaviourCommand : CommandNode
 	{
@@ -16,9 +17,7 @@ namespace NGTools
 			{
 				CommandAttribute[]	attr = fields[i].GetCustomAttributes(typeof(CommandAttribute), false) as CommandAttribute[];
 				if (attr.Length > 0)
-				{
 					InternalNGDebug.LogError(Errors.CLI_ForbiddenCommandOnField, "Attribute Command can not be assigned on field \"" + fields[i].Name + "\" from \"" + instance.GetType().Name + "\" alias \"" + name + "\".");
-				}
 			}
 
 			for (int i = 0; i < properties.Length; i++)

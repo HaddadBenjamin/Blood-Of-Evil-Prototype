@@ -4,6 +4,7 @@ ContactFormWizard_ContactEMail=Contact E-Mail
 ContactFormWizard_UnityInformation=Unity Information
 ContactFormWizard_OSInformation=OS Information
 ContactFormWizard_HardwareInformation=Hardware Information
+ContactFormWizard_ComplementaryInformation=Complementary Information
 ContactFormWizard_NameRequired=A name is required.
 ContactFormWizard_ValidEMailRequired=A valid E-Mail is required.
 ContactFormWizard_BugReportRecommendation=Adding Unity, OS or hardware informations for a bug report is highly recommended.

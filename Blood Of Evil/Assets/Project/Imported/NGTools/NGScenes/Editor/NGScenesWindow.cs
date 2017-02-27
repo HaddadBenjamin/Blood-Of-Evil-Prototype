@@ -10,7 +10,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGScenes
 {
 	using UnityEngine;
 
@@ -191,7 +191,7 @@ namespace NGToolsEditor
 		private void	DrawSceneRow(Rect r, Scene scene, int i)
 		{
 			if (r.Contains(Event.current.mousePosition) == false)
-				GUI.Button(r, scene.name, GeneralStyles.ToolbarButtonLeft);
+				GUI.Label(r, scene.name, GeneralStyles.ToolbarButtonLeft);
 			else
 			{
 				if (Event.current.type == EventType.MouseDrag &&

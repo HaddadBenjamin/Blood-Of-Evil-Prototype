@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.AnimatedValues;
 using UnityEngine;
-using UnityEngine.Events;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	public class ConsoleSettingsEditor
+	public sealed class ConsoleSettingsEditor
 	{
 		public enum MainTabs
 		{
@@ -24,7 +23,7 @@ namespace NGToolsEditor
 			StackTrace
 		}
 
-		private static Color	HighlightInput = new Color(.4F, 9F, .25F, 1F);
+		private static Color	HighlightInput = new Color(.4F, 9F, .25F);
 
 		public MainTabs		currentTab = MainTabs.General;
 		public GeneralTabs	currentGeneralTab = GeneralTabs.General;
@@ -32,16 +31,17 @@ namespace NGToolsEditor
 		public Vector2		generalLogScrollPosition;
 		public Vector2		generalStackTraceScrollPosition;
 
+		private int			selectedInputsGroup = 0;
+
 		private Type[]		themeTypes;
 		private string[]	themeNames;
 		private Type[]		presetTypes;
 		private string[]	presetNames;
 
 		private Vector2			inputScrollPosition;
-		private List<Timer>		testInputAnimationFeedback;
+		private List<GUITimer>	testInputAnimationFeedback;
 		private InputCommand	registeringCommand;
 		private bool			shiftPressed;
-		private ColorContentRestorer restorer;
 
 		private SectionDrawer	sectionGeneral;
 		private SectionDrawer	sectionLog;
@@ -78,8 +78,7 @@ namespace NGToolsEditor
 			NGSettingsWindow.AddSection(NGConsoleWindow.Title, this.OnGUI, 10);
 
 			this.inputScrollPosition = new Vector2();
-			this.testInputAnimationFeedback = new List<Timer>();
-			this.restorer = new ColorContentRestorer();
+			this.testInputAnimationFeedback = new List<GUITimer>();
 
 			this.sectionGeneral = new SectionDrawer(typeof(NGSettings.GeneralSettings));
 			this.sectionLog = new SectionDrawer(typeof(NGSettings.LogSettings));
@@ -357,7 +356,7 @@ namespace NGToolsEditor
 			for (int i = 0; i < this.themeTypes.Length; i++)
 			{
 				if (GUILayout.Button(this.themeNames[i]) == true &&
-					EditorUtility.DisplayDialog(this.themeNames[i], LC.G("NGSettings_ConfirmApply"), LC.G("Yes"), LC.G("No")) == true)
+					((Event.current.modifiers & Constants.ByPassPromptModifier) != 0 || EditorUtility.DisplayDialog(this.themeNames[i], LC.G("NGSettings_ConfirmApply"), LC.G("Yes"), LC.G("No")) == true))
 				{
 					Theme	theme = Activator.CreateInstance(this.themeTypes[i]) as Theme;
 
@@ -379,7 +378,7 @@ namespace NGToolsEditor
 			for (int i = 0; i < this.presetTypes.Length; i++)
 			{
 				if (GUILayout.Button(this.presetNames[i]) == true &&
-					EditorUtility.DisplayDialog(this.presetNames[i], LC.G("NGSettings_ConfirmApply"), LC.G("Yes"), LC.G("No")) == true)
+					((Event.current.modifiers & Constants.ByPassPromptModifier) != 0 || EditorUtility.DisplayDialog(this.presetNames[i], LC.G("NGSettings_ConfirmApply"), LC.G("Yes"), LC.G("No")) == true))
 				{
 					Preset	preset = Activator.CreateInstance(this.presetTypes[i]) as Preset;
 
@@ -396,44 +395,12 @@ namespace NGToolsEditor
 			}
 		}
 
-		private int	selectedInputsGroup = 0;
-
-		public class Timer
-		{
-			public float	Value { get { return this.af.value; } }
-
-			public AnimFloat	af;
-			private float		value;
-			private float		target;
-
-			public	Timer(UnityAction update, float value, float target)
-			{
-				this.af = new AnimFloat(0F, update);
-				this.af.speed = 1F;
-				this.af.target = target;
-
-				this.value = value;
-				this.target = target;
-			}
-
-			/// <summary>
-			/// Initializes the animation. Value will now be updated.
-			/// </summary>
-			public void	Start()
-			{
-				this.af.value = this.value;
-				this.af.target = this.target;
-			}
-		}
-
 		private void	OnGUIInputs()
 		{
 			for (int n = 0, i = 0; i < Preferences.Settings.inputsManager.groups.Count; ++i, ++n)
 			{
 				if (GUILayout.Toggle(i == this.selectedInputsGroup, LC.G("InputGroup_" + Preferences.Settings.inputsManager.groups[i].name), this.menuButtonStyle) == true)
-				{
 					this.selectedInputsGroup = i;
-				}
 			}
 
 			if (this.selectedInputsGroup < Preferences.Settings.inputsManager.groups.Count)
@@ -447,7 +414,7 @@ namespace NGToolsEditor
 							var	af = new AnimFloat(0F, EditorWindow.focusedWindow.Repaint);
 							af.speed = 1F;
 							af.target = 0F;
-							this.testInputAnimationFeedback.Add(new Timer(EditorWindow.focusedWindow.Repaint, Constants.CheckFadeoutCooldown, 0F));
+							this.testInputAnimationFeedback.Add(new GUITimer(EditorWindow.focusedWindow.Repaint, Constants.CheckFadeoutCooldown, 0F));
 						}
 
 						if (Preferences.Settings.inputsManager.groups[this.selectedInputsGroup].commands[j].Check() == true)
@@ -461,8 +428,15 @@ namespace NGToolsEditor
 
 						if (this.testInputAnimationFeedback[n].Value > 0F)
 						{
-							using (this.restorer.Set(Color.Lerp(GUI.contentColor, ConsoleSettingsEditor.HighlightInput, this.testInputAnimationFeedback[n].Value)))
+#if UNITY_4_5
+							this.DrawInputCommand(Preferences.Settings.inputsManager.groups[this.selectedInputsGroup].commands[j]);
+							Rect	r = GUILayoutUtility.GetLastRect();
+							r.width = 2F;
+							EditorGUI.DrawRect(r, Color.Lerp(GUI.contentColor, ConsoleSettingsEditor.HighlightInput, this.testInputAnimationFeedback[n].Value));
+#else
+							using (ColorContentRestorer.Get(Color.Lerp(GUI.contentColor, ConsoleSettingsEditor.HighlightInput, this.testInputAnimationFeedback[n].Value)))
 								this.DrawInputCommand(Preferences.Settings.inputsManager.groups[this.selectedInputsGroup].commands[j]);
+#endif
 						}
 						else
 							this.DrawInputCommand(Preferences.Settings.inputsManager.groups[this.selectedInputsGroup].commands[j]);
@@ -498,9 +472,7 @@ namespace NGToolsEditor
 						Event.current.Use();
 					}
 					else if (Event.current.shift == true)
-					{
 						this.shiftPressed = true;
-					}
 					else if (this.shiftPressed == true)
 					{
 						command.shift = !command.shift;
@@ -508,9 +480,7 @@ namespace NGToolsEditor
 					}
 
 					if (GUILayout.Button(LC.G("Stop"), GUILayout.MaxWidth(80F)) == true)
-					{
 						registeringCommand = null;
-					}
 
 					GUILayout.Label(LC.G("ConsoleSettings_PressAny"));
 

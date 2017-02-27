@@ -8,7 +8,7 @@ namespace NGToolsEditor
 	using UnityEngine;
 
 	[InitializeOnLoad]
-	public class ScriptableObjectCreator
+	internal sealed class ScriptableObjectCreator
 	{
 		private const string	Title = "Create ScriptableObject";
 		private static Object	contextObject;
@@ -46,7 +46,7 @@ namespace NGToolsEditor
 
 				if (string.IsNullOrEmpty(path) == false)
 				{
-					ScriptableObject instance = ScriptableObject.CreateInstance(type);
+					ScriptableObject	instance = ScriptableObject.CreateInstance(type);
 
 					AssetDatabase.CreateAsset(instance, path);
 					AssetDatabase.SaveAssets();

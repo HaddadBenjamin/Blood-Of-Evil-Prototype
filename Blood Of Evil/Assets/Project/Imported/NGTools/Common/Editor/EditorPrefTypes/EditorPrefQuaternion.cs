@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace NGToolsEditor
 {
-	public class EditorPrefQuaternion : EditorPrefType
+	internal sealed class EditorPrefQuaternion : EditorPrefType
 	{
 		public override bool	CanHandle(Type type)
 		{

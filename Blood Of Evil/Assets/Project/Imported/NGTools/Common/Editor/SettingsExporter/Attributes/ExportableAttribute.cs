@@ -8,7 +8,7 @@ namespace NGToolsEditor
 	/// <para>Makes EditorWindow exportable by the wizard.</para>
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-	public class ExportableAttribute : Attribute
+	public sealed class ExportableAttribute : Attribute
 	{
 		/// <summary>Sets the default export/import option.</summary>
 		[Flags]

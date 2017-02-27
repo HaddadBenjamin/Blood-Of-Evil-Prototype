@@ -1,15 +1,16 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Camera_ServerSendAllCameras)]
-	public class ServerSendAllCamerasPacket : Packet
+	internal sealed class ServerSendAllCamerasPacket : Packet
 	{
 		public int[]	IDs;
 		public string[]	names;
 		public int		ghostCameraId;
 
-		protected	ServerSendAllCamerasPacket(ByteBuffer buffer) : base(buffer)
+		private	ServerSendAllCamerasPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

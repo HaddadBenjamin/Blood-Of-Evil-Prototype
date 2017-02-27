@@ -1,15 +1,23 @@
-﻿namespace NGTools
+﻿using NGTools.Network;
+using NGTools.NGConsole;
+
+namespace NGTools.NGGameConsole
 {
 	using UnityEngine;
 
 	public class NGServerCommand : BaseServer
 	{
+		public const float	UDPPingInterval = 3F;
+		public const int	UDPPortBroadcastMin = 6600;
+		public const int	UDPPortBroadcastMax = 6610;
 		public const int	DefaultPort = 17255;
 
 		[Header("[Optional] Allow to execute commands from NG Console.")]
 		public NGCLI	cli;
 
 		public new AbstractTcpListener	listener { get { return (AbstractTcpListener)base.listener; } }
+
+		private AutoDetectUDPClient	udpClient;
 
 		protected override PacketExecuter	CreatePacketExecuter()
 		{
@@ -23,6 +31,8 @@
 #else
 			Application.logMessageReceived += this.HandleLog;
 #endif
+
+			this.udpClient = new AutoDetectUDPClient(this, this.listener.port, NGServerCommand.UDPPortBroadcastMin, NGServerCommand.UDPPortBroadcastMax, NGServerCommand.UDPPingInterval);
 		}
 
 		protected virtual void	OnDisable()
@@ -32,6 +42,9 @@
 #else
 			Application.logMessageReceived -= this.HandleLog;
 #endif
+
+			if (this.udpClient != null)
+				this.udpClient.Stop();
 		}
 
 		private	void	HandleLog(string condition, string stackTrace, LogType type)

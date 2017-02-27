@@ -1,12 +1,12 @@
 using System;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[ArgumentDrawerFor(typeof(Char))]
-	public class CharArgumentDrawer : ArgumentDrawer
+	internal sealed class CharArgumentDrawer : ArgumentDrawer
 	{
-		public CharArgumentDrawer(string name) : base(name, typeof(Char))
+		public CharArgumentDrawer(string name, Type type) : base(name, typeof(Char))
 		{
 		}
 
@@ -23,12 +23,12 @@ namespace NGToolsEditor
 			}
 		}
 
-		public override void	Serialize(string path)
+		public override void	Save(string path)
 		{
 			NGEditorPrefs.SetInt(path, (char)this.value);
 		}
 
-		public override void	Deserialize(string path)
+		public override void	Load(string path)
 		{
 			this.value = (char)NGEditorPrefs.GetInt(path);
 		}

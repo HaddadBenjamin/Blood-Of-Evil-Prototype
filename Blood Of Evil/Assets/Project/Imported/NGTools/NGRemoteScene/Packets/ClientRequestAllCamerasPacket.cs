@@ -1,11 +1,12 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Camera_ClientRequestAllCameras)]
-	public class ClientRequestAllCamerasPacket : Packet
+	internal sealed class ClientRequestAllCamerasPacket : Packet
 	{
-		protected	ClientRequestAllCamerasPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientRequestAllCamerasPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

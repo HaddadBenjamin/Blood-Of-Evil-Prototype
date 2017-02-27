@@ -2,7 +2,7 @@
 
 namespace NGToolsEditor
 {
-	public class NGEditorPrefs
+	public sealed class NGEditorPrefs
 	{
 		public static string	GetPerProjectPrefix()
 		{

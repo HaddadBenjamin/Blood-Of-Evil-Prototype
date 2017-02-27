@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGAssetsFinder
 {
 	public abstract class TypeMembersExclusion
 	{

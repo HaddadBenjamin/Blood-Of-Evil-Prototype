@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-	public class PriorityAttribute : Attribute
+	public sealed class PriorityAttribute : Attribute
 	{
 		public readonly int	priority;
 

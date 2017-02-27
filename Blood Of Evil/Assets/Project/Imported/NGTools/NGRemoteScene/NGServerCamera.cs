@@ -1,8 +1,8 @@
-﻿using System;
+﻿using NGTools.Network;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	public class NGServerCamera : MonoBehaviour, ICameraScreenshotData
 	{
@@ -42,15 +42,9 @@ namespace NGTools
 		public Camera			targetCamera;
 		public RenderTexture	renderTexture;
 
-#if NGT_DEBUG
 		public int		FPS;
 		public int		FPSSent;
 		public float	nextFPSTime;
-
-		public int		FPS2;
-		public int		FPSSent2;
-		public float	nextFPSTime2;
-#endif
 
 		private ScreenshotModule	screenshotModule;
 
@@ -94,16 +88,14 @@ namespace NGTools
 		{
 			this.screenshotModule.Update(this);
 
-#if NGT_DEBUG
 			float	t = Time.time;
-			this.FPSSent2++;
-			if (t >= this.nextFPSTime2)
+			this.FPSSent++;
+			if (t >= this.nextFPSTime)
 			{
-				this.FPS2 = this.FPSSent2;
-				this.FPSSent2 = 0;
-				this.nextFPSTime2 = t + 1F;
+				this.FPS = this.FPSSent;
+				this.FPSSent = 0;
+				this.nextFPSTime = t + 1F;
 			}
-#endif
 
 			if (this.moveForward == true)
 				this.cacheTransform.localPosition += this.cacheTransform.forward * Time.deltaTime * this.moveSpeed;
@@ -122,16 +114,6 @@ namespace NGTools
 
 				this.sender.AddPacket(new ServerSendCameraTransformPacket(this.cacheTransform.position, this.cacheTransform.eulerAngles.x, this.cacheTransform.eulerAngles.y));
 			}
-
-#if NGT_DEBUG
-			this.FPSSent++;
-			if (t >= this.nextFPSTime)
-			{
-				this.FPS = this.FPSSent;
-				this.FPSSent = 0;
-				this.nextFPSTime = t + 1F;
-			}
-#endif
 		}
 
 		public void	SetTransformPosition(Vector3 position)
@@ -169,10 +151,11 @@ namespace NGTools
 			int	n = NGServerCamera.RaycastResult.Length;
 #endif
 
-#if NGT_DEBUG
-			Debug.DrawRay(ray.origin, ray.direction * this.targetCamera.farClipPlane, Color.blue, 3F, true);
-			NGDebug.Log(NGServerCamera.RaycastResult);
-#endif
+			if (Conf.DebugMode != Conf.DebugModes.None)
+			{
+				Debug.DrawRay(ray.origin, ray.direction * this.targetCamera.farClipPlane, Color.blue, 3F, true);
+				NGDebug.Log(NGServerCamera.RaycastResult);
+			}
 
 			result.Clear();
 

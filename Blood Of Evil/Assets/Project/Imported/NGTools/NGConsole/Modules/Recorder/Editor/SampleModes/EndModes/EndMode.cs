@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
 	[Exportable(ExportableAttribute.ArrayOptions.Immutable)]

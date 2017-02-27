@@ -1,11 +1,12 @@
-﻿using System;
+﻿using NGToolsEditor.NGNavSelection;
+using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGHub
 {
 	[Serializable, Category("Misc")]
-	public class NavSelectionComponent : HubComponent
+	internal sealed class NavSelectionComponent : HubComponent
 	{
 		[NonSerialized]
 		private GUIContent	leftContent;

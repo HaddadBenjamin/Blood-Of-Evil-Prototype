@@ -1,4 +1,0 @@
-NameHierarchyFilter=Par nom
-GameObjectWithName="Game Object" comportant le nom
-FilterByThisObjectName=Filtrer par le nom de cet "Object"
-ByName=Par nom

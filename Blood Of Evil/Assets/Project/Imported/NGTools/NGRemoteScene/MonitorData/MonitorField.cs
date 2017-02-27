@@ -1,10 +1,11 @@
-﻿using System;
+﻿using NGTools.Network;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	public class MonitorField : MonitorData
+	internal sealed class MonitorField : MonitorData
 	{
 		private FieldInfo		fieldInfo;
 		private TypeHandler		typeHandler;

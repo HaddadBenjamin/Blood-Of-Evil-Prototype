@@ -2,6 +2,7 @@
 #define UNITY_4
 #endif
 
+using NGTools;
 using System;
 using UnityEditor;
 #if !UNITY_4 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
@@ -16,18 +17,8 @@ namespace NGToolsEditor
 	[InitializeOnLoad]
 	public static class NGEditorApplication
 	{
-		[ExecuteInEditMode]
-		private class EditorExitBehaviour : MonoBehaviour
-		{
-			protected virtual void	OnDestroy()
-			{
-				if (NGEditorApplication.EditorExit != null)
-					NGEditorApplication.EditorExit();
-			}
-		}
-
-		public static Action	ChangeScene;
-		public static Action	EditorExit;
+		public static event Action	ChangeScene;
+		public static event Action	EditorExit;
 
 #if UNITY_4 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
 		private static string	currentScene;
@@ -43,11 +34,27 @@ namespace NGToolsEditor
 			EditorApplication.update += NGEditorApplication.DetectChangeScene;
 
 			EditorApplication.delayCall += () => {
-				if (Resources.FindObjectsOfTypeAll<EditorExitBehaviour>().Length == 0)
+				GameObject[]	gameObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+
+				for (int i = 0; i < gameObjects.Length; i++)
 				{
-					GameObject	gameObject = new GameObject("NGEditorExit", typeof(EditorExitBehaviour));
-					gameObject.hideFlags = HideFlags.HideAndDontSave;
+					if (gameObjects[i].name.Equals("NGEditorExit") == true)
+						Object.DestroyImmediate(gameObjects[i]);
 				}
+
+				GameObject	gameObject = new GameObject("NGEditorExit", typeof(EditorExitBehaviour));
+				gameObject.hideFlags =
+#if UNITY_4
+				HideFlags.DontSave |
+#else
+				HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild |
+#endif
+				HideFlags.HideInHierarchy;
+				gameObject.GetComponent<EditorExitBehaviour>().callback = () =>
+				{
+					if (NGEditorApplication.EditorExit != null)
+						NGEditorApplication.EditorExit();
+				};
 			};
 		}
 

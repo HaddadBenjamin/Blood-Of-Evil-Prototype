@@ -1,9 +1,10 @@
-﻿using NGTools;
+﻿using NGTools.Network;
+using NGTools.NGRemoteScene;
 using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	public abstract class TypeHandlerDrawer
 	{
@@ -30,12 +31,12 @@ namespace NGToolsEditor
 		/// <param name="type"></param>
 		protected void	AsyncUpdateCommand(IUnityData unityData, string valuePath, object value, Type type)
 		{
-			unityData.Client.AddPacket(new ClientUpdateFieldValuePacket(valuePath, this.typeHandler.Serialize(type, value), this.typeHandler));
+			unityData.AddPacket(new ClientUpdateFieldValuePacket(valuePath, this.typeHandler.Serialize(type, value), this.typeHandler));
 		}
 
 		protected void	AsyncUpdateCommand(IUnityData unityData, string valuePath, object value, Type type, TypeHandler customTypeHandler)
 		{
-			unityData.Client.AddPacket(new ClientUpdateFieldValuePacket(valuePath, customTypeHandler.Serialize(type, value), customTypeHandler));
+			unityData.AddPacket(new ClientUpdateFieldValuePacket(valuePath, customTypeHandler.Serialize(type, value), customTypeHandler));
 		}
 	}
 }

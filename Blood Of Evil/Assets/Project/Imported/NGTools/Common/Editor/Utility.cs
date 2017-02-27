@@ -21,8 +21,62 @@ namespace NGToolsEditor
 {
 	using UnityEngine;
 
-	public static class	Utility
+	[InitializeOnLoad]
+	public static partial class	Utility
 	{
+		static	Utility()
+		{
+			try
+			{
+				Utility.InitiateAssemblies();
+
+				for (int i = 0; i < Utility.allAssemblies.Length; i++)
+				{
+					foreach (Type t in Utility.allTypes[i])
+					{
+						FieldInfo[]	fields = t.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+
+						for (int j = 0; j < fields.Length; j++)
+						{
+							if (fields[j].IsDefined(typeof(SetColorAttribute), false) == true)
+							{
+								object[]	attr = fields[j].GetCustomAttributes(typeof(SetColorAttribute), false);
+
+								for (int k = 0; k < attr.Length; k++)
+								{
+									SetColorAttribute	setColor = attr[k] as SetColorAttribute;
+
+									if (setColor != null)
+									{
+										// For security, set the personal color by default.
+										fields[j].SetValue(null, setColor.personal);
+	#if UNITY_4 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2 || UNITY_5_3
+										fields[j].SetValue(null, EditorGUIUtility.isProSkin == true ? setColor.pro : setColor.personal);
+	#else
+										Utility.ClosureSetColor(setColor, fields[j]);
+	#endif
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				InternalNGDebug.LogException(ex);
+			}
+		}
+
+		private static void	ClosureSetColor(SetColorAttribute setColor, FieldInfo field)
+		{
+			EditorApplication.delayCall += () =>
+			{
+				field.SetValue(null, EditorGUIUtility.isProSkin == true ? setColor.pro : setColor.personal);
+			};
+		}
+
 		#region Shared variables
 		public const string				DragObjectDataName = "i";
 		public static Vector2			position2D = new Vector2();
@@ -30,9 +84,6 @@ namespace NGToolsEditor
 		/// <summary>Is setup before OnGUI by NGConsole and ModuleEditorWindow. Use this variable to know which window is drawing.</summary>
 		public static EditorWindow		drawingWindow = null;
 		#endregion
-
-		public static FastFileCache		files = new FastFileCache();
-		public static FastClassCache	classes = new FastClassCache();
 
 		#region Buffer tools
 		private static Stack<ByteBuffer>	poolBBuffers = new Stack<ByteBuffer>(2);
@@ -99,6 +150,23 @@ namespace NGToolsEditor
 		public static Type	GetArraySubType(Type arrayType)
 		{
 			return InnerUtility.GetArraySubType(arrayType);
+		}
+
+		private static List<object>	tempList = new List<object>();
+
+		public static T[]				CreateInstancesOf<T>(params object[] args) where T : class
+		{
+			Utility.tempList.Clear();
+
+			foreach (Type type in Utility.EachSubClassesOf(typeof(T)))
+				Utility.tempList.Add(Activator.CreateInstance(type, args));
+
+			T[]	result = new T[Utility.tempList.Count];
+
+			for (int i = 0; i < Utility.tempList.Count; i++)
+				result[i] = Utility.tempList[i] as T;
+
+			return result;
 		}
 
 		public static Type[]			GetSubClassesOf(Type baseType)
@@ -213,6 +281,45 @@ namespace NGToolsEditor
 			return null;
 		}
 
+		/// <summary>
+		/// Searches for a type looking in all assemblies from Editor and Engine.
+		/// </summary>
+		/// <param name="className"></param>
+		/// <returns></returns>
+		public static Type	GetType(string @namespace, string className)
+		{
+			// Remove generic symbols.
+			int	n = className.IndexOf("[");
+
+			if (n != -1)
+				className = className.Substring(0, n);
+
+			if (Utility.allAssemblies == null)
+				Utility.InitiateAssemblies();
+
+			string	fullName = @namespace + '.' + className;
+
+			for (int i = 0; i < Utility.allAssemblies.Length; i++)
+			{
+				Type	classType = Utility.allAssemblies[i].GetType(className);
+
+				if (classType != null)
+					return classType;
+
+				foreach (Type t in Utility.allTypes[i])
+				{
+					if ((t.Namespace == @namespace &&
+						 t.Name == className) ||
+						t.FullName == fullName)
+					{
+						return t;
+					}
+				}
+			}
+
+			return null;
+		}
+
 		private static void InitiateAssemblies()
 		{
 			// Look into editor assemblies.
@@ -240,61 +347,6 @@ namespace NGToolsEditor
 		{
 			r.width -= width;
 			return new Rect(r.x + r.width, r.y, width, r.height);
-		}
-
-		public static void	OpenModuleInWindow(NGConsoleWindow console, Module module, bool focus = false)
-		{
-			ModuleWindow	moduleWindow = EditorWindow.CreateInstance<ModuleWindow>();
-			moduleWindow.Init(console, module);
-
-			Type	ContainerWindow = typeof(EditorWindow).Assembly.GetType("UnityEditor.ContainerWindow");
-			Type	View = typeof(EditorWindow).Assembly.GetType("UnityEditor.View");
-			Type	DockArea = typeof(EditorWindow).Assembly.GetType("UnityEditor.DockArea");
-
-			if (ContainerWindow != null && View != null && DockArea != null)
-			{
-				PropertyInfo	windows = ContainerWindow.GetProperty("windows", BindingFlags.Static | BindingFlags.Public);
-				PropertyInfo	mainView = ContainerWindow.GetProperty("mainView", BindingFlags.Instance | BindingFlags.Public);
-				PropertyInfo	allChildren = View.GetProperty("allChildren", BindingFlags.Instance | BindingFlags.Public);
-				FieldInfo		m_Panes = DockArea.GetField("m_Panes", BindingFlags.Instance | BindingFlags.NonPublic);
-				MethodInfo		AddTab = DockArea.GetMethod("AddTab", new Type[] { typeof(EditorWindow) });
-
-				if (windows != null && mainView != null && allChildren != null && m_Panes != null && AddTab != null)
-				{
-					Array	array = windows.GetValue(null, null) as Array;
-
-					foreach (var w in array)
-					{
-						object	view = mainView.GetValue(w, null);
-						Array	children = allChildren.GetValue(view, null) as Array;
-
-						foreach (var c in children)
-						{
-							try
-							{
-								var panes = m_Panes.GetValue(c);
-
-								List<EditorWindow>	panesCasted = panes as List<EditorWindow>;
-								if (panesCasted.Any((EditorWindow pane) => pane.GetType() == console.GetType()))
-								{
-									AddTab.Invoke(c, new object[] { moduleWindow });
-									moduleWindow.Show();
-									if (focus == false)
-										console.Focus();
-									return;
-								}
-							}
-							catch
-							{
-							}
-						}
-					}
-				}
-			}
-
-			moduleWindow.Show();
-			if (focus == false)
-				console.Focus();
 		}
 
 		public static List<FieldInfo>			GetFieldsHierarchyOrdered(Type t, Type stopType, BindingFlags flags)
@@ -594,7 +646,7 @@ namespace NGToolsEditor
 #if UNITY_5_2 || UNITY_5_3 || UNITY_5_4
 			if (buildTarget == BuildTarget.Nintendo3DS)
 				return BuildTargetGroup.Nintendo3DS;
-#elif UNITY_5_5
+#elif UNITY_5_5 || UNITY_5_5_OR_NEWER
 			if (buildTarget == BuildTarget.N3DS)
 				return BuildTargetGroup.N3DS;
 #endif
@@ -705,13 +757,23 @@ namespace NGToolsEditor
 
 				for (int i = 0; i < dirs.Length; i++)
 				{
-					if (Directory.Exists(Path.Combine(dirs[i], Constants.RelativeLocaleFolder)) == true &&
-						Directory.Exists(Path.Combine(dirs[i], "Common")) == true &&
-						File.Exists(Path.Combine(dirs[i], "Common/Editor/Preferences/Preferences.cs")) == true)
-					{
-						Utility.cachedConsolePath = dirs[i].Replace('\\', '/');
+					int	chances = 0;
+
+					if (Directory.Exists(Path.Combine(dirs[i], Constants.RelativeLocaleFolder)) == true)
+						++chances;
+					if (Directory.Exists(Path.Combine(dirs[i], "NGConsole")) == true)
+						++chances;
+					if (chances < 2 && Directory.Exists(Path.Combine(dirs[i], "NGGameConsole")) == true)
+						++chances;
+					if (chances < 2 && Directory.Exists(Path.Combine(dirs[i], "Test")) == true)
+						++chances;
+
+					// Set the path anyway.
+					Utility.cachedConsolePath = dirs[i].Replace('\\', '/');
+
+					// But break on the highest potential.
+					if (chances >= 2)
 						break;
-					}
 				}
 			}
 
@@ -850,16 +912,6 @@ namespace NGToolsEditor
 				(windows[i] as EditorWindow).Repaint();
 		}
 
-		/// <summary>
-		/// Removes all NGConsole's settings available. These Windows will not work anymore, a new ConsoleSettings will be required to work again.
-		/// </summary>
-		public static void	ResetConsolesSettings()
-		{
-			var	consoles = Resources.FindObjectsOfTypeAll<NGConsoleWindow>();
-			foreach (var c in consoles)
-				c.Repaint();
-		}
-
 		private static Type	preferencesWindowType;
 
 		/// <summary>Opens Preferences Window at the given <paramref name="preferenceItem"/>.</summary>
@@ -922,7 +974,7 @@ namespace NGToolsEditor
 
 		public static IEnumerable<T>	GetCustomAttributesIncludingBaseInterfaces<T>(this Type type)
 		{
-			var attributeType = typeof(T);
+			var	attributeType = typeof(T);
 			return type.GetCustomAttributes(attributeType, true).Union(type.GetInterfaces().SelectMany(interfaceType => interfaceType.GetCustomAttributes(attributeType, true))).Distinct().Cast<T>();
 		}
 
@@ -1004,7 +1056,7 @@ namespace NGToolsEditor
 
 					if (method != null)
 					{
-						object obj = method.Invoke(null, new object[] { asset });
+						object	obj = method.Invoke(null, new object[] { asset });
 						//Debug.Log("Method" + " " + obj);
 						icon = (Texture2D)obj;
 						if (icon != null)
@@ -1016,33 +1068,11 @@ namespace NGToolsEditor
 			return null;
 		}
 
-		private static Color    dropZoneOutline = Utility.GetBackgroundColor();
-		private static Color    dropZoneBackground;
-
-		private static GUIStyle dynamicFontSizeCenterText;
-
-		/// <summary>
-		/// Assigns dropZoneOutline and dropZoneBackground 1 frame later, too avoid call to any Unity skin and therefore unwanted warning.
-		/// </summary>
-		/// <returns></returns>
-		private static Color GetBackgroundColor()
-		{
-			EditorApplication.delayCall += () =>
-			{
-				if (EditorGUIUtility.isProSkin == true)
-				{
-					Utility.dropZoneBackground = new Color(.2F, .2F, .2F, .95F);
-					Utility.dropZoneOutline = new Color(.4F, .4F, .0F, .95F);
-				}
-				else
-				{
-					Utility.dropZoneBackground = new Color(.7F, .7F, .7F, .95F);
-					Utility.dropZoneOutline = new Color(.9F, .9F, .9F, .95F);
-				}
-			};
-
-			return default(Color);
-		}
+		[SetColor(.4F, .4F, .0F, .95F, .9F, .9F, .9F, .95F)]
+		private static Color	dropZoneOutline = default(Color);
+		[SetColor(.2F, .2F, .2F, .95F, .7F, .7F, .7F, .95F)]
+		private static Color	dropZoneBackground = default(Color);
+		private static GUIStyle	dynamicFontSizeCenterText;
 
 		/// <summary>
 		/// Draws a drop area where drag&drop should be handled.
@@ -1054,12 +1084,13 @@ namespace NGToolsEditor
 			if (Utility.dynamicFontSizeCenterText == null)
 			{
 				Utility.dynamicFontSizeCenterText = new GUIStyle(GUI.skin.label);
+				Utility.dynamicFontSizeCenterText.wordWrap = true;
 				Utility.dynamicFontSizeCenterText.alignment = TextAnchor.MiddleCenter;
 			}
 
 			EditorGUI.DrawRect(r, Utility.dropZoneBackground);
 
-			Rect r2 = r;
+			Rect	r2 = r;
 			r2.xMin += 2F;
 			r2.xMax -= 2F;
 			r2.yMin += 2F;
@@ -1072,7 +1103,7 @@ namespace NGToolsEditor
 			// Shrink title to fit the space.
 			Utility.content.text = message;
 			while (Utility.dynamicFontSizeCenterText.CalcSize(Utility.content).x >= r.width &&
-				   Utility.dynamicFontSizeCenterText.fontSize > 6)
+				   Utility.dynamicFontSizeCenterText.fontSize > 9)
 			{
 				--Utility.dynamicFontSizeCenterText.fontSize;
 			}
@@ -1112,9 +1143,9 @@ namespace NGToolsEditor
 		public static EditorWindow	InspectTarget(Object target)
 		{
 			// Get a reference to the `InspectorWindow` type object
-			var inspectorType = typeof(Editor).Assembly.GetType("UnityEditor.InspectorWindow");
+			var	inspectorType = typeof(Editor).Assembly.GetType("UnityEditor.InspectorWindow");
 			// Create an InspectorWindow instance
-			var inspectorInstance = ScriptableObject.CreateInstance(inspectorType) as EditorWindow;
+			var	inspectorInstance = ScriptableObject.CreateInstance(inspectorType) as EditorWindow;
 			// We display it - currently, it will inspect whatever gameObject is currently selected
 			// So we need to find a way to let it inspect/aim at our target GO that we passed
 			// For that we do a simple trick:
@@ -1124,11 +1155,11 @@ namespace NGToolsEditor
 			// 4- Fallback to our previous selection
 			//inspectorInstance.Show(false);
 			// Cache previous selected gameObject
-			var prevSelection = Selection.activeGameObject;
+			var	prevSelection = Selection.activeGameObject;
 			// Set the selection to GO we want to inspect
 			Selection.activeObject = target;
 			// Get a ref to the "locked" property, which will lock the state of the inspector to the current inspected target
-			var isLocked = inspectorType.GetProperty("isLocked", BindingFlags.Instance | BindingFlags.Public);
+			var	isLocked = inspectorType.GetProperty("isLocked", BindingFlags.Instance | BindingFlags.Public);
 			// Invoke `isLocked` setter method passing 'true' to lock the inspector
 			isLocked.GetSetMethod().Invoke(inspectorInstance, new object[] { true });
 			// Finally revert back to the previous selection so that other inspectors continue to inspect whatever they were inspecting...
@@ -1192,12 +1223,12 @@ namespace NGToolsEditor
 
 		private class ProgressBarTask
 		{
-			public Action	action;
-			public string	content;
-			public double	endTime;
-			public float	lifetime;
-			public string	abortMessage;
-			public Thread	thread;
+			public Action<object>	action;
+			public string			content;
+			public double			endTime;
+			public float			lifetime;
+			public string			abortMessage;
+			public Thread			thread;
 		}
 
 		private static List<ProgressBarTask>	progressBarTasks = new List<ProgressBarTask>();
@@ -1210,12 +1241,11 @@ namespace NGToolsEditor
 
 			// Around 32 chars max, smartly share the amount between tasks.
 
-
 			lock (Utility.progressBarTasks)
 			{
 				for (int i = 0; i < Utility.progressBarTasks.Count; i++)
 				{
-					var task = Utility.progressBarTasks[i];
+					var	task = Utility.progressBarTasks[i];
 
 					Utility.AsyncProgressBarDisplay(task.content, 0F);
 
@@ -1260,7 +1290,7 @@ namespace NGToolsEditor
 			Utility.AsyncProgressBarDisplay(Utility.ReturnBuffer(buffer), globalProgress / total);
 		}
 
-		public static void	StartAsyncBackgroundCallback(Action callback, string progressBarString, float lifetime, string abortMessage = null)
+		public static void	StartAsyncBackgroundTask(Action<object> callback, string progressBarString, float lifetime, string abortMessage = null)
 		{
 			lock (Utility.progressBarTasks)
 			{
@@ -1273,13 +1303,12 @@ namespace NGToolsEditor
 					endTime = EditorApplication.timeSinceStartup + lifetime,
 					lifetime = lifetime,
 					abortMessage = abortMessage,
-					thread = new Thread(new ThreadStart(callback))
+					thread = new Thread(new ParameterizedThreadStart(callback))
 				};
 
 				Utility.progressBarTasks.Add(task);
 
-				task.thread.Start();
-
+				task.thread.Start(task);
 				//Utility.StartBackgroundTask(Utility.StartThreadedCallback(task));
 			}
 		}
@@ -1970,12 +1999,14 @@ namespace NGToolsEditor
 			return null;
 		}
 
-		public static void DrawLine(Vector2 a, Vector2 b, Color c)
+		public static void	DrawLine(Vector2 a, Vector2 b, Color c)
 		{
-			Handles.BeginGUI();
-			//Handles.DrawSolidRectangleWithOutline(r, Color.clear, c);
-			Handles.DrawLine(a, b);
-			Handles.EndGUI();
+			using (HandlesColorRestorer.Get(c))
+			{
+				Handles.BeginGUI();
+				Handles.DrawLine(a, b);
+				Handles.EndGUI();
+			}
 		}
 
 		public static void	DrawRect(Rect r, Color c)
@@ -2000,12 +2031,12 @@ namespace NGToolsEditor
 			Graphics.DrawTexture(r, EditorGUIUtility.whiteTexture, Utility.FullRect, 0, 0, 0, 0, c, Utility.blendMaterial);
 
 			// Right border
-			r.x = xMax;
+			r.x = xMax - 1F;
 			Graphics.DrawTexture(r, EditorGUIUtility.whiteTexture, Utility.FullRect, 0, 0, 0, 0, c, Utility.blendMaterial);
 
 			// Bottom border
 			r.x = x;
-			r.y += r.height;
+			r.y += r.height - 1F;
 			r.width = w;
 			r.height = 1F;
 			Graphics.DrawTexture(r, EditorGUIUtility.whiteTexture, Utility.FullRect, 0, 0, 0, 0, c, Utility.blendMaterial);
@@ -2056,11 +2087,11 @@ namespace NGToolsEditor
 
 		public static Type[]	GetAllDerivedTypes(this AppDomain aAppDomain, Type aType)
 		{
-			var result = new List<Type>();
-			var assemblies = aAppDomain.GetAssemblies();
+			var	result = new List<Type>();
+			var	assemblies = aAppDomain.GetAssemblies();
 			foreach (var assembly in assemblies)
 			{
-				var types = assembly.GetTypes();
+				var	types = assembly.GetTypes();
 				foreach (var type in types)
 				{
 					if (type.IsSubclassOf(aType))
@@ -2100,10 +2131,10 @@ namespace NGToolsEditor
 
 			if (mainWindow == null || Object.Equals(mainWindow, "null") == true)
 			{
-				var windows = Resources.FindObjectsOfTypeAll(containerWinType);
+				var	windows = Resources.FindObjectsOfTypeAll(containerWinType);
 				foreach (var win in windows)
 				{
-					var showmode = (int)showModeField.GetValue(win);
+					var	showmode = (int)showModeField.GetValue(win);
 					if (showmode == 4) // main window
 					{
 						mainWindow = win;
@@ -2120,10 +2151,10 @@ namespace NGToolsEditor
 
 		public static void	CenterOnMainWin(this UnityEditor.EditorWindow aWin)
 		{
-			var main = GetEditorMainWindowPos();
-			var pos = aWin.position;
-			float w = (main.width - pos.width) * 0.5f;
-			float h = (main.height - pos.height) * 0.5f;
+			var	main = GetEditorMainWindowPos();
+			var	pos = aWin.position;
+			float	w = (main.width - pos.width) * 0.5f;
+			float	h = (main.height - pos.height) * 0.5f;
 			pos.x = main.x + w;
 			pos.y = main.y + h;
 			aWin.position = pos;
@@ -2149,93 +2180,28 @@ namespace NGToolsEditor
 
 		public static void	ShowExplorer(string itemPath)
 		{
-			itemPath = itemPath.Replace(@"/", @"\");   // explorer doesn't like front slashes
-			Process.Start("explorer.exe", "/select," + itemPath);
+			EditorUtility.RevealInFinder(itemPath);
 		}
 
 		public static void	AddNGMenuItems(GenericMenu menu, EditorWindow window, string helpLabel, string helpURL, bool isNGSettings = false)
 		{
-			menu.AddItem(new GUIContent("NG Preferences"), false, () => Utility.ShowPreferencesWindowAt(Constants.PackageTitle));
+			menu.AddItem(new GUIContent(Preferences.Title), false, () => Utility.ShowPreferencesWindowAt(Constants.PackageTitle));
 			if (isNGSettings == false)
 			{
-				menu.AddItem(new GUIContent("NG Settings"), false, () => {
+				menu.AddItem(new GUIContent(NGSettingsWindow.Title), false, () => {
 #if UNITY_5
-					EditorWindow.GetWindow<NGSettingsWindow>("NG Settings", true, window.GetType());
+					EditorWindow.GetWindow<NGSettingsWindow>(NGSettingsWindow.Title, true, window.GetType()).Focus(window.GetTitle());
 #else
-					EditorWindow.GetWindow<NGSettingsWindow>("NG Settings", true);
+					EditorWindow.GetWindow<NGSettingsWindow>(NGSettingsWindow.Title, true).Focus(window.GetTitle());
 #endif
 				});
 			}
 
 			if (string.IsNullOrEmpty(helpURL) == false)
 				menu.AddItem(new GUIContent("Help for " + helpLabel), false, () => Application.OpenURL(helpURL));
-		}
 
-		/// <summary>
-		/// Colors keywords given by StackSettings.
-		/// </summary>
-		/// <param name="line"></param>
-		/// <returns></returns>
-		public static string	ColorLine(string line)
-		{
-			StringBuilder	buffer = Utility.GetBuffer();
-
-			buffer.Append(' ');
-			buffer.AppendStartColor(Preferences.Settings.stackTrace.previewTextColor);
-			for (int i = 0; i < line.Length; i++)
-			{
-				int	previousKeywordColor = -1;
-
-				// Convert tab to spaces.
-				if (line[i] == '	' &&
-					Preferences.Settings.stackTrace.displayTabAsSpaces > 0)
-				{
-					buffer.Append(' ', Preferences.Settings.stackTrace.displayTabAsSpaces);
-					continue;
-				}
-				// Color only visible char.
-				else if (line[i] != ' ')
-				{
-					for (int j = 0; j < Preferences.Settings.stackTrace.keywords.Length; ++j)
-					{
-						for (int k = 0; k < Preferences.Settings.stackTrace.keywords[j].keywords.Length; k++)
-						{
-							if (Utility.Compare(line, Preferences.Settings.stackTrace.keywords[j].keywords[k], i) == true)
-							{
-								// Save some color tags.
-								if (previousKeywordColor != -1 &&
-									Preferences.Settings.stackTrace.keywords[previousKeywordColor].color != Preferences.Settings.stackTrace.keywords[j].color)
-								{
-									previousKeywordColor = j;
-									buffer.AppendEndColor();
-									buffer.AppendStartColor(Preferences.Settings.stackTrace.keywords[j].color);
-								}
-								else if (previousKeywordColor == -1)
-								{
-									previousKeywordColor = j;
-									buffer.AppendStartColor(Preferences.Settings.stackTrace.keywords[j].color);
-								}
-
-								buffer.Append(Preferences.Settings.stackTrace.keywords[j].keywords[k]);
-								i += Preferences.Settings.stackTrace.keywords[j].keywords[k].Length - 1;
-								goto skip;
-							}
-						}
-					}
-				}
-
-				buffer.Append(line[i]);
-				skip:
-
-				if (previousKeywordColor != -1)
-					buffer.AppendEndColor();
-
-				continue;
-			}
-
-			buffer.AppendEndColor();
-
-			return Utility.ReturnBuffer(buffer);
+			if (Conf.DebugMode != Conf.DebugModes.None)
+				menu.AddItem(new GUIContent("Open NGRealTimeEditorDebug"), false, () => EditorWindow.GetWindow<NGRealTimeEditorDebug>(NGRealTimeEditorDebug.Title));
 		}
 
 		/// <summary>
@@ -2303,14 +2269,14 @@ namespace NGToolsEditor
 		// Thanks to Dave Swersky at http://stackoverflow.com/questions/3354893/how-can-i-convert-a-datetime-to-the-number-of-seconds-since-1970
 		public static DateTime	ConvertFromUnixTimestamp(double timestamp)
 		{
-			DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+			DateTime	origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 			return origin.AddSeconds(timestamp);
 		}
 
 		public static double	ConvertToUnixTimestamp(DateTime date)
 		{
-			DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-			TimeSpan diff = date.ToUniversalTime() - origin;
+			DateTime	origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+			TimeSpan	diff = date.ToUniversalTime() - origin;
 			return Math.Floor(diff.TotalSeconds);
 		}
 
@@ -2368,32 +2334,24 @@ namespace NGToolsEditor
 				if (name[i] >= '1' && name[i] <= '9')
 				{
 					if (i > 0 && name[i - 1] >= 'a' && name[i - 1] <= 'z')
-					{
 						buffer.Append(' ');
-					}
 				}
 				else if (name[i] >= 'A' && name[i] <= 'Z')
 				{
 					if (i + 1 == name.Length) // Last letter
 					{
 						if (i > 0 && name[i - 1] >= 'a' && name[i - 1] <= 'z')
-						{
 							buffer.Append(' ');
-						}
 					}
 					else
 					{
 						if (name[i + 1] >= 'a' && name[i + 1] <= 'z')
 						{
 							if (((name[i - 1] >= 'a' && name[i - 1] <= 'z') || (name[i - 1] >= 'A' && name[i - 1] <= 'Z') || (name[i - 1] >= '0' && name[i - 1] <= '9')))
-							{
 								buffer.Append(' ');
-							}
 						}
 						else if (name[i - 1] >= 'a' && name[i - 1] <= 'z')
-						{
 							buffer.Append(' ');
-						}
 					}
 				}
 

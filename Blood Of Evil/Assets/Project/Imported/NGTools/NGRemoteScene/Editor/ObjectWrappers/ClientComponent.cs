@@ -1,4 +1,6 @@
 ﻿using NGTools;
+using NGTools.Network;
+using NGTools.NGRemoteScene;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,14 +10,15 @@ using UnityEditor;
 using UnityEditorInternal;
 using InnerUtility = NGTools.Utility;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	using UnityEngine;
 
-	public class ClientComponent
+	public sealed class ClientComponent
 	{
 		public const float	Spacing = 3F;
-		public static Color	BackgroundColorBar = new Color(102F / 255F, 102F / 255F, 102F / 255F, 1F);
+		public const float	ComponentHeaderHeight = 16F;
+		public static Color	BackgroundColorBar = new Color(102F / 255F, 102F / 255F, 102F / 255F);
 
 		private static List<ClientField>	cachedFields = new List<ClientField>(16);
 
@@ -33,6 +36,7 @@ namespace NGToolsEditor
 		private readonly string[]	methodNames;
 
 		#region Editor
+		private readonly Texture2D	icon = null;
 		private readonly IUnityData	unityData;
 		private bool				fold = true;
 
@@ -72,6 +76,8 @@ namespace NGToolsEditor
 
 				StringBuilder	buffer = Utility.GetBuffer();
 
+				buffer.Append(component.methods[i].returnType.Name);
+				buffer.Append('	');
 				buffer.Append(component.methods[i].name);
 				buffer.Append('(');
 
@@ -91,6 +97,11 @@ namespace NGToolsEditor
 			}
 
 			this.booleanHandler = TypeHandlersManager.GetTypeHandler<bool>();
+
+			if (this.type != null)
+				this.icon = AssetPreview.GetMiniTypeThumbnail(this.type);
+			if (this.icon == null)
+				this.icon = UnityEditorInternal.InternalEditorUtility.GetIconForFile(".cs");
 		}
 
 		public ClientField	GetField(string name)
@@ -104,9 +115,9 @@ namespace NGToolsEditor
 			return null;
 		}
 
-		public float	GetHeight(NGInspectorWindow inspector)
+		public float	GetHeight(NGRemoteInspectorWindow inspector)
 		{
-			float	height = 16F + ClientComponent.Spacing; // Component bar
+			float	height = ClientComponent.ComponentHeaderHeight + ClientComponent.Spacing; // Component bar
 
 			if (this.fold == true)
 			{
@@ -120,7 +131,7 @@ namespace NGToolsEditor
 			return height;
 		}
 
-		public void		OnGUI(Rect r, NGInspectorWindow inspector)
+		public void		OnGUI(Rect r, NGRemoteInspectorWindow inspector)
 		{
 			r = this.DrawHeader(r, inspector);
 
@@ -153,20 +164,13 @@ namespace NGToolsEditor
 
 		private void	RemoveComponent()
 		{
-			this.unityData.Client.AddPacket(new ClientDeleteComponentsPacket(this.parent.instanceID, this.instanceID));
+			this.unityData.AddPacket(new ClientDeleteComponentsPacket(this.parent.instanceID, this.instanceID));
 		}
 
 		private void	CopyComponent()
 		{
 			try
 			{
-				//RequireComponent[]	attributes = this.type.GetCustomAttributes(typeof(RequireComponent), true) as RequireComponent[];
-
-				//for (int i = 0; i < attributes.Length; i++)
-				//{
-				//	Debug.Log(attributes[i]);
-				//}
-
 				GameObject	go = new GameObject();
 
 				try
@@ -179,14 +183,10 @@ namespace NGToolsEditor
 						c = go.AddComponent(this.type);
 
 					for (int i = 0; i < this.fields.Length; i++)
-					{
 						this.SetValue(c, this.fields[i].name, this.fields[i].value);
-					}
 
 					if (ComponentUtility.CopyComponent(c) == false)
-					{
 						Debug.LogError("Copy component failed.");
-					}
 				}
 				finally
 				{
@@ -261,6 +261,9 @@ namespace NGToolsEditor
 
 		private object	SetValue(object instance, string name, object value)
 		{
+			if (value is UnityObject)
+				return instance;
+
 			GenericClass	o = value as GenericClass;
 			IFieldModifier	field = InnerUtility.GetFieldInfo(instance.GetType(), name);
 			InternalNGDebug.Assert(field != null, "Field \"" + name + "\" was not found in type \"" + instance.GetType() + "\".");
@@ -318,6 +321,8 @@ namespace NGToolsEditor
 						field.SetValue(instance, fieldValue);
 					}
 				}
+				else if (value is EnumInstance)
+					field.SetValue(instance, (value as EnumInstance).value);
 				else
 					field.SetValue(instance, value);
 			}
@@ -325,7 +330,7 @@ namespace NGToolsEditor
 			return instance;
 		}
 
-		private Rect	DrawHeader(Rect r, NGInspectorWindow inspector)
+		private Rect	DrawHeader(Rect r, NGRemoteInspectorWindow inspector)
 		{
 			if (Event.current.type == EventType.Repaint)
 			{
@@ -345,7 +350,7 @@ namespace NGToolsEditor
 			float	width = r.width;
 			float	height = r.height;
 
-			r.height = 16F;
+			r.height = ClientComponent.ComponentHeaderHeight;
 
 			if (this.type != null &&
 				Event.current.type == EventType.MouseDown &&
@@ -354,7 +359,8 @@ namespace NGToolsEditor
 			{
 				GenericMenu	menu = new GenericMenu();
 
-				menu.AddItem(new GUIContent("Remove Component"), false, this.RemoveComponent);
+				if (this.deletable == true)
+					menu.AddItem(new GUIContent("Remove Component"), false, this.RemoveComponent);
 				menu.AddItem(new GUIContent("Copy Component"), false, this.CopyComponent);
 				menu.ShowAsContext();
 
@@ -366,24 +372,29 @@ namespace NGToolsEditor
 				Rect	r2 = r;
 
 				r2.width = 16F;
-				r2.x += 16F;
+				r2.x += 34F;
 
 				EditorGUI.BeginChangeCheck();
 				bool	enable = EditorGUI.Toggle(r2, (bool)this.fields[this.enabledFieldIndex].value);
 				if (EditorGUI.EndChangeCheck() == true)
-					this.unityData.Client.AddPacket(new ClientUpdateFieldValuePacket(this.parent.instanceID.ToString() + "." + this.instanceID.ToString() + ".enabled", this.booleanHandler.Serialize(enable), this.booleanHandler));
+					this.unityData.AddPacket(new ClientUpdateFieldValuePacket(this.parent.instanceID.ToString() + "." + this.instanceID.ToString() + ".enabled", this.booleanHandler.Serialize(enable), this.booleanHandler));
 			}
 
-			r.width -= 100F;
+			r.width -= 170F;
 
 			this.fold = EditorGUI.Foldout(r, this.fold, GUIContent.none, true);
 
-			r.x += 32F;
-			r.width -= 32F;
-			EditorGUI.LabelField(r, Utility.NicifyVariableName(this.name), GeneralStyles.ComponentName);
+			Rect	r3 = r;
+			r3.x += 16F;
+			r3.width = 16F;
+			GUI.DrawTexture(r3, this.icon);
+
+			r.x += 48F;
+			r.width -= 48F;
+			EditorGUI.LabelField(r, new GUIContent(Utility.NicifyVariableName(this.name)), GeneralStyles.ComponentName);
 
 			r.x += r.width;
-			r.width = 100F - 20F;
+			r.width = 170F - 20F;
 
 			this.selectedMethod = EditorGUI.Popup(r, this.selectedMethod, this.methodNames);
 
@@ -392,17 +403,8 @@ namespace NGToolsEditor
 
 			if (GUI.Button(r, "@") == true)
 			{
-				byte[]	arguments = { };
-
-				if (this.methods[this.selectedMethod].argumentTypes.Length == 0)
-				{
-					this.unityData.Client.AddPacket(new ClientInvokeBehaviourMethodPacket(this.parent.instanceID, this.instanceID, this.methods[this.selectedMethod].name, arguments));
-				}
-				else
-				{
-					MethodArgumentsWizard	wizard = ScriptableWizard.DisplayWizard<MethodArgumentsWizard>("Method Invoker Form");
-					wizard.Init(this.unityData.Client, this.parent.instanceID, this.instanceID, this.methods[this.selectedMethod]);
-				}
+				MethodArgumentsWindow	window = EditorWindow.GetWindow<MethodArgumentsWindow>("Method Invoker Form");
+				window.Init(inspector.Hierarchy, this.unityData.Client, this.parent.instanceID, this.instanceID, this.methods[this.selectedMethod]);
 			}
 
 			r.x = x;

@@ -1,10 +1,10 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[CustomPropertyDrawer(typeof(NGSettings.GeneralSettings.EditorExtensions))]
-	public class EditorExtensionsDrawer : PropertyDrawer
+	internal sealed class EditorExtensionsDrawer : PropertyDrawer
 	{
 		private string	newExt = string.Empty;
 

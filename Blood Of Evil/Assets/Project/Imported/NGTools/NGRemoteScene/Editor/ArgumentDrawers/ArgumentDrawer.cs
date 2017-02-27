@@ -1,7 +1,8 @@
 ﻿using NGTools;
+using NGTools.NGRemoteScene;
 using System;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	public abstract class ArgumentDrawer
 	{
@@ -25,17 +26,15 @@ namespace NGToolsEditor
 		}
 
 		public abstract void	OnGUI();
-		public abstract void	Serialize(string path);
-		public abstract void	Deserialize(string path);
+		public abstract void	Save(string path);
+		public abstract void	Load(string path);
 
 		public void	Append(ByteBuffer buffer)
 		{
 			TypeHandler	typeHandler = TypeHandlersManager.GetTypeHandler(this.type);
 
 			if (typeHandler == null)
-			{
 				throw new NotImplementedException("TypeHandler for \"" + this.type + "\" was not found.");
-			}
 			else
 				typeHandler.Serialize(buffer, this.type, this.value);
 		}

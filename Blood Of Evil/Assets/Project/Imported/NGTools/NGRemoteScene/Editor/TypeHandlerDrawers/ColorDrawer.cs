@@ -1,12 +1,11 @@
-﻿using NGTools;
-using System;
+﻿using NGTools.NGRemoteScene;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[TypeHandlerDrawerFor(typeof(ColorHandler))]
-	public class ColorDrawer : TypeHandlerDrawer
+	internal sealed class ColorDrawer : TypeHandlerDrawer
 	{
 		private ColorContentAnimator	anim;
 

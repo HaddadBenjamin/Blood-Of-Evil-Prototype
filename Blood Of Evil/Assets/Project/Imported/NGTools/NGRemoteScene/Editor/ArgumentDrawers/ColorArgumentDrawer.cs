@@ -1,12 +1,13 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[ArgumentDrawerFor(typeof(Color))]
-	public class ColorArgumentDrawer : ArgumentDrawer
+	internal sealed class ColorArgumentDrawer : ArgumentDrawer
 	{
-		public ColorArgumentDrawer(string name) : base(name, typeof(Color))
+		public ColorArgumentDrawer(string name, Type type) : base(name, typeof(Color))
 		{
 		}
 
@@ -15,7 +16,7 @@ namespace NGToolsEditor
 			this.value = EditorGUILayout.ColorField(this.name, (Color)this.value);
 		}
 
-		public override void	Serialize(string path)
+		public override void	Save(string path)
 		{
 			Color	c = (Color)this.value;
 
@@ -25,7 +26,7 @@ namespace NGToolsEditor
 			NGEditorPrefs.SetFloat(path + ".a", (float)c.a);
 		}
 
-		public override void	Deserialize(string path)
+		public override void	Load(string path)
 		{
 			Color	v = (Color)this.value;
 

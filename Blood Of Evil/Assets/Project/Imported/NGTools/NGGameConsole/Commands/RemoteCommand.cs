@@ -1,4 +1,4 @@
-﻿namespace NGTools
+﻿namespace NGTools.NGGameConsole
 {
 	public class RemoteCommand : CommandNode
 	{
@@ -13,9 +13,7 @@
 			int	childrenCount = buffer.ReadInt32();
 
 			for (int i = 0; i < childrenCount; i++)
-			{
 				this.AddChild(new RemoteCommand(buffer));
-			}
 		}
 
 		/// <summary>
@@ -27,9 +25,7 @@
 			this.isLeaf = node.IsLeaf;
 
 			for (int i = 0; i < node.children.Count; i++)
-			{
 				this.AddChild(new RemoteCommand(node.children[i]));
-			}
 		}
 
 		public override string	GetSetInvoke(params string[] args)

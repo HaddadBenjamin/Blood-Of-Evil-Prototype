@@ -3,13 +3,13 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	public abstract class NGRemoteWindow : EditorWindow
 	{
 		[NonSerialized]
-		private NGHierarchyWindow	hierarchy;
-		public NGHierarchyWindow	Hierarchy
+		private NGRemoteHierarchyWindow	hierarchy;
+		public NGRemoteHierarchyWindow	Hierarchy
 		{
 			get
 			{
@@ -27,35 +27,38 @@ namespace NGToolsEditor
 
 		protected void	OnGUI()
 		{
+			FreeOverlay.First(this, "NG Remote Scene is exclusive to NG Tools Pro.\n\nFree version is restrained to read-only.");
+
 			if (this.Hierarchy == null)
 			{
-				NGHierarchyWindow[]	hierarchies = Resources.FindObjectsOfTypeAll<NGHierarchyWindow>();
+				NGRemoteHierarchyWindow[]	hierarchies = Resources.FindObjectsOfTypeAll<NGRemoteHierarchyWindow>();
 
 				if (hierarchies.Length == 0)
 				{
 					EditorGUILayout.LabelField(LC.G("NGRemote_NoHierarchyAvailable"), GeneralStyles.BigCenterText, GUILayout.ExpandHeight(true));
+
+					FreeOverlay.Last();
+
 					return;
 				}
 				else if (hierarchies.Length == 1)
-				{
 					hierarchies[0].AddRemoteWindow(this);
-				}
 				else
 				{
 					EditorGUILayout.LabelField(LC.G("NGRemote_RequireHierarchy"));
 
-					var	hierarchyNames = hierarchies.Select<NGHierarchyWindow, string>((h) => h.GetTitle() + " - " + h.address + ":" + h.port).ToArray();
+					string[]	hierarchyNames = hierarchies.Select<NGRemoteHierarchyWindow, string>((h) => h.GetTitle() + " - " + h.address + ":" + h.port).ToArray();
 
 					EditorGUILayout.BeginHorizontal();
 					{
 						this.hierarchyIndex = EditorGUILayout.Popup(this.hierarchyIndex, hierarchyNames);
 
 						if (GUILayout.Button(LC.G("Set")) == true)
-						{
 							hierarchies[0].AddRemoteWindow(this);
-						}
 					}
 					EditorGUILayout.EndHorizontal();
+
+					FreeOverlay.Last();
 
 					return;
 				}
@@ -66,13 +69,14 @@ namespace NGToolsEditor
 			if (this.Hierarchy.IsClientConnected() == false)
 			{
 				GUILayout.Label(LC.G("NGRemote_NotConnected"), GeneralStyles.BigCenterText, GUILayout.ExpandHeight(true));
+				FreeOverlay.Last();
 				return;
 			}
 
 			this.OnGUIConnected();
 		}
 
-		public void	SetHierarchy(NGHierarchyWindow hierarchy)
+		public void	SetHierarchy(NGRemoteHierarchyWindow hierarchy)
 		{
 			if (this.hierarchy == hierarchy)
 				return;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	public class MethodCommand : CommandNode
 	{
@@ -28,9 +28,7 @@ namespace NGTools
 				object[]	arguments = new object[this.parameters.Length];
 
 				for (int i = 0; i < this.parameters.Length; i++)
-				{
 					arguments[i] = this.GetValueFromType(this.parameters[i], args[i]);
-				}
 
 				return this.methodInfo.Invoke(this.instance, arguments).ToString();
 			}

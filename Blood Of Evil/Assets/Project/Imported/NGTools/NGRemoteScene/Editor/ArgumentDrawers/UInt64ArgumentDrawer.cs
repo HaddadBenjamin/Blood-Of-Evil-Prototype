@@ -2,12 +2,12 @@
 using System;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[ArgumentDrawerFor(typeof(UInt64))]
-	public class UInt64ArgumentDrawer : ArgumentDrawer
+	internal sealed class UInt64ArgumentDrawer : ArgumentDrawer
 	{
-		public UInt64ArgumentDrawer(string name) : base(name, typeof(UInt64))
+		public UInt64ArgumentDrawer(string name, Type type) : base(name, typeof(UInt64))
 		{
 		}
 
@@ -16,12 +16,12 @@ namespace NGToolsEditor
 			this.value = (UInt64)EditorGUILayout.LongField(this.name, (Int64)this.value);
 		}
 
-		public override void	Serialize(string path)
+		public override void	Save(string path)
 		{
 			NGEditorPrefs.SetString(path, ((UInt64)this.value).ToString());
 		}
 
-		public override void	Deserialize(string path)
+		public override void	Load(string path)
 		{
 			UInt64	result;
 

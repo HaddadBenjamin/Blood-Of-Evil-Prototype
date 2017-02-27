@@ -1,12 +1,14 @@
-﻿namespace NGTools
+﻿using NGTools.Network;
+
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Scene_ServerUpdateFieldValue)]
-	public class ServerUpdateFieldValuePacket : Packet
+	internal sealed class ServerUpdateFieldValuePacket : Packet
 	{
 		public string	fieldPath;
 		public byte[]	rawValue;
 
-		protected	ServerUpdateFieldValuePacket(ByteBuffer buffer) : base(buffer)
+		private	ServerUpdateFieldValuePacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using NGTools.Network;
+using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	[PacketLinkTo(PacketId.Scene_ClientUpdateFieldValue)]
-	public class ClientUpdateFieldValuePacket : Packet
+	[PacketLinkTo(PacketId.Scene_ClientUpdateFieldValue, true)]
+	internal sealed class ClientUpdateFieldValuePacket : Packet
 	{
 		public string		fieldPath;
 		public byte[]		rawValue;
@@ -11,7 +12,7 @@ namespace NGTools
 		private TypeHandler	deserializer;
 		private string		cachedGUI;
 
-		protected	ClientUpdateFieldValuePacket(ByteBuffer buffer) : base(buffer)
+		private	ClientUpdateFieldValuePacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

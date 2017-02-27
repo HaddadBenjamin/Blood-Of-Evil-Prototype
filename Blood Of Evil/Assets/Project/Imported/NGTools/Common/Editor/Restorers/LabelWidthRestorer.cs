@@ -4,12 +4,16 @@ using UnityEditor;
 
 namespace NGToolsEditor
 {
-	public class LabelWidthRestorer : IDisposable
+	public sealed class LabelWidthRestorer : IDisposable
 	{
 		private static Dictionary<float, LabelWidthRestorer>	cached = new Dictionary<float, LabelWidthRestorer>();
 
-		private float	width;
 		private float	lastWidth;
+
+		public static LabelWidthRestorer	Get(bool condition, float width)
+		{
+			return condition ? LabelWidthRestorer.Get(width) : null;
+		}
 
 		public static LabelWidthRestorer	Get(float width)
 		{
@@ -22,19 +26,21 @@ namespace NGToolsEditor
 				LabelWidthRestorer.cached.Add(width, restorer);
 			}
 			else
-				EditorGUIUtility.labelWidth = restorer.width;
+			{
+				restorer.lastWidth = EditorGUIUtility.labelWidth;
+				EditorGUIUtility.labelWidth = width;
+			}
 
 			return restorer;
 		}
 
 		private	LabelWidthRestorer(float width)
 		{
-			this.width = width;
 			this.lastWidth = EditorGUIUtility.labelWidth;
 			EditorGUIUtility.labelWidth = width;
 		}
 
-		public void Dispose()
+		public void	Dispose()
 		{
 			EditorGUIUtility.labelWidth = this.lastWidth;
 		}

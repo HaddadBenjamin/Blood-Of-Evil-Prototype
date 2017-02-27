@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	using UnityEngine;
 

@@ -1,11 +1,14 @@
-﻿namespace NGTools
+﻿using NGTools.Network;
+using NGTools.NGGameConsole;
+
+namespace NGTools.NGConsole
 {
 	[PacketLinkTo(PacketId.CLI_ServerSendCommandNodes)]
-	public class ServerSendCommandNodesPacket : Packet
+	internal sealed class ServerSendCommandNodesPacket : Packet
 	{
 		public RemoteCommand	root;
 
-		protected	ServerSendCommandNodesPacket(ByteBuffer buffer) : base(buffer)
+		private	ServerSendCommandNodesPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 
@@ -32,9 +35,7 @@
 			buffer.Append(node.children.Count);
 
 			for (int i = 0; i < node.children.Count; i++)
-			{
 				this.BrowseOut(buffer, node.children[i]);
-			}
 		}
 
 		private RemoteCommand	BrowseIn(ByteBuffer buffer)

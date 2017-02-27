@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[Priority(60)]
-	public class ColorHandler : TypeHandler
+	internal sealed class ColorHandler : TypeHandler
 	{
 		public	ColorHandler() : base(typeof(Color))
 		{

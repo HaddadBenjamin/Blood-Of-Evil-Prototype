@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class NeverEndMode : EndMode
+	internal sealed class NeverEndMode : EndMode
 	{
 		public override bool	CheckEnd(Row row)
 		{

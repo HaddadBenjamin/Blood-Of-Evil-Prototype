@@ -1,13 +1,13 @@
-﻿using NGTools;
+﻿using NGTools.Network;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
-	public class DataDrawer
+	public sealed class DataDrawer
 	{
-		public	class LayerPath : IDisposable
+		public sealed class LayerPath : IDisposable
 		{
 			private DataDrawer	data;
 
@@ -27,7 +27,7 @@ namespace NGToolsEditor
 
 		public string	name { get; private set; }
 		public object	value { get; private set; }
-		public NGInspectorWindow	inspector { get; private set; }
+		public NGRemoteInspectorWindow	inspector { get; private set; }
 
 		public readonly IUnityData	unityData;
 
@@ -36,7 +36,7 @@ namespace NGToolsEditor
 			this.unityData = unityData;
 		}
 
-		public void	Init(string path, NGInspectorWindow inspector)
+		public void	Init(string path, NGRemoteInspectorWindow inspector)
 		{
 			this.inspector = inspector;
 			DataDrawer.valuePath.Length = 0;

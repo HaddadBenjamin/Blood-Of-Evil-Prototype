@@ -1,11 +1,12 @@
 ﻿using NGTools;
+using NGTools.NGRemoteScene;
 using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
-	public class MouseReplayModule : ReplayDataModule
+	internal sealed class MouseReplayModule : ReplayDataModule
 	{
 		public static Color	BackgroundColor = Color.black * .75F;
 

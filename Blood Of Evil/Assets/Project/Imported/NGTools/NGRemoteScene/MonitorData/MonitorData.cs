@@ -1,14 +1,15 @@
-﻿using System;
+﻿using NGTools.Network;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	using UnityEngine;
 
-	public abstract class MonitorData
+	internal abstract class MonitorData
 	{
 		protected static ByteBuffer	buffer = new ByteBuffer(64);
 

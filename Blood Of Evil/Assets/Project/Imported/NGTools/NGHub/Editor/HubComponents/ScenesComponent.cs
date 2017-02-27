@@ -1,10 +1,11 @@
-﻿using System;
+﻿using NGToolsEditor.NGScenes;
+using System;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGHub
 {
 	[Serializable, Category("Scene")]
-	public class ScenesComponent : HubComponent
+	internal sealed class ScenesComponent : HubComponent
 	{
 		private const float	WindowWidth = 600F;
 		private const float	WindowHeight = 400F;
@@ -47,7 +48,7 @@ namespace NGToolsEditor
 				{
 					window = ScriptableObject.CreateInstance<NGScenesWindow>();
 					window.position = new Rect(r.x, r.y + r.height + 4F, ScenesComponent.WindowWidth, ScenesComponent.WindowHeight);
-					Vector2 vector = new Vector2(window.position.width, window.position.height);
+					Vector2	vector = new Vector2(window.position.width, window.position.height);
 					window.maxSize = vector;
 					window.minSize = vector;
 					window.ShowPopup();

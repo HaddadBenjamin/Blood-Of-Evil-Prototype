@@ -3,10 +3,10 @@ using System.Runtime.Serialization;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGHub
 {
 	[Serializable, Category("Misc")]
-	public class MenuCallerComponent : HubComponent, ISerializable
+	internal sealed class MenuCallerComponent : HubComponent, ISerializable
 	{
 		[Exportable]
 		public string	menuItem;
@@ -27,7 +27,6 @@ namespace NGToolsEditor
 		public	MenuCallerComponent() : base("Call MenuItem", true)
 		{
 		}
-
 
 		public override void	OnPreviewGUI(Rect r)
 		{
@@ -57,9 +56,7 @@ namespace NGToolsEditor
 			this.content.text = (string.IsNullOrEmpty(this.alias) == true ? this.menuItem : this.alias);
 			this.content.image = this.image;
 			if (GUILayout.Button(this.content, GUILayout.Height(this.hub.height)) == true)
-			{
 				EditorApplication.ExecuteMenuItem(this.menuItem);
-			}
 		}
 
 		private void	PickMenuItem(object data)

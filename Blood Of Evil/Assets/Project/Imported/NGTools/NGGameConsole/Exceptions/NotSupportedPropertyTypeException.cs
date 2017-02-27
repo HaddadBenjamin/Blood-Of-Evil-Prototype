@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	/// <summary>
 	/// Thrown when calling GetSetInvoke on an unhandled parameter type.
 	/// </summary>
-	public class NotSupportedParameterTypeException : Exception
+	internal sealed class NotSupportedParameterTypeException : Exception
 	{
 		public readonly	Type	type;
 

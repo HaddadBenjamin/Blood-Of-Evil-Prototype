@@ -1,54 +1,56 @@
+using NGTools.Network;
 using System;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	[PacketLinkTo(PacketId.Camera_ClientSetSetting)]
-	public class ClientSetSettingPacket : Packet
+	internal enum Setting
 	{
-		public enum Settings
-		{
-			TargetRefresh,
-			Wireframe,
+		TargetRefresh,
+		Wireframe,
 
-			CameraClearFlags,
-			CameraBackground,
-			CameraCullingMask,
-			CameraProjection,
-			CameraFieldOfView,
-			CameraSize,
-			CameraClippingPlanesFar,
-			CameraClippingPlanesNear,
-			CameraViewportRect,
-			CameraDepth,
-			CameraRenderingPath,
-			CameraOcclusionCulling,
-			CameraHDR,
+		CameraClearFlags,
+		CameraBackground,
+		CameraCullingMask,
+		CameraProjection,
+		CameraFieldOfView,
+		CameraSize,
+		CameraClippingPlanesFar,
+		CameraClippingPlanesNear,
+		CameraViewportRect,
+		CameraDepth,
+		CameraRenderingPath,
+		CameraOcclusionCulling,
+		CameraHDR,
 #if UNITY_5
-			CameraTargetDisplay,
+		CameraTargetDisplay,
 #endif
-		}
+	}
 
-		public enum SettingType
-		{
-			Integer,
-			Single,
-			Boolean,
-			String,
-			Color,
-			Rect,
-			Vector2
-		}
+	internal enum SettingType
+	{
+		Integer,
+		Single,
+		Boolean,
+		String,
+		Color,
+		Rect,
+		Vector2
+	}
 
-		public Settings		setting;
+	[PacketLinkTo(PacketId.Camera_ClientSetSetting)]
+	internal sealed class ClientSetSettingPacket : Packet
+	{
+
+		public Setting		setting;
 		public SettingType	type;
 		public object		value;
 
-		protected	ClientSetSettingPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientSetSettingPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 
-		public	ClientSetSettingPacket(Settings setting, SettingType type, object value)
+		public	ClientSetSettingPacket(Setting setting, SettingType type, object value)
 		{
 			this.setting = setting;
 			this.type = type;
@@ -57,7 +59,7 @@ namespace NGTools
 
 		public override void	In(ByteBuffer buffer)
 		{
-			this.setting = (Settings)buffer.ReadInt32();
+			this.setting = (Setting)buffer.ReadInt32();
 			this.type = (SettingType)buffer.ReadInt32();
 			
 			if (this.type == SettingType.Integer)

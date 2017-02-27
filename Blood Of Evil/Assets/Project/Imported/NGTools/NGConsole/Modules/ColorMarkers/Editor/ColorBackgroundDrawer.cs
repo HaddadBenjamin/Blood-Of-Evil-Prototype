@@ -1,10 +1,10 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[CustomPropertyDrawer(typeof(ColorBackground))]
-	public class ColorBackgroundDrawer : PropertyDrawer
+	internal sealed class ColorBackgroundDrawer : PropertyDrawer
 	{
 		public override void	OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{

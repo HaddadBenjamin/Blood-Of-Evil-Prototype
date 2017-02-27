@@ -1,9 +1,8 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	public class TouchModule : CameraServerDataModule
+	internal sealed class TouchModule : CameraServerDataModule
 	{
 		public const int	ModuleID = 4;
 		public const int	Priority = 500;

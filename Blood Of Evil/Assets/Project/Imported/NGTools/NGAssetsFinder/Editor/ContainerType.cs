@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGAssetsFinder
 {
-	public class ContainerType
+	internal sealed class ContainerType
 	{
 		public bool	HasType { get { return this.containObject == true || this.fields.Count > 0 || this.properties.Count > 0; } }
 

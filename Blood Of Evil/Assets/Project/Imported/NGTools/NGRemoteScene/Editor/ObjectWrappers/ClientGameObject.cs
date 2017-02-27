@@ -1,15 +1,16 @@
-﻿using NGTools;
+﻿using NGTools.Network;
+using NGTools.NGRemoteScene;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	public enum GameObjectReady
 	{
 		TagAndLayer = 0x1
 	}
 
-	public class ClientGameObject
+	public sealed class ClientGameObject
 	{
 		private const float	MinTimeBetweenRefresh = 5F;
 
@@ -95,9 +96,7 @@ namespace NGToolsEditor
 
 			this.children = new List<ClientGameObject>(remote.children.Length);
 			for (int i = 0; i < length; i++)
-			{
 				this.children.Add(new ClientGameObject(this, remote.children[i], this.unityData));
-			}
 		}
 
 		public void	Destroy()
@@ -140,7 +139,7 @@ namespace NGToolsEditor
 
 		/// <summary></summary>
 		/// <param name="instanceID"></param>
-		/// <exception cref="UnityEngine.MissingComponentException">Thrown when there is no component with the given instanceID.</exception>
+		/// <exception cref="NGTools.NGRemoteScene.MissingComponentException">Thrown when there is no component with the given instanceID.</exception>
 		public void	RemoveComponent(int instanceID)
 		{
 			for (int i = 0; i < this.components.Count; i++)
@@ -152,7 +151,7 @@ namespace NGToolsEditor
 				}
 			}
 
-			throw new MissingComponentException();
+			throw new NGTools.NGRemoteScene.MissingComponentException(instanceID);
 		}
 
 		public ClientComponent	GetComponent(int instanceID)
@@ -177,9 +176,7 @@ namespace NGToolsEditor
 			this.hasSelection = false;
 
 			for (int i = 0; i < this.children.Count; i++)
-			{
 				this.children[i].ClearSelection();
-			}
 		}
 
 		public int	GetSiblingIndex()

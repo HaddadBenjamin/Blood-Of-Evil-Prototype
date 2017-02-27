@@ -1,10 +1,10 @@
 ﻿#if UNITY_5
 using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[Priority(0)]
-	public class UInt64Handler : TypeHandler
+	internal sealed class UInt64Handler : TypeHandler
 	{
 		public	UInt64Handler() : base(typeof(UInt64))
 		{

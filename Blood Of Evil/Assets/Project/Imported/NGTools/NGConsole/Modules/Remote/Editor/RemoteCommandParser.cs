@@ -1,13 +1,13 @@
-﻿using NGTools;
+﻿using NGTools.NGGameConsole;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	public class RemoteCommandParser : CommandParser
+	internal sealed class RemoteCommandParser : CommandParser
 	{
-		protected GUIStyle	highlightedMatchStyle;
-		protected string	highlightedColor = "#48FF00";
+		private GUIStyle	highlightedMatchStyle;
+		private string		highlightedColor = "#48FF00";
 
 		public override Rect	PostGUI(Rect r, ref string command)
 		{
@@ -61,12 +61,12 @@ namespace NGToolsEditor
 							command = string.Join(NGCLI.CommandsSeparator.ToString(), commands) +
 											NGCLI.CommandsArgumentsSeparator +
 											rawArguments;
-							this.SetCursor(command.Length - rawArguments.Length - 1);
+							this.SetCursor(command, command.Length - rawArguments.Length - 1);
 						}
 						else
 						{
 							command = string.Join(NGCLI.CommandsSeparator.ToString(), commands);
-							this.SetCursor(command.Length);
+							this.SetCursor(command, command.Length);
 						}
 
 						this.matchingCommands = null;

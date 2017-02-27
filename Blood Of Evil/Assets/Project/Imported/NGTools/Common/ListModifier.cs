@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 
 namespace NGTools
 {
@@ -9,6 +10,14 @@ namespace NGTools
 			get
 			{
 				return this.list.Count;
+			}
+		}
+
+		public Type	Type
+		{
+			get
+			{
+				return Utility.GetArraySubType(this.list.GetType());
 			}
 		}
 

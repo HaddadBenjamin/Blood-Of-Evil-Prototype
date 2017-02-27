@@ -1,6 +1,6 @@
-﻿using NGTools;
+﻿using NGTools.Network;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	public abstract class AbstractTcpClient
 	{

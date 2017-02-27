@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGTools
 {
 	public class FileAttribute : PropertyAttribute
 	{

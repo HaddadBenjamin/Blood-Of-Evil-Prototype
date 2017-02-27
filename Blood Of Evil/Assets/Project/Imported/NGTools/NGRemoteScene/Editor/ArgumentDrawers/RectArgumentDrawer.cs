@@ -1,12 +1,13 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[ArgumentDrawerFor(typeof(Rect))]
-	public class RectArgumentDrawer : ArgumentDrawer
+	internal sealed class RectArgumentDrawer : ArgumentDrawer
 	{
-		public RectArgumentDrawer(string name) : base(name, typeof(Rect))
+		public RectArgumentDrawer(string name, Type type) : base(name, typeof(Rect))
 		{
 		}
 
@@ -15,7 +16,7 @@ namespace NGToolsEditor
 			this.value = EditorGUILayout.RectField(this.name, (Rect)this.value);
 		}
 
-		public override void	Serialize(string path)
+		public override void	Save(string path)
 		{
 			Rect	c = (Rect)this.value;
 
@@ -25,7 +26,7 @@ namespace NGToolsEditor
 			NGEditorPrefs.SetFloat(path + ".h", (float)c.height);
 		}
 
-		public override void	Deserialize(string path)
+		public override void	Load(string path)
 		{
 			Rect	v = (Rect)this.value;
 

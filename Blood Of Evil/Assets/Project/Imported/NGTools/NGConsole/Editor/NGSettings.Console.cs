@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NGTools;
+using NGToolsEditor.NGConsole;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -207,27 +209,27 @@ namespace NGToolsEditor
 			[LocaleHeader("StackTrace_IndentAfterReturnType")]
 			public bool			indentAfterReturnType = true;
 			[LocaleHeader("StackTrace_ReturnValueColor")]
-			public Color		returnValueColor = new Color(92F / 255F, 193F / 255F, 114F / 255F, 1F);
+			public Color		returnValueColor = new Color(78F / 255F, 50F / 255F, 255F / 255F);
 			[LocaleHeader("StackTrace_DisplayReflectedType")]
 			public DisplayReflectedType	displayReflectedType = DisplayReflectedType.Class;
 			[LocaleHeader("StackTrace_ReflectedTypeColor")]
-			public Color		reflectedTypeColor = new Color(171F / 255F, 171F / 255F, 171F / 255F, 1F);
+			public Color		reflectedTypeColor = new Color(103F / 255F, 103F / 255F, 103F / 255F);
 			[LocaleHeader("StackTrace_MethodNameColor")]
-			public Color		methodNameColor = new Color(171F / 255F, 171F / 255F, 171F / 255F, 1F);
+			public Color		methodNameColor = new Color(149F / 255F, 68F / 255F, 84F / 255F);
 			[LocaleHeader("StackTrace_DisplayArgumentType")]
 			public bool			displayArgumentType = true;
 			[LocaleHeader("StackTrace_ArgumentTypeColor")]
-			public Color		argumentTypeColor = new Color(92F / 255F, 193F / 255, 114F / 255F, 1F);
+			public Color		argumentTypeColor = new Color(84F / 255F, 40F / 255, 250F / 255F);
 			[LocaleHeader("StackTrace_DisplayArgumentName")]
 			public bool			displayArgumentName = true;
 			[LocaleHeader("StackTrace_ArgumentNameColor")]
-			public Color		argumentNameColor = new Color(4F / 255F, 255F / 255F, 224F / 255F, 1F);
+			public Color		argumentNameColor = new Color(170F / 255F, 115F / 255F, 114F / 255F);
 			[LocaleHeader("StackTrace_IndentAfterArgument")]
 			public bool			indentAfterArgument = true;
 			[LocaleHeader("StackTrace_FilepathColor")]
-			public Color		filepathColor = new Color(167F / 255F, 172F / 255F, 172F / 255F, 1F);
+			public Color		filepathColor = new Color(69F / 255F, 69F / 255F, 69F / 255F);
 			[LocaleHeader("StackTrace_LineColor")]
-			public Color		lineColor = new Color(141F / 255F, 141F / 255F, 255F / 255F, 1F);
+			public Color		lineColor = new Color(44F / 255F, 6F / 255F, 199F / 255F);
 			[LocaleHeader("StackTrace_PreviewOffset")]
 			public Vector2		previewOffset = new Vector2(-15F, 15F);
 			[LocaleHeader("StackTrace_PreviewLinesBeforeStackFrame")]
@@ -237,26 +239,26 @@ namespace NGToolsEditor
 			[LocaleHeader("StackTrace_DisplayTabAsSpaces")]
 			public int			displayTabAsSpaces = 4;
 			[LocaleHeader("StackTrace_PreviewTextColor")]
-			public Color		previewTextColor = new Color(167F / 255F, 172F / 255F, 172F / 255F, 1F);
+			public Color		previewTextColor = new Color(68F / 255F, 69F / 255F, 69F / 255F);
 			[LocaleHeader("StackTrace_PreviewLineColor")]
-			public Color		previewLineColor = new Color(141F / 255F, 141F / 255F, 255F / 255F, 1F);
-			public Color		previewSourceCodeBackgroundColor = new Color(.11484375F, .11484375F, .11484375F, 1F);
-			public Color		previewSourceCodeMainLineBackgroundColor = new Color(.01484375F, 0.01484375F, .01484375F, 1F);
+			public Color		previewLineColor = new Color(44F / 255F, 6F / 255F, 199F / 255F);
+			public Color		previewSourceCodeBackgroundColor = new Color(174F / 255F, 177F / 255F, 177F / 255F);
+			public Color		previewSourceCodeMainLineBackgroundColor = new Color(161F / 255F, 161F / 255F, 161F / 255F);
 			[LocaleHeader("StackTrace_PreviewHeight")]
 			public float		previewHeight = 16F;
 			public GUIStyle		previewSourceCodeStyle = new GUIStyle();
 			[LocaleHeader("StackTrace_Keywords")]
 			public KeywordsColor[]	keywords = new KeywordsColor[] {
 				new KeywordsColor() {
-					color = new Color(4F / 255F, 255F / 255F, 224F / 255F, 1F),
+					color = new Color(96F / 255F, 69F / 255F, 0F / 255F),
 					keywords = new string[] { ";", "=", ".", "{", "}", "(", ")", ",", "[", "]", "+", "-", "*", "/", ":", "!", "?", "@", "<", ">" },
 				},
 				new KeywordsColor() {
-					color = new Color(92F / 255F, 193F / 255, 114F / 255F, 1F),
+					color = new Color(141F / 255F, 47F / 255F, 212F / 255F),
 					keywords = new string[] { "this", "if", "else", "new", "foreach", "for", "switch", "while", "as", "is", "get", "set", "try", "catch", "finally", "return", "yield", "public", "private", "protected", "static", "throw", "internal", "virtual", "override", "base", "implicit", "explicit", "ref", "out", "in", "using", "class", "struct", "where", "params", "elif", "endif" },
 				},
 				new KeywordsColor() {
-					color = new Color(52F / 255F, 193F / 255, 94F / 255F, 1F),
+					color = new Color(186F / 255F, 99F / 255F, 218F / 255F),
 					keywords = new string[] { "var", "void", "float", "uint", "int", "string", "object", "bool", "type", "char", "sbyte", "byte", "double", "decimal", "ulong", "long", "ushort", "short", "Boolean", "Char", "String", "SByte", "Byte", "Int16", "Int32", "Int64", "UInt16", "UInt32", "UInt64", "Single", "Double", "Decimal" },
 				},
 			};
@@ -269,11 +271,7 @@ namespace NGToolsEditor
 		}
 		public StackTraceSettings	stackTrace = new StackTraceSettings();
 
-#if !NGT_DEBUG
-		[HideInInspector]
-#else
 		[LocaleHeader("ConsoleSettings_InputsManager")]
-#endif
 		public InputsManager	inputsManager = new InputsManager();
 
 		[HideInInspector]

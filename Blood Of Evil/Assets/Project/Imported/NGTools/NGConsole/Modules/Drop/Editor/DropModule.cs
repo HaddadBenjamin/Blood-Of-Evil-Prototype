@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
 	public abstract class AssetReader
@@ -14,7 +14,7 @@ namespace NGToolsEditor
 
 	[Serializable]
 	[ExcludeFromExport]
-	public class DropModule : Module
+	internal sealed class DropModule : Module
 	{
 		public List<int>	drops;
 		//private int			workingDrop;
@@ -47,9 +47,7 @@ namespace NGToolsEditor
 				GUI.Box(r, GUIContent.none);
 
 				if (Event.current.type == EventType.DragUpdated)
-				{
 					Event.current.Use();
-				}
 				else if (Event.current.type == EventType.DragPerform)
 				{
 					Debug.Log("DragPerform");
@@ -59,9 +57,7 @@ namespace NGToolsEditor
 				DragAndDrop.visualMode = DragAndDropVisualMode.Move;
 			}
 			if (Event.current.type == EventType.DragExited)
-			{
 				Debug.Log("DragExit");
-			}
 		}
 
 		public void	Clear()

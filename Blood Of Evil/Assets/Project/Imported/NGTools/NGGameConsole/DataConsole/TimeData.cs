@@ -2,22 +2,22 @@
 using System.Text;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	public class TimeData : DataConsole
 	{
 		public string	timeFormat = "HH:mm:ss.fff";
-		public bool		displayCaptureFramerate;
-		public bool		displayDeltaTime;
-		public bool		displayFixedDeltaTime;
-		public bool		displayFixedTime;
-		public bool		displayFrameCount;
-		public bool		displayRealtimeSinceStartup;
-		public bool		displayRenderedFrameCount;
-		public bool		displaySmoothDeltaTime;
-		public bool		displayTime;
-		public bool		displayTimeScale;
-		public bool		displayTimeSinceLevelLoad;
+		public bool		displayCaptureFramerate = true;
+		public bool		displayDeltaTime = true;
+		public bool		displayFixedDeltaTime = true;
+		public bool		displayFixedTime = true;
+		public bool		displayFrameCount = true;
+		public bool		displayRealtimeSinceStartup = true;
+		public bool		displayRenderedFrameCount = true;
+		public bool		displaySmoothDeltaTime = true;
+		public bool		displayTime = true;
+		public bool		displayTimeScale = true;
+		public bool		displayTimeSinceLevelLoad = true;
 
 		public override void	ShortGUI()
 		{

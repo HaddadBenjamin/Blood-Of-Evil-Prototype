@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace NGToolsEditor
 {
-	public class EditorPrefClass : EditorPrefType
+	internal sealed class EditorPrefClass : EditorPrefType
 	{
 		public override bool	CanHandle(Type type)
 		{
@@ -33,6 +33,14 @@ namespace NGToolsEditor
 			}
 		}
 
+		public override void	Save(object instance, Type type, string path)
+		{
+			if (instance == null)
+				return;
+
+			this.DirectSave(instance, type, path + instance.GetType().FullName);
+		}
+
 		public override void	Load(object instance, Type type, string path)
 		{
 			foreach (var field in Utility.EachFieldHierarchyOrdered(type, typeof(object), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
@@ -43,7 +51,7 @@ namespace NGToolsEditor
 					continue;
 				}
 
-				field.SetValue(instance, Utility.LoadEditorPref(field.GetValue(instance), field.FieldType, path + '.' + field.Name));
+				field.SetValue(instance, Utility.LoadEditorPref(field.GetValue(instance), field.FieldType, path + instance.GetType().FullName + '.' + field.Name));
 			}
 		}
 
@@ -51,8 +59,17 @@ namespace NGToolsEditor
 		{
 			if (instance == null)
 				return null;
+			
+			foreach (var field in Utility.EachFieldHierarchyOrdered(type, typeof(object), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+			{
+				if (field.IsDefined(typeof(NonSerializedAttribute), true) == true ||
+					(field.IsPublic == false && field.IsDefined(typeof(SerializeField), true) == false))
+				{
+					continue;
+				}
 
-			this.Load(instance, type, path);
+				field.SetValue(instance, Utility.LoadEditorPref(field.GetValue(instance), field.FieldType, path + '.' + field.Name));
+			}
 
 			return instance;
 		}

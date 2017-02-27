@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Reflection;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[Priority(500)]
-	public class StructHandler : TypeHandler
+	internal sealed class StructHandler : TypeHandler
 	{
 		public override bool	CanHandle(Type type)
 		{

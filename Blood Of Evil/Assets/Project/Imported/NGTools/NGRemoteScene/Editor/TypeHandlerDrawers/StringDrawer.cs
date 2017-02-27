@@ -1,12 +1,12 @@
-﻿using NGTools;
+﻿using NGTools.NGRemoteScene;
 using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[TypeHandlerDrawerFor(typeof(StringHandler))]
-	public class StringDrawer : TypeHandlerDrawer
+	internal sealed class StringDrawer : TypeHandlerDrawer
 	{
 		private BgColorContentAnimator	anim;
 		private ValueMemorizer<String>	drag;

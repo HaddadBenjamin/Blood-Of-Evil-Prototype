@@ -1,13 +1,16 @@
-﻿namespace NGTools
+﻿using NGTools.Network;
+using NGTools.NGGameConsole;
+
+namespace NGTools.NGConsole
 {
 	[PacketLinkTo(PacketId.CLI_ServerSendCommandResponse)]
-	public class ServerSendCommandResponsePacket : Packet
+	internal sealed class ServerSendCommandResponsePacket : Packet
 	{
 		public int			requestId;
 		public ExecResult	returnValue;
 		public string		response;
 
-		protected	ServerSendCommandResponsePacket(ByteBuffer buffer) : base(buffer)
+		private	ServerSendCommandResponsePacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

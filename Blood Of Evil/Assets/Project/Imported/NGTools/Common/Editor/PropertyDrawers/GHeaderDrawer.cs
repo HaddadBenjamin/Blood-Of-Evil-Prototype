@@ -5,7 +5,7 @@ using UnityEngine;
 namespace NGToolsEditor
 {
 	[CustomPropertyDrawer(typeof(GHeaderAttribute), true)]
-	public class GHeaderDrawer : DecoratorDrawer
+	internal sealed class GHeaderDrawer : DecoratorDrawer
 	{
 		public override float	GetHeight()
 		{

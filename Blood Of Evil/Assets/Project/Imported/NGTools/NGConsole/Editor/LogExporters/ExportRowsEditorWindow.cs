@@ -5,7 +5,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	public class ExportRowsEditorWindow : EditorWindow
 	{
@@ -19,7 +19,7 @@ namespace NGToolsEditor
 		public string	exportFile;
 		public int		selectedExporter;
 
-		public class ExportSettings
+		public sealed class ExportSettings
 		{
 			public bool				outputIndex = true;
 			public bool				outputTime = true;
@@ -36,6 +36,7 @@ namespace NGToolsEditor
 		private string[]		names;
 		private string			preview;
 		private List<Row>		rows;
+		private Vector2			scrollPosition;
 
 		public static void	Export(List<Row> rows, Action<ILogExporter, Row> callbackLog = null)
 		{
@@ -63,7 +64,7 @@ namespace NGToolsEditor
 			Utility.LoadEditorPref(this.settings, NGEditorPrefs.GetPerProjectPrefix());
 
 			for (int i = 0; i < this.exporters.Length; i++)
-				this.exporters[i].OnFocus();
+				this.exporters[i].OnEnable();
 		}
 
 		protected virtual void	OnDestroy()
@@ -72,45 +73,55 @@ namespace NGToolsEditor
 			Utility.SaveEditorPref(this.settings, NGEditorPrefs.GetPerProjectPrefix());
 
 			for (int i = 0; i < this.exporters.Length; i++)
-				this.exporters[i].OnBlur();
+				this.exporters[i].OnDestroy();
 		}
 
 		protected virtual void	OnGUI()
 		{
-			EditorGUI.BeginChangeCheck();
-			int	e = EditorGUILayout.Popup(LC.G("Exporter"), this.selectedExporter, this.names);
-			if (EditorGUI.EndChangeCheck() == true)
+			this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
 			{
-				this.selectedExporter = e;
-				this.UpdatePreview();
-			}
-
-			if (0 <= this.selectedExporter && this.selectedExporter < this.exporters.Length)
-			{
-				this.exportFile = EditorGUILayout.TextField(LC.G("ExportFilePath"), this.exportFile);
-
 				EditorGUI.BeginChangeCheck();
-				this.settings.outputIndex = EditorGUILayout.Toggle(LC.G("OutputIndex"), this.settings.outputIndex);
-				this.settings.outputTime = EditorGUILayout.Toggle(LC.G("OutputTime"), this.settings.outputTime);
-				this.settings.outputContent = (OutputContent)EditorGUILayout.EnumPopup(LC.G("OutputContent"), this.settings.outputContent);
-				this.settings.outputLogFile = EditorGUILayout.Toggle(LC.G("OutputLogFile"), this.settings.outputLogFile);
-				this.settings.outputLogFileLine = EditorGUILayout.Toggle(LC.G("OutputLogFileLine"), this.settings.outputLogFileLine);
-				this.settings.outputStackTrace = EditorGUILayout.Toggle(LC.G("OutputStackTrace"), this.settings.outputStackTrace);
-
-				this.exporters[this.selectedExporter].OnGUI();
-				if (EditorGUI.EndChangeCheck() == true ||
-					string.IsNullOrEmpty(this.preview) == true)
+				int	e = EditorGUILayout.Popup(LC.G("Exporter"), this.selectedExporter, this.names);
+				if (EditorGUI.EndChangeCheck() == true)
 				{
+					this.selectedExporter = e;
 					this.UpdatePreview();
 				}
 
-				GUILayout.Label(string.Format(LC.G("PreviewOfNFirstRows"), Constants.PreviewRowsCount));
-				GUILayout.TextArea(this.preview);
+				if (0 <= this.selectedExporter && this.selectedExporter < this.exporters.Length)
+				{
+					NGEditorGUILayout.SaveFileField(LC.G("ExportFilePath"), this.exportFile, string.Empty, string.Empty);
 
-				GUI.enabled = string.IsNullOrEmpty(this.exportFile) == false;
-				if (GUILayout.Button(LC.G("Export")) == true)
-					this.ExportLogs();
+					EditorGUI.BeginChangeCheck();
+					this.settings.outputIndex = EditorGUILayout.Toggle(LC.G("OutputIndex"), this.settings.outputIndex);
+					this.settings.outputTime = EditorGUILayout.Toggle(LC.G("OutputTime"), this.settings.outputTime);
+					this.settings.outputContent = (OutputContent)EditorGUILayout.EnumPopup(LC.G("OutputContent"), this.settings.outputContent);
+					this.settings.outputLogFile = EditorGUILayout.Toggle(LC.G("OutputLogFile"), this.settings.outputLogFile);
+					this.settings.outputLogFileLine = EditorGUILayout.Toggle(LC.G("OutputLogFileLine"), this.settings.outputLogFileLine);
+					this.settings.outputStackTrace = EditorGUILayout.Toggle(LC.G("OutputStackTrace"), this.settings.outputStackTrace);
+
+					this.exporters[this.selectedExporter].OnGUI();
+					if (EditorGUI.EndChangeCheck() == true ||
+						string.IsNullOrEmpty(this.preview) == true)
+					{
+						this.UpdatePreview();
+					}
+
+					GUILayout.Label(string.Format(LC.G("PreviewOfNFirstRows"), Constants.PreviewRowsCount));
+					GUILayout.TextArea(this.preview);
+
+					EditorGUI.BeginDisabledGroup(string.IsNullOrEmpty(this.exportFile));
+					{
+						using (BgColorContentRestorer.Get(GeneralStyles.HighlightActionButton))
+						{
+							if (GUILayout.Button(LC.G("Export")) == true)
+								this.ExportLogs();
+						}
+					}
+					EditorGUI.EndDisabledGroup();
+				}
 			}
+			EditorGUILayout.EndScrollView();
 		}
 
 		protected virtual void	Update()

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using NGTools.Network;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	public class MonitorMaterialProperty : MonitorData
+	internal sealed class MonitorMaterialProperty : MonitorData
 	{
 		private Material			material;
 		private NGShaderProperty	propertyInfo;

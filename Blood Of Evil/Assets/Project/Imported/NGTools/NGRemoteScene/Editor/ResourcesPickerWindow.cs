@@ -1,4 +1,6 @@
 ﻿using NGTools;
+using NGTools.Network;
+using NGTools.NGRemoteScene;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,14 +8,14 @@ using System.Globalization;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	public class ResourcesPickerWindow : EditorWindow
 	{
-		private static Color	FocusBackgroundColor = new Color(50F / 255F, 76F / 255F, 120F / 255F, 1F);
-		private static Color	InitialBackgroundColor = new Color(30F / 255F, 46F / 255F, 20F / 255F, 1F);
+		private static Color	FocusBackgroundColor = new Color(50F / 255F, 76F / 255F, 120F / 255F);
+		private static Color	InitialBackgroundColor = new Color(30F / 255F, 46F / 255F, 20F / 255F);
 
-		private NGHierarchyWindow	hierarchy;
+		private NGRemoteHierarchyWindow	hierarchy;
 		private Type				type;
 		private string				valuePath;
 		private Func<string, byte[], Packet> packetGenerator;
@@ -28,7 +30,7 @@ namespace NGToolsEditor
 		private int[]		ids;
 		private TypeHandler	typeHandler;
 
-		public static void	Init(NGHierarchyWindow hierarchy, Type type, string valuePath, Func<string, byte[], Packet> packetGenerator, int initialInstanceID)
+		public static void	Init(NGRemoteHierarchyWindow hierarchy, Type type, string valuePath, Func<string, byte[], Packet> packetGenerator, int initialInstanceID)
 		{
 			ResourcesPickerWindow	picker = EditorWindow.GetWindow<ResourcesPickerWindow>(true, "Select " + type.Name);
 
@@ -214,12 +216,8 @@ namespace NGToolsEditor
 							this.Close();
 						else
 						{
-							if (i > 0)
-								this.SendSelection(id);
-							else
-								this.SendSelection(0);
-
 							this.selected = i;
+							this.SendSelection(id);
 						}
 
 						this.Repaint();
@@ -244,11 +242,11 @@ namespace NGToolsEditor
 			if (id == -1)
 				id = this.GetIDForResource(this.selected - 1, this.ids);
 
-			ByteBuffer buffer = Utility.GetBBuffer();
+			ByteBuffer	buffer = Utility.GetBBuffer();
 
 			this.typeHandler.Serialize(buffer, this.type, new UnityObject(this.type, id));
 
-			this.hierarchy.Client.AddPacket(this.packetGenerator(this.valuePath, Utility.ReturnBBuffer(buffer)));
+			this.hierarchy.AddPacket(this.packetGenerator(this.valuePath, Utility.ReturnBBuffer(buffer)));
 
 			this.FitFocusedRowInScreen(this.selected);
 		}
@@ -265,7 +263,12 @@ namespace NGToolsEditor
 
 		protected virtual void	OnLostFocus()
 		{
+#if UNITY_4_5 || UNITY_4_6 || UNITY_4_7
+			// HACK: Workaround to avoid crash in Unity 4.
+			EditorApplication.delayCall += this.Close;
+#else
 			this.Close();
+#endif
 		}
 
 		private IEnumerable	ForResources(string[] resources)

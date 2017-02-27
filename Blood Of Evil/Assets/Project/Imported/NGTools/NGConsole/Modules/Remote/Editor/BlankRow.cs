@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class BlankRow : Row
+	internal sealed class BlankRow : Row
 	{
 		private float	height;
 

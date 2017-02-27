@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGAssetsFinder
 {
-	public class AssetMatches
+	internal sealed class AssetMatches
 	{
 		public enum Type
 		{

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	public sealed class ServerGameObject
 	{
@@ -26,9 +26,7 @@ namespace NGTools
 			if (transform.childCount > 0)
 			{
 				for (int i = 0; i < transform.childCount; i++)
-				{
 					this.children.Add(new ServerGameObject(transform.GetChild(i).gameObject, instanceIDs));
-				}
 			}
 		}
 
@@ -67,12 +65,13 @@ namespace NGTools
 			else
 				this.components.Clear();
 
+			// Unity 4 does not clear it.
+			ServerGameObject.tempListComponents.Clear();
+
 			this.gameObject.GetComponents<Component>(ServerGameObject.tempListComponents);
 
 			for (int i = ServerGameObject.tempListComponents.Count - 1; i >= 0; --i)
-			{
 				this.components.Add(new ServerComponent(ServerGameObject.tempListComponents[i]));
-			}
 		}
 
 		public bool	RemoveComponent(int instanceID)

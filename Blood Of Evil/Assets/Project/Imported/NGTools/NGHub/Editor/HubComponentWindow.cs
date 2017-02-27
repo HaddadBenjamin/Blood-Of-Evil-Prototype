@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGHub
 {
 	public class HubComponentWindow : EditorWindow
 	{
@@ -47,12 +47,18 @@ namespace NGToolsEditor
 				NGHubWindow	hub = this.editor as NGHubWindow;
 
 				if (hub != null)
+				{
+					hub.SaveComponents();
 					hub.Repaint();
+				}
 				else
 				{
 					NGHubEditorWindow	editor = this.editor as NGHubEditorWindow;
 					if (editor != null)
+					{
+						editor.hub.SaveComponents();
 						editor.hub.Repaint();
+					}
 					else
 						this.editor.Repaint();
 				}

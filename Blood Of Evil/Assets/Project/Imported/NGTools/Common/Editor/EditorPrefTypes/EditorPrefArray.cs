@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 
 namespace NGToolsEditor
 {
-	public class EditorPrefArray : EditorPrefType
+	internal sealed class EditorPrefArray : EditorPrefType
 	{
 		public override bool	CanHandle(Type type)
 		{
@@ -59,7 +59,7 @@ namespace NGToolsEditor
 
 			Type	subType = type.GetElementType();
 
-			if (subType.IsValueType == true || subType == typeof(string) || subType.IsInterface == true || subType.IsAbstract == true)
+			if (length > 0 && (subType.IsValueType == true || subType == typeof(string) || subType.IsInterface == true || subType.IsAbstract == true))
 			{
 				string	v = NGEditorPrefs.GetString(path + ".serialized", null);
 

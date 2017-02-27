@@ -1,9 +1,10 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Camera_ClientSendCameraInput)]
-	public class ClientSendCameraInputPacket : Packet
+	internal sealed class ClientSendCameraInputPacket : Packet
 	{
 		public bool		forward;
 		public bool		backward;
@@ -11,7 +12,7 @@ namespace NGTools
 		public bool		right;
 		public float	speed;
 
-		protected	ClientSendCameraInputPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientSendCameraInputPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

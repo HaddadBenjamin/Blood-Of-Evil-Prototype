@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[Priority(10)]
-	public class StringHandler : TypeHandler
+	internal sealed class StringHandler : TypeHandler
 	{
 		public	StringHandler() : base(typeof(String))
 		{

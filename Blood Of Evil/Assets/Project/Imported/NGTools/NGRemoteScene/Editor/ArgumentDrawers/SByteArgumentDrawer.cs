@@ -1,12 +1,12 @@
 using System;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[ArgumentDrawerFor(typeof(SByte))]
-	public class SByteArgumentDrawer : ArgumentDrawer
+	internal sealed class SByteArgumentDrawer : ArgumentDrawer
 	{
-		public SByteArgumentDrawer(string name) : base(name, typeof(SByte))
+		public SByteArgumentDrawer(string name, Type type) : base(name, typeof(SByte))
 		{
 		}
 
@@ -15,12 +15,12 @@ namespace NGToolsEditor
 			this.value = (SByte)EditorGUILayout.IntField(this.name, (SByte)this.value);
 		}
 
-		public override void	Serialize(string path)
+		public override void	Save(string path)
 		{
 			NGEditorPrefs.SetInt(path, (SByte)this.value);
 		}
 
-		public override void	Deserialize(string path)
+		public override void	Load(string path)
 		{
 			this.value = (SByte)NGEditorPrefs.GetInt(path);
 		}

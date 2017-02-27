@@ -1,13 +1,14 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Camera_ClientPickGhostCameraAtCamera)]
-	public class ClientPickGhostCameraAtCameraPacket : Packet
+	internal sealed class ClientPickGhostCameraAtCameraPacket : Packet
 	{
 		public int	ID;
 
-		protected	ClientPickGhostCameraAtCameraPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientPickGhostCameraAtCameraPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

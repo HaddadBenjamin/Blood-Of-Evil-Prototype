@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using UnityEngine;
 
 namespace NGToolsEditor
@@ -7,9 +8,9 @@ namespace NGToolsEditor
 	{
 		public const int	Version = 1;
 
-#if !NGT_DEBUG
+		public static event Action<NGSettings>	Initialize;
+
 		[HideInInspector]
-#endif
 		public int	version =  NGSettings.Version;
 
 		[Serializable]
@@ -28,6 +29,22 @@ namespace NGToolsEditor
 			}
 
 			protected abstract void	InitGUI();
+		}
+
+		public void	Init()
+		{
+			FieldInfo[]	fields = typeof(NGSettings).GetFields(BindingFlags.Public | BindingFlags.Instance);
+
+			for (int i = 0; i < fields.Length; i++)
+			{
+				NGSettings.Settings	settings = fields[i].GetValue(this) as NGSettings.Settings;
+
+				if (settings != null)
+					settings.InternalInitGUI();
+			}
+
+			if (NGSettings.Initialize != null)
+				NGSettings.Initialize(this);
 		}
 	}
 }

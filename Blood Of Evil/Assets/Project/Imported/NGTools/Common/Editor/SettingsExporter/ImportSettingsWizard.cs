@@ -88,18 +88,14 @@ namespace NGToolsEditor
 				this.instanceType = workingType;
 				// Look for class.
 				//if (this.instanceType.FullName == node.name)
-				//{
 				//	this.instance = instance;
-				//}
 				// Look for array element.
 				if (typeof(IEnumerable).IsAssignableFrom(this.instanceType) == true)
 				{
 					this.arrayElementType = Type.GetType(node.name);
 
 					if (this.arrayElementType == null)
-					{
 						Debug.LogWarning("Type \"" + node.name + "\" was not recognized.");
-					}
 					else
 					{
 						foreach (ExportableAttribute attribute in this.arrayElementType.GetCustomAttributesIncludingBaseInterfaces<ExportableAttribute>())
@@ -189,9 +185,7 @@ namespace NGToolsEditor
 				//{
 					this.children = new ImportNode[node.children.Count];
 					for (int i = 0; i < this.children.Length; i++)
-					{
 						this.children[i] = new ImportNode(this, node.children[i], this.instanceType, this.instance);
-					}
 				//}
 				//else
 				//	this.children = new ImportNode[0];
@@ -217,9 +211,7 @@ namespace NGToolsEditor
 						this.children = new ImportNode[node.children.Count];
 
 						for (int i = 0; i < this.children.Length; i++)
-						{
 							this.children[i] = new ImportNode(this, node.children[i], this.instanceType, this.instance);
-						}
 					}
 				}
 			}
@@ -234,9 +226,7 @@ namespace NGToolsEditor
 
 				this.children = new ImportNode[node.children.Count];
 				for (int i = 0; i < this.children.Length; i++)
-				{
 					this.children[i] = new ImportNode(this, node.children[i]);
-				}
 			}
 
 			/// <summary>
@@ -292,17 +282,20 @@ namespace NGToolsEditor
 				this.richTextField.richText = true;
 			}
 
-			if (GUILayout.Button(LC.G("ImportSettings_Import")) == true)
+			using (BgColorContentRestorer.Get(GeneralStyles.HighlightActionButton))
 			{
-				ImportSettingsWizard.trackObjects.Clear();
-				try
+				if (GUILayout.Button(LC.G("ImportSettings_Import")) == true)
 				{
-					this.Import(this.root);
-					InternalNGDebug.Log(LC.G("ImportSettings_ImportCompleted"));
-				}
-				catch (Exception ex)
-				{
-					InternalNGDebug.LogException(LC.G("ImportSettings_ImportFailed"), ex);
+					ImportSettingsWizard.trackObjects.Clear();
+					try
+					{
+						this.Import(this.root);
+						InternalNGDebug.Log(LC.G("ImportSettings_ImportCompleted"));
+					}
+					catch (Exception ex)
+					{
+						InternalNGDebug.LogException(LC.G("ImportSettings_ImportFailed"), ex);
+					}
 				}
 			}
 
@@ -428,9 +421,7 @@ namespace NGToolsEditor
 			if (node.parent != null)
 				++GUI.depth;
 			for (int i = 0; i < node.children.Length; i++)
-			{
 				this.DrawNode(node.children[i]);
-			}
 			if (node.parent != null)
 				--GUI.depth;
 		}
@@ -589,12 +580,12 @@ namespace NGToolsEditor
 
 		private static Type GetElementTypeOfEnumerable(object o)
 		{
-			var enumerable = o as IEnumerable;
+			var	enumerable = o as IEnumerable;
 			// if it's not an enumerable why do you call this method all ?
 			if (enumerable == null)
 				return null;
 
-			Type[] interfaces = enumerable.GetType().GetInterfaces();
+			Type[]	interfaces = enumerable.GetType().GetInterfaces();
 
 			return (from i in interfaces
 					where i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>)

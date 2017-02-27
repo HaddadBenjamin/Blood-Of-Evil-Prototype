@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class MaxLogEndMode : EndMode
+	internal sealed class MaxLogEndMode : EndMode
 	{
 		[Exportable]
 		private int	endMaxLog;

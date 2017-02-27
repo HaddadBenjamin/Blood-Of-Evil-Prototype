@@ -2,13 +2,13 @@
 using UnityEditor;
 using UnityEditorInternal;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	using UnityEngine;
 
 	[Serializable]
 	[RowLogHandler(0)]
-	public class DefaultRow : Row, ILogContentGetter
+	internal class DefaultRow : Row, ILogContentGetter
 	{
 		/// <summary>Defines whether the Row is open or not by RowsDrawer.</summary>
 		public bool		isOpened;
@@ -68,10 +68,10 @@ namespace NGToolsEditor
 
 		public override void	DrawRow(RowsDrawer rowsDrawer, Rect r, int i, bool? collapse)
 		{
-			float	originWidth = r.width - rowsDrawer.verticalScrollbarWidth + rowsDrawer.currentVars.scrollPosition.x;
+			float	originWidth = r.width - rowsDrawer.verticalScrollbarWidth + rowsDrawer.currentVars.scrollX;
 
 			// Draw highlight.
-			r.x = rowsDrawer.currentVars.scrollPosition.x;
+			r.x = rowsDrawer.currentVars.scrollX;
 			r.width = originWidth;
 			r.height = Preferences.Settings.log.height;
 
@@ -94,22 +94,22 @@ namespace NGToolsEditor
 
 					if (rowsDrawer.RowHovered != null)
 					{
-						r.x -= rowsDrawer.currentVars.scrollPosition.x;
-						r.y -= rowsDrawer.currentVars.scrollPosition.y;
+						r.x -= rowsDrawer.currentVars.scrollX;
+						r.y -= rowsDrawer.currentVars.scrollY;
 						rowsDrawer.RowHovered(r, this);
-						r.x += rowsDrawer.currentVars.scrollPosition.x;
-						r.y += rowsDrawer.currentVars.scrollPosition.y;
+						r.x += rowsDrawer.currentVars.scrollX;
+						r.y += rowsDrawer.currentVars.scrollY;
 					}
 				}
 				else if (Event.current.type == EventType.MouseDown)
 				{
 					if (rowsDrawer.RowClicked != null)
 					{
-						r.x -= rowsDrawer.currentVars.scrollPosition.x;
-						r.y -= rowsDrawer.currentVars.scrollPosition.y;
+						r.x -= rowsDrawer.currentVars.scrollX;
+						r.y -= rowsDrawer.currentVars.scrollY;
 						rowsDrawer.RowClicked(r, this);
-						r.x += rowsDrawer.currentVars.scrollPosition.x;
-						r.y += rowsDrawer.currentVars.scrollPosition.y;
+						r.x += rowsDrawer.currentVars.scrollX;
+						r.y += rowsDrawer.currentVars.scrollY;
 					}
 				}
 			}
@@ -147,7 +147,7 @@ namespace NGToolsEditor
 			bool	lastValue = this.isOpened;
 			if ((this.log.mode & Mode.ScriptingException) != 0)
 				this.isOpened = EditorGUI.Foldout(r, this.isOpened, "", Preferences.Settings.log.ExceptionFoldoutStyle);
-			else if ((this.log.mode & (Mode.ScriptCompileError | Mode.ScriptingError | Mode.Fatal | Mode.Error | Mode.Assert | Mode.AssetImportError)) != 0)
+			else if ((this.log.mode & (Mode.ScriptCompileError | Mode.ScriptingError | Mode.Fatal | Mode.Error | Mode.Assert | Mode.AssetImportError | Mode.ScriptingAssertion)) != 0)
 				this.isOpened = EditorGUI.Foldout(r, this.isOpened, "", Preferences.Settings.log.ErrorFoldoutStyle);
 			else if ((this.log.mode & (Mode.ScriptCompileWarning | Mode.ScriptingWarning | Mode.AssetImportWarning)) != 0)
 				this.isOpened = EditorGUI.Foldout(r, this.isOpened, "", Preferences.Settings.log.WarningFoldoutStyle);
@@ -278,9 +278,7 @@ namespace NGToolsEditor
 					}
 					// Go to line if force focus is available.
 					else if ((Event.current.modifiers & Preferences.Settings.log.forceFocusOnModifier) != 0)
-					{
 						RowUtility.GoToLine(this, this.log, true);
-					}
 					// Handle multi-selection.
 					else if (Event.current.control == true &&
 							 rowsDrawer.currentVars.IsSelected(i) == true)
@@ -290,9 +288,7 @@ namespace NGToolsEditor
 					else
 					{
 						if (Event.current.shift == true)
-						{
 							rowsDrawer.currentVars.WrapSelection(i);
-						}
 						else if (Event.current.control == false)
 						{
 							if (rowsDrawer.currentVars.CountSelection != 1)
@@ -416,6 +412,7 @@ namespace NGToolsEditor
 						this.isOpened = false;
 						rowsDrawer.InvalidateViewHeight();
 						Utility.drawingWindow.Repaint();
+						RowUtility.ClearPreview();
 					}
 				}
 				else if (Preferences.Settings.inputsManager.Check("Navigation", Constants.OpenLogCommand) == true)
@@ -425,6 +422,7 @@ namespace NGToolsEditor
 						this.isOpened = true;
 						rowsDrawer.InvalidateViewHeight();
 						Utility.drawingWindow.Repaint();
+						RowUtility.ClearPreview();
 					}
 				}
 				else if (Preferences.Settings.inputsManager.Check("Navigation", Constants.GoToLineCommand) == true &&

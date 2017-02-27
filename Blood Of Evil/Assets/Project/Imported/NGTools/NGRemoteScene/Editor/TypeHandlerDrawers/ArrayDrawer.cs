@@ -1,13 +1,12 @@
-﻿using NGTools;
+﻿using NGTools.NGRemoteScene;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
-	public class ArrayDrawer : TypeHandlerDrawer
+	internal sealed class ArrayDrawer : TypeHandlerDrawer
 	{
 		private List<TypeHandlerDrawer>	subDrawers;
 		private bool					fold;
@@ -72,9 +71,7 @@ namespace NGToolsEditor
 				r.y += r.height;
 
 				if (GUI.Button(r, "Load") == true)
-				{
 					data.inspector.Hierarchy.LoadBigArray(data.GetPath());
-				}
 
 				return;
 			}
@@ -94,9 +91,7 @@ namespace NGToolsEditor
 			EditorGUI.BeginChangeCheck();
 			int	newSize = EditorGUI.IntField(r, "Size", array.array.Length);
 			if (EditorGUI.EndChangeCheck() == true)
-			{
 				this.AsyncUpdateCommand(data.unityData, data.GetPath(), newSize, typeof(int), TypeHandlersManager.GetTypeHandler(typeof(int)));
-			}
 
 			r.y += r.height;
 

@@ -2,9 +2,9 @@
 using System.Text;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	public static class FrameBuilder
+	internal static class FrameBuilder
 	{
 		public static string		returnType;
 		public static string		namespaceName;

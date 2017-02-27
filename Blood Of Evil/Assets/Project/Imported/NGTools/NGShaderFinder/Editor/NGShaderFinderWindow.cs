@@ -6,12 +6,12 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGShaderFinder
 {
 	[InitializeOnLoad]
 	public class NGShaderFinderWindow : EditorWindow, IHasCustomMenu
 	{
-		public const string	Title = "NG Shader Finder";
+		public const string	Title = "ƝƓ Ȿhader Ḟinder";
 
 		private bool	canReplace;
 		private Shader	targetShader;
@@ -23,7 +23,6 @@ namespace NGToolsEditor
 		private bool	isSearching;
 		private float	searchTime;
 		private float	lastFrameTime;
-		private double	lastClick;
 		private Vector2	scrollPosition;
 
 		static	NGShaderFinderWindow()
@@ -32,13 +31,13 @@ namespace NGToolsEditor
 			Utility.AddMenuItemPicker("Assets/Search Material using this Shader");
 		}
 
-		#region Menu Items
 		[MenuItem(Constants.MenuItemPath + NGShaderFinderWindow.Title, priority = Constants.MenuItemPriority + 335)]
-		private static void	Open()
+		public static void	Open()
 		{
-			EditorWindow.GetWindow<NGShaderFinderWindow>(true, Title);
+			EditorWindow.GetWindow<NGShaderFinderWindow>(true, NGShaderFinderWindow.Title);
 		}
 
+		#region Menu Items
 		[MenuItem("CONTEXT/Shader/Search Material using this Shader", priority = 502)]
 		private static void	SearchShader(MenuCommand menuCommand)
 		{
@@ -76,19 +75,31 @@ namespace NGToolsEditor
 		}
 		#endregion
 
+		protected virtual void	OnEnable()
+		{
+			Undo.undoRedoPerformed += this.Repaint;
+		}
+
+		protected virtual void	OnDisable()
+		{
+			Undo.undoRedoPerformed -= this.Repaint;
+		}
+
 		protected virtual void	OnGUI()
 		{
+			FreeOverlay.First(this, NGShaderFinderWindow.Title + " is restrained to " + FreeConstants.MaxShaderReplacements + " replacements at once.\n\nYou can replace many times.");
+
 			EditorGUILayout.BeginHorizontal();
 			{
 				EditorGUI.BeginDisabledGroup(this.targetShader == null || this.isSearching == true);
 				{
-					if (GUILayout.Button("Search all Material") == true)
-						this.FindReferences();
+					using (BgColorContentRestorer.Get(GeneralStyles.HighlightActionButton))
+					{
+						if (GUILayout.Button("Search all Material") == true)
+							this.FindReferences();
+					}
 				}
 				EditorGUI.EndDisabledGroup();
-
-				if (GUILayout.Button("Clear", GUILayout.Width(70F)) == true)
-					this.ClearResults();
 			}
 			EditorGUILayout.EndHorizontal();
 			
@@ -115,13 +126,16 @@ namespace NGToolsEditor
 
 					EditorGUILayout.BeginVertical();
 					{
-						EditorGUI.BeginChangeCheck();
-						Shader	newTarget = EditorGUILayout.ObjectField("Find Asset", this.targetShader, typeof(Shader), false) as Shader;
-						if (EditorGUI.EndChangeCheck() == true)
-							this.targetShader = newTarget;
+						using (LabelWidthRestorer.Get(90F))
+						{
+							EditorGUI.BeginChangeCheck();
+							Shader	newTarget = EditorGUILayout.ObjectField("Find Shader", this.targetShader, typeof(Shader), false) as Shader;
+							if (EditorGUI.EndChangeCheck() == true)
+								this.targetShader = newTarget;
 
-						if (this.canReplace == true)
-							this.replaceShader = EditorGUILayout.ObjectField("Replace Asset", this.replaceShader, typeof(Shader), false) as Shader;
+							if (this.canReplace == true)
+								this.replaceShader = EditorGUILayout.ObjectField("Replace Shader", this.replaceShader, typeof(Shader), false) as Shader;
+						}
 
 						GUILayout.Space(4F);
 					}
@@ -133,14 +147,17 @@ namespace NGToolsEditor
 
 			if (this.canReplace == true)
 			{
-				EditorGUI.BeginDisabledGroup(this.isSearching);
+				EditorGUI.BeginDisabledGroup(this.isSearching == true || this.hasResult == false);
 				{
 					EditorGUILayout.BeginHorizontal();
 					{
-						if (GUILayout.Button("Replace") == true)
-							this.ReplaceReferences();
-						if (GUILayout.Button("Set all") == true)
-							this.SetAllReferences();
+						using (BgColorContentRestorer.Get(GeneralStyles.HighlightActionButton))
+						{
+							if (GUILayout.Button("Replace") == true)
+								this.ReplaceReferences(true);
+							if (GUILayout.Button("Set all") == true)
+								this.ReplaceReferences(false);
+						}
 					}
 					EditorGUILayout.EndHorizontal();
 				}
@@ -159,7 +176,17 @@ namespace NGToolsEditor
 			{
 				this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
 				{
-					EditorGUILayout.LabelField("Results:", this.results.Count.ToString());
+					EditorGUILayout.BeginHorizontal(GeneralStyles.Toolbar);
+					{
+						EditorGUILayout.LabelField("Results:", this.results.Count.ToString());
+
+						using (BgColorContentRestorer.Get(GeneralStyles.HighlightResultButton))
+						{
+							if (GUILayout.Button("Clear", GeneralStyles.ToolbarButton, GUILayout.Width(70F)) == true)
+								this.ClearResults();
+						}
+					}
+					EditorGUILayout.EndHorizontal();
 
 					for (int i = 0; i < this.results.Count; i++)
 					{
@@ -169,25 +196,20 @@ namespace NGToolsEditor
 							Shader	o = EditorGUILayout.ObjectField(this.results[i].name, this.results[i].shader, typeof(Shader), false) as Shader;
 							if (EditorGUI.EndChangeCheck() == true)
 							{
+								Undo.RecordObject(this.results[i], "Replace Material shader");
 								this.results[i].shader = o;
 								EditorUtility.SetDirty(this.results[i]);
 							}
 
-							if (GUILayout.Button(LC.G("Ping"), GUILayout.Width(40F)) == true)
-							{
-								if (Event.current.button != 0 || this.lastClick + Constants.DoubleClickTime > EditorApplication.timeSinceStartup)
-									Selection.activeObject = this.results[i];
-								else
-									EditorGUIUtility.PingObject(this.results[i]);
-
-								this.lastClick = EditorApplication.timeSinceStartup;
-							}
+							NGEditorGUILayout.PingObject(LC.G("Ping"), this.results[i], GUILayout.Width(40F));
 						}
 						EditorGUILayout.EndHorizontal();
 					}
 				}
 				EditorGUILayout.EndScrollView();
 			}
+
+			FreeOverlay.Last();
 		}
 
 		private void	FindReferences()
@@ -195,7 +217,7 @@ namespace NGToolsEditor
 			Utility.StartBackgroundTask(this.ProcessFolder(), this.PrepareResults);
 		}
 
-		private void	ReplaceReferences()
+		private void	ReplaceReferences(bool replaceOnTarget)
 		{
 			AssetDatabase.StartAssetEditing();
 
@@ -203,37 +225,13 @@ namespace NGToolsEditor
 
 			for (int i = 0; i < this.results.Count; i++)
 			{
-				if (this.results[i].shader == this.targetShader)
+				if (replaceOnTarget == false || this.results[i].shader == this.targetShader)
 				{
+					Undo.RecordObject(this.results[i], "Replace Material shader");
 					this.results[i].shader = this.replaceShader;
 					++count;
-				}
-			}
-
-			AssetDatabase.StopAssetEditing();
-
-			AssetDatabase.SaveAssets();
-
-			if (count == 0)
-				EditorUtility.DisplayDialog(NGShaderFinderWindow.Title, "No reference updated.", "OK");
-			else if (count == 1)
-				EditorUtility.DisplayDialog(NGShaderFinderWindow.Title, count + " reference updated.", "OK");
-			else
-				EditorUtility.DisplayDialog(NGShaderFinderWindow.Title, count + " references updated.", "OK");
-		}
-
-		private void	SetAllReferences()
-		{
-			AssetDatabase.StartAssetEditing();
-
-			int	count = 0;
-
-			for (int i = 0; i < this.results.Count; i++)
-			{
-				if (this.results[i].shader != this.replaceShader)
-				{
-					this.results[i].shader = this.replaceShader;
-					++count;
+					if (FreeConstants.CheckMaxShaderReplacements(count) == false)
+						break;
 				}
 			}
 
@@ -290,9 +288,9 @@ namespace NGToolsEditor
 					InternalNGDebug.LogException("Exception thrown on file \"" + files[i] + "\".", ex);
 				}
 
-				if (Time.realtimeSinceStartup - lastFrameTime >= NGAssetsFinderWindow.MaxProcessTimePerFrame)
+				if (Time.realtimeSinceStartup - lastFrameTime >= Preferences.MaxProcessTimePerFrame)
 				{
-					lastFrameTime += NGAssetsFinderWindow.MaxProcessTimePerFrame;
+					lastFrameTime += Preferences.MaxProcessTimePerFrame;
 
 					if (i + 1 < max)
 						EditorUtility.DisplayProgressBar(NGShaderFinderWindow.Title + " - Project (" + (i + 1) + " / " + max + ")", files[i], (float)(i + 1) / (float)max);

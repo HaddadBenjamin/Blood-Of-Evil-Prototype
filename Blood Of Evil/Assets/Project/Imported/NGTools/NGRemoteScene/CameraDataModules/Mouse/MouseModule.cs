@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[Flags]
 	public enum MouseButtons
@@ -41,14 +41,14 @@ namespace NGTools
 		Button31
 	}
 
-	public class MouseModule : CameraServerDataModule
+	internal sealed class MouseModule : CameraServerDataModule
 	{
 		public const int	ModuleID = 3;
 		public const int	Priority = 100;
 		public const string	Name = "Mouse";
 
-		private float	lastMouseX;
-		private float	lastMouseY;
+		private float			lastMouseX;
+		private float			lastMouseY;
 		private MouseButtons	lastMouseButtons;
 
 		public	MouseModule() : base(MouseModule.ModuleID, MouseModule.Priority, MouseModule.Name)

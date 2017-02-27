@@ -1,10 +1,11 @@
 ﻿using NGTools;
+using NGTools.NGRemoteScene;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
-	public class TouchReplayModule : ReplayDataModule
+	internal sealed class TouchReplayModule : ReplayDataModule
 	{
 		private Vector2	mouseScrollPosition;
 
@@ -98,9 +99,7 @@ namespace NGToolsEditor
 				{
 					GUILayout.Label(state.time.ToString());
 					for (int i = 0; i < state.touches.Length; i++)
-					{
 						GUILayout.Label(" " + state.touches[i].x + " " + state.touches[i].y + " " + state.touches[i].fingerID);
-					}
 				}
 			}
 			GUILayout.EndScrollView();

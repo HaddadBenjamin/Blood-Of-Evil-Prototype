@@ -1,14 +1,15 @@
-﻿using System;
+﻿using NGTools.Network;
+using System;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Scene_ClientRequestResources)]
-	public class ClientRequestResourcesPacket : Packet
+	internal sealed class ClientRequestResourcesPacket : Packet
 	{
 		public Type	type;
 
-		protected	ClientRequestResourcesPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientRequestResourcesPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

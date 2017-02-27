@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-    public class ArrayData
+	internal sealed class ArrayData
 	{
 		public readonly	Type	type;
 		public readonly	bool	isBigArray;
@@ -19,7 +19,7 @@ namespace NGTools
 	}
 
 	[Priority(100)]
-	public class ArrayHandler : TypeHandler
+	internal sealed class ArrayHandler : TypeHandler
 	{
 		public const int	BigArrayThreshold = 256;
 

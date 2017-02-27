@@ -1,10 +1,11 @@
-﻿using System;
+﻿using NGTools.Network;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	public class MonitorArrayItem : MonitorData
+	internal sealed class MonitorArrayItem : MonitorData
 	{
 		private int			index;
 		private TypeHandler	typeHandler;

@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
-	public class LocalCommandParser : CommandParser
+	internal class LocalCommandParser : CommandParser
 	{
 		private NGCLI	cli;
 		private Texture2D	hover;
@@ -91,12 +91,12 @@ namespace NGTools
 							command = string.Join(NGCLI.CommandsSeparator.ToString(), commands) +
 											NGCLI.CommandsArgumentsSeparator +
 											rawArguments;
-							this.SetCursor(command.Length - rawArguments.Length - 1);
+							this.SetCursor(command, command.Length - rawArguments.Length - 1);
 						}
 						else
 						{
 							command = string.Join(NGCLI.CommandsSeparator.ToString(), commands);
-							this.SetCursor(command.Length);
+							this.SetCursor(command, command.Length);
 						}
 
 						this.matchingCommands = null;

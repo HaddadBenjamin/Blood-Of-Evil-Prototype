@@ -1,22 +1,23 @@
-﻿using System;
+﻿using NGTools;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable, VisibleModule(150)]
-	public class ArchiveModule : Module, IRows
+	internal sealed class ArchiveModule : Module, IRows
 	{
 		[Serializable]
-		public class Vars
+		private sealed class Vars
 		{
 			public int	workingFolder;
 		}
 
 		[Serializable, ExcludeFromExport]
-		public class UnexportableFolder : Folder
+		private sealed class UnexportableFolder : Folder
 		{
 		}
 
@@ -50,7 +51,7 @@ namespace NGToolsEditor
 		}
 
 		[Serializable]
-		public class LogNote
+		public sealed class LogNote
 		{
 			[Exportable]
 			public Row		row;
@@ -183,35 +184,25 @@ namespace NGToolsEditor
 						if (EditorGUI.EndChangeCheck() == true)
 						{
 							if (Event.current.button == 0)
-							{
 								this.currentVars.workingFolder = i;
-							}
 							// Forbid to alter the main folder.
-							else
-#if !NGT_DEBUG
-							if (i > 0)
-#endif
+							else if (Conf.DebugMode != Conf.DebugModes.None || i > 0)
 							{
 								// Show context menu on right click.
 								if (Event.current.button == 1)
 								{
-									GenericMenu menu = new GenericMenu();
+									GenericMenu	menu = new GenericMenu();
 									menu.AddItem(new GUIContent(LC.G("ArchiveModule_ChangeName")), false, this.ChangeStreamName, i);
-#if NGT_DEBUG
 									if (i > 0)
-#endif
-									menu.AddItem(new GUIContent(LC.G("Delete")), false, this.DeleteFolder, i);
-#if NGT_DEBUG
-									menu.AddItem(new GUIContent("Clear"), false, (d) => { this.folders[(int)d].notes.Clear();this.folders[(int)d].rowsDrawer.Clear(); ; }, i);
-#endif
+										menu.AddItem(new GUIContent(LC.G("Delete")), false, this.DeleteFolder, i);
+									if (Conf.DebugMode != Conf.DebugModes.None)
+										menu.AddItem(new GUIContent("Clear"), false, (d) => { this.folders[(int)d].notes.Clear();this.folders[(int)d].rowsDrawer.Clear(); ; }, i);
 									menu.DropDown(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y, 0, 0));
 								}
 								else if (Event.current.button == 2)
 								{
-#if NGT_DEBUG
-									if (i > 0)
-#endif
-									this.DeleteFolder(i);
+									if (Conf.DebugMode != Conf.DebugModes.None && i > 0)
+										this.DeleteFolder(i);
 								}
 							}
 						}
@@ -514,9 +505,7 @@ namespace NGToolsEditor
 			Action<object, string>	SetNote = delegate(object data2, string content)
 			{
 				if (data2 is LogNote)
-				{
 					((LogNote)data2).note = content;
-				}
 				// Add a new note.
 				else if (data2 is Row)
 				{

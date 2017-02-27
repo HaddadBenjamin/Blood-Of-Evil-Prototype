@@ -5,6 +5,9 @@ namespace NGToolsEditor
 {
 	public static class GeneralStyles
 	{
+		public static Color	HighlightActionButton = Color.yellow;
+		public static Color	HighlightResultButton = Color.green * .8F;
+
 		private static GUIStyle	mainTitle;
 		public static GUIStyle	MainTitle
 		{
@@ -33,6 +36,10 @@ namespace NGToolsEditor
 					GeneralStyles.title1 = new GUIStyle(EditorStyles.label);
 					GeneralStyles.title1.fontStyle = FontStyle.Bold;
 					GeneralStyles.title1.fontSize = 14;
+					GeneralStyles.title1.margin.top = 0;
+					GeneralStyles.title1.margin.bottom = 0;
+					GeneralStyles.title1.margin.left = 0;
+					GeneralStyles.title1.margin.right = 0;
 				}
 
 				return GeneralStyles.title1;
@@ -96,9 +103,7 @@ namespace NGToolsEditor
 			get
 			{
 				if (GeneralStyles.lockButton == null)
-				{
 					GeneralStyles.lockButton = new GUIStyle("IN LockButton");
-				}
 
 				return GeneralStyles.lockButton;
 			}
@@ -127,7 +132,7 @@ namespace NGToolsEditor
 				if (GeneralStyles.textFieldPlaceHolder == null)
 				{
 					GeneralStyles.textFieldPlaceHolder = new GUIStyle(EditorStyles.label);
-					GeneralStyles.textFieldPlaceHolder.normal.textColor = new Color(125F / 255F, 125F / 255F, 125F / 255F, 1F);
+					GeneralStyles.textFieldPlaceHolder.normal.textColor = new Color(125F / 255F, 125F / 255F, 125F / 255F);
 				}
 
 				return GeneralStyles.textFieldPlaceHolder;
@@ -214,6 +219,24 @@ namespace NGToolsEditor
 			}
 		}
 
+		private static GUIStyle	bigButton;
+		public static GUIStyle	BigButton
+		{
+			get
+			{
+				if (GeneralStyles.bigButton == null)
+				{
+					GeneralStyles.bigButton = new GUIStyle(GUI.skin.button);
+					GeneralStyles.bigButton.margin = new RectOffset(10, 10, 10, 10);
+					GeneralStyles.bigButton.padding = new RectOffset(30, 30, 10, 10);
+					GeneralStyles.bigButton.alignment = TextAnchor.MiddleCenter;
+					GeneralStyles.bigButton.wordWrap = true;
+				}
+
+				return GeneralStyles.bigButton;
+			}
+		}
+
 		private static GUIStyle	centerButton;
 		public static GUIStyle	CenterButton
 		{
@@ -262,7 +285,7 @@ namespace NGToolsEditor
 				if (GeneralStyles.toolbarCloseButton == null)
 				{
 					GeneralStyles.toolbarCloseButton = new GUIStyle("ToolbarButton");
-					GeneralStyles.toolbarCloseButton.normal.textColor = Color.grey;
+					GeneralStyles.toolbarCloseButton.normal.textColor = EditorGUIUtility.isProSkin == true ? Color.grey : Color.black;
 					GeneralStyles.toolbarCloseButton.alignment = TextAnchor.MiddleCenter;
 					GeneralStyles.toolbarCloseButton.fontSize = 12;
 					GeneralStyles.toolbarCloseButton.fontStyle = FontStyle.Italic;
@@ -280,7 +303,7 @@ namespace NGToolsEditor
 				if (GeneralStyles.toolbarValidButton == null)
 				{
 					GeneralStyles.toolbarValidButton = new GUIStyle("ToolbarButton");
-					GeneralStyles.toolbarValidButton.normal.textColor = Color.green;
+					GeneralStyles.toolbarValidButton.normal.textColor = EditorGUIUtility.isProSkin == true ? Color.green : Color.blue;
 					GeneralStyles.toolbarValidButton.alignment = TextAnchor.MiddleCenter;
 					GeneralStyles.toolbarValidButton.fontSize = 20;
 				}
@@ -297,7 +320,7 @@ namespace NGToolsEditor
 				if (GeneralStyles.toolbarAltButton == null)
 				{
 					GeneralStyles.toolbarAltButton = new GUIStyle("ToolbarButton");
-					GeneralStyles.toolbarAltButton.normal.textColor = Color.cyan;
+					GeneralStyles.toolbarAltButton.normal.textColor = EditorGUIUtility.isProSkin == true ? Color.cyan : Color.grey;
 					GeneralStyles.toolbarAltButton.alignment = TextAnchor.MiddleCenter;
 					GeneralStyles.toolbarAltButton.fontSize = 14;
 				}
@@ -314,8 +337,6 @@ namespace NGToolsEditor
 				if (GeneralStyles.toolbarButton == null)
 				{
 					GeneralStyles.toolbarButton = new GUIStyle("ToolbarButton");
-					//GeneralStyles.toolbarButton.border = new RectOffset(1, 1, 1, 1);
-					//GeneralStyles.toolbarButton.normal.textColor *= ;
 					GeneralStyles.toolbarButton.fontStyle = FontStyle.Bold;
 				}
 
@@ -377,27 +398,27 @@ namespace NGToolsEditor
 			}
 		}
 
-		private static GUIStyle	toolbarSeachTextField;
-		public static GUIStyle	ToolbarSeachTextField
+		private static GUIStyle	toolbarSearchTextField;
+		public static GUIStyle	ToolbarSearchTextField
 		{
 			get
 			{
-				if (GeneralStyles.toolbarSeachTextField == null)
-					GeneralStyles.toolbarSeachTextField = new GUIStyle("ToolbarSeachTextField");
+				if (GeneralStyles.toolbarSearchTextField == null)
+					GeneralStyles.toolbarSearchTextField = new GUIStyle("ToolbarSeachTextField");
 
-				return GeneralStyles.toolbarSeachTextField;
+				return GeneralStyles.toolbarSearchTextField;
 			}
 		}
 
-		private static GUIStyle	toolbarSeachCancelButton;
-		public static GUIStyle	ToolbarSeachCancelButton
+		private static GUIStyle	toolbarSearchCancelButton;
+		public static GUIStyle	ToolbarSearchCancelButton
 		{
 			get
 			{
-				if (GeneralStyles.toolbarSeachCancelButton == null)
-					GeneralStyles.toolbarSeachCancelButton = new GUIStyle("ToolbarSeachCancelButton");
+				if (GeneralStyles.toolbarSearchCancelButton == null)
+					GeneralStyles.toolbarSearchCancelButton = new GUIStyle("ToolbarSeachCancelButton");
 
-				return GeneralStyles.toolbarSeachCancelButton;
+				return GeneralStyles.toolbarSearchCancelButton;
 			}
 		}
 
@@ -407,9 +428,7 @@ namespace NGToolsEditor
 			get
 			{
 				if (GeneralStyles.unityObjectPicker == null)
-				{
 					GeneralStyles.unityObjectPicker = new GUIStyle(EditorStyles.objectField);
-				}
 
 				return GeneralStyles.unityObjectPicker;
 			}
@@ -454,11 +473,26 @@ namespace NGToolsEditor
 			{
 				if (GeneralStyles.richLabel == null)
 				{
-					GeneralStyles.richLabel = new GUIStyle(EditorStyles.foldout);
+					GeneralStyles.richLabel = new GUIStyle(EditorStyles.label);
 					GeneralStyles.richLabel.richText = true;
 				}
 
 				return GeneralStyles.richLabel;
+			}
+		}
+
+		private static GUIStyle	richTextArea;
+		public static GUIStyle	RichTextArea
+		{
+			get
+			{
+				if (GeneralStyles.richTextArea == null)
+				{
+					GeneralStyles.richTextArea = new GUIStyle(EditorStyles.textArea);
+					GeneralStyles.richTextArea.richText = true;
+				}
+
+				return GeneralStyles.richTextArea;
 			}
 		}
 
@@ -474,6 +508,21 @@ namespace NGToolsEditor
 				}
 
 				return GeneralStyles.verticalCenterTextField;
+			}
+		}
+
+		private static GUIStyle	verticalCenterLabel;
+		public static GUIStyle	VerticalCenterLabel
+		{
+			get
+			{
+				if (GeneralStyles.verticalCenterLabel == null)
+				{
+					GeneralStyles.verticalCenterLabel = new GUIStyle(EditorStyles.label);
+					GeneralStyles.verticalCenterLabel.alignment = TextAnchor.MiddleLeft;
+				}
+
+				return GeneralStyles.verticalCenterLabel;
 			}
 		}
 	}

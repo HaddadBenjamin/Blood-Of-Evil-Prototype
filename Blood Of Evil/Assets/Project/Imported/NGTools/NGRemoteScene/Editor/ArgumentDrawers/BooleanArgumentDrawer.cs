@@ -1,12 +1,12 @@
 using System;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[ArgumentDrawerFor(typeof(Boolean))]
-	public class BooleanArgumentDrawer : ArgumentDrawer
+	internal sealed class BooleanArgumentDrawer : ArgumentDrawer
 	{
-		public BooleanArgumentDrawer(string name) : base(name, typeof(Boolean))
+		public BooleanArgumentDrawer(string name, Type type) : base(name, typeof(Boolean))
 		{
 		}
 
@@ -15,12 +15,12 @@ namespace NGToolsEditor
 			this.value = EditorGUILayout.Toggle(this.name, (Boolean)this.value);
 		}
 
-		public override void	Serialize(string path)
+		public override void	Save(string path)
 		{
 			NGEditorPrefs.SetBool(path, (bool)this.value);
 		}
 
-		public override void	Deserialize(string path)
+		public override void	Load(string path)
 		{
 			this.value = (bool)NGEditorPrefs.GetBool(path);
 		}

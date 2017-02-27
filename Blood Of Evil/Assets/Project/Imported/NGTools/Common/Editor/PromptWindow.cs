@@ -52,9 +52,7 @@ namespace NGToolsEditor
 			}
 
 			if (this.first == true)
-			{
 				GUI.SetNextControlName("text");
-			}
 
 			this.placeholder = GUILayout.TextField(this.placeholder);
 			if (this.first == true)
@@ -87,9 +85,7 @@ namespace NGToolsEditor
 			}
 
 			if (GUILayout.Button("Cancel"))
-			{
 				this.Close();
-			}
 
 			GUILayout.EndHorizontal();
 		}

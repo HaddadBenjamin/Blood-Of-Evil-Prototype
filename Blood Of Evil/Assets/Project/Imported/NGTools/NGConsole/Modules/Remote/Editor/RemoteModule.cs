@@ -1,22 +1,25 @@
 ﻿using NGTools;
+using NGTools.Network;
+using NGTools.NGConsole;
+using NGTools.NGGameConsole;
+using NGToolsEditor.Network;
 using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[InitializeOnLoad, Serializable, VisibleModule(200)]
-	public class RemoteModule : Module, IStreams, IRows
+	internal sealed class RemoteModule : Module, IStreams, IRows
 	{
 		[Serializable]
-		public class Vars
+		private sealed class Vars
 		{
 			public int	workingStream;
 		}
 
-		public class CommandRequest
+		public sealed class CommandRequest
 		{
 			public int			id;
 			public RemoteRow	row;
@@ -28,7 +31,8 @@ namespace NGToolsEditor
 			}
 		}
 
-		public const string ProgressBarConnectingString = "Connecting Remote module";
+		public const string		ProgressBarConnectingString = "Connecting Remote module";
+		//private static byte[]	pollDiscBuffer = new byte[1];
 
 		public List<StreamLog>	Streams { get { return this.streams; } }
 		public int				WorkingStream { get { return this.perWindowVars.Get(Utility.drawingWindow).workingStream; } }
@@ -53,7 +57,7 @@ namespace NGToolsEditor
 		public List<CommandRequest>	pendingCommands;
 		private string				command;
 		[NonSerialized]
-		private List<AbstractTcpClient>	tcpClientProviders;
+		private AbstractTcpClient[]	tcpClientProviders;
 		[NonSerialized]
 		private string[]				tcpClientProviderNames;
 		private int						selectedTcpClientProvider;
@@ -63,9 +67,13 @@ namespace NGToolsEditor
 
 		[SerializeField]
 		private PerWindowVars<Vars>	perWindowVars;
+		[NonSerialized]
+		private Vars				currentVars;
+		[NonSerialized]
+		private SectionDrawer		section;
 
 		[NonSerialized]
-		private Vars	currentVars;
+		private AutoDetectUDPListener	udpListener;
 
 		public	RemoteModule()
 		{
@@ -108,23 +116,22 @@ namespace NGToolsEditor
 			this.pendingCommands = new List<CommandRequest>();
 			this.command = string.Empty;
 
-			this.tcpClientProviders = new List<AbstractTcpClient>();
+			this.tcpClientProviders = Utility.CreateInstancesOf<AbstractTcpClient>();
 
-			foreach (var provider in Utility.EachSubClassesOf(typeof(AbstractTcpClient)))
-				this.tcpClientProviders.Add(Activator.CreateInstance(provider) as AbstractTcpClient);
+			this.tcpClientProviderNames = new string[this.tcpClientProviders.Length];
 
-			this.tcpClientProviderNames = new string[this.tcpClientProviders.Count];
-
-			for (int i = 0; i < this.tcpClientProviders.Count; i++)
+			for (int i = 0; i < this.tcpClientProviders.Length; i++)
 				this.tcpClientProviderNames[i] = this.tcpClientProviders[i].GetType().Name;
 
-			if (this.selectedTcpClientProvider >= this.tcpClientProviders.Count - 1)
-				this.selectedTcpClientProvider = this.tcpClientProviders.Count - 1;
+			if (this.selectedTcpClientProvider >= this.tcpClientProviders.Length - 1)
+				this.selectedTcpClientProvider = this.tcpClientProviders.Length - 1;
+
+			this.udpListener = new AutoDetectUDPListener(this.console, NGServerCommand.UDPPortBroadcastMin, NGServerCommand.UDPPortBroadcastMax);
 
 			if (this.perWindowVars == null)
 				this.perWindowVars = new PerWindowVars<Vars>();
 
-			new SectionDrawer("Remote Module", typeof(NGSettings.RemoteModuleSettings));
+			this.section = new SectionDrawer("Remote Module", typeof(NGSettings.RemoteModuleSettings), 40);
 		}
 
 		public override void	OnDisable()
@@ -136,9 +143,12 @@ namespace NGToolsEditor
 			foreach (var stream in this.streams)
 				stream.Uninit();
 
-			if (this.client != null &&
-				this.client.tcpClient.Connected == true)
+			if (this.IsClientConnected() == true)
 				this.client.Close();
+
+			this.udpListener.Stop();
+
+			this.section.Uninit();
 		}
 
 		public override void	OnGUI(Rect r)
@@ -152,12 +162,46 @@ namespace NGToolsEditor
 			r.height = EditorGUIUtility.singleLineHeight;
 			GUILayout.BeginArea(r);
 			{
-				GUILayout.BeginHorizontal("Toolbar");
+				GUILayout.BeginHorizontal(GeneralStyles.Toolbar);
 				{
 					if (GUILayout.Button("Clear", GeneralStyles.ToolbarButton) == true)
 						this.Clear();
 
-					EditorGUI.BeginDisabledGroup(this.client != null && this.client.tcpClient.Connected == true);
+					lock (this.udpListener.NGServerInstances)
+					{
+						EditorGUI.BeginDisabledGroup(this.udpListener.NGServerInstances.Count == 0);
+						{
+							if (this.udpListener.NGServerInstances.Count == 0)
+								Utility.content.text = "No server";
+							else if (this.udpListener.NGServerInstances.Count == 1)
+								Utility.content.text = "1 server";
+							else
+								Utility.content.text = this.udpListener.NGServerInstances.Count + " servers";
+
+							Rect	r2 = GUILayoutUtility.GetRect(Utility.content, GeneralStyles.ToolbarDropDown);
+
+							if (GUI.Button(r2, Utility.content, GeneralStyles.ToolbarDropDown) == true)
+							{
+								GenericMenu	menu = new GenericMenu();
+								bool		isConnected = this.IsClientConnected();
+
+								for (int i = 0; i < this.udpListener.NGServerInstances.Count; i++)
+								{
+									bool	current = false;
+
+									if (isConnected == true && this.udpListener.NGServerInstances[i].server == this.address + ":" + this.port)
+										current = true;
+
+									menu.AddItem(new GUIContent(this.udpListener.NGServerInstances[i].server), current, this.OverrideAddressPort, this.udpListener.NGServerInstances[i].server);
+								}
+
+								menu.DropDown(r2);
+							}
+						}
+						EditorGUI.EndDisabledGroup();
+					}
+
+					EditorGUI.BeginDisabledGroup(this.IsClientConnected());
 					{
 						this.selectedTcpClientProvider = EditorGUILayout.Popup(this.selectedTcpClientProvider, this.tcpClientProviderNames, GeneralStyles.ToolbarDropDown);
 
@@ -197,10 +241,9 @@ namespace NGToolsEditor
 					}
 					EditorGUI.EndDisabledGroup();
 
-					if (this.client != null &&
-						this.client.tcpClient.Connected == true)
+					if (this.IsClientConnected() == true)
 					{
-						if (GUILayout.Button(LC.G("RemoteModule_Disconnect")) == true)
+						if (GUILayout.Button(LC.G("RemoteModule_Disconnect"), GeneralStyles.ToolbarButton) == true)
 							this.CloseClient();
 					}
 					else
@@ -226,8 +269,7 @@ namespace NGToolsEditor
 			if (this.currentVars.workingStream < 0)
 				return;
 
-			if (this.client != null &&
-				this.client.tcpClient.Connected == true)
+			if (this.IsClientConnected() == true)
 			{
 				float	streamHeight = maxHeight - (r.y - yOrigin) - EditorGUIUtility.singleLineHeight;
 				r.y += streamHeight;
@@ -354,9 +396,7 @@ namespace NGToolsEditor
 				GUILayout.BeginHorizontal();
 				{
 					for (int i = 0; i < this.streams.Count; i++)
-					{
 						this.streams[i].OnTabGUI(i);
-					}
 
 					if (GUILayout.Button("+", Preferences.Settings.general.menuButtonStyle) == true)
 					{
@@ -391,18 +431,14 @@ namespace NGToolsEditor
 			r.width -= Preferences.Settings.remoteModule.execButtonWidth;
 
 			if (this.parser.root.children.Count == 0)
-			{
 				EditorGUI.LabelField(r, LC.G("RemoteModule_CLIUnavailable"), Preferences.Settings.remoteModule.commandInputStyle);
-			}
 			else
 			{
 				EditorGUI.BeginChangeCheck();
 				GUI.SetNextControlName(CommandParser.CommandTextFieldName);
 				this.command = GUI.TextField(r, this.command, Preferences.Settings.remoteModule.commandInputStyle);
 				if (EditorGUI.EndChangeCheck() == true)
-				{
 					this.parser.UpdateMatchesAvailable(this.command);
-				}
 			}
 
 			if (this.parser.root.children.Count == 0)
@@ -411,9 +447,7 @@ namespace NGToolsEditor
 			r.x += r.width;
 			r.width = Preferences.Settings.remoteModule.execButtonWidth;
 			if (GUI.Button(r, "Exec", Preferences.Settings.remoteModule.execButtonStyle) == true)
-			{
 				this.Exec();
-			}
 
 			if (this.parser.root.children.Count == 0)
 				GUI.enabled = true;
@@ -422,10 +456,20 @@ namespace NGToolsEditor
 			return r;
 		}
 
+#if NGTOOLS_FREE
+		private int	countExec = 0;
+#endif
+
 		private void	Exec()
 		{
 			string		result = string.Empty;
-			ExecResult	returnValue = this.parser.Exec(this.command, ref result);
+			ExecResult	returnValue = ExecResult.InvalidCommand;
+#if NGTOOLS_FREE
+			if (++this.countExec > FreeConstants.MaxCLICommandExecutions)
+				result = "Free version does not allow more than " + FreeConstants.MaxCLICommandExecutions + " remote executions.\nAwesomeness has a price. :D";
+			else
+#endif
+			returnValue = this.parser.Exec(this.command, ref result);
 
 			LogEntry	log = new LogEntry();
 			log.condition = this.command;
@@ -446,9 +490,7 @@ namespace NGToolsEditor
 				this.client.AddPacket(new ClientSendCommandPacket(cr.id, this.command));
 			}
 			else
-			{
 				row.error = result;
-			}
 
 			this.command = string.Empty;
 			this.parser.Clear();
@@ -456,10 +498,10 @@ namespace NGToolsEditor
 
 		private void	AsyncOpenClient()
 		{
-			Utility.StartAsyncBackgroundCallback(this.OpenClient, RemoteModule.ProgressBarConnectingString, 10F, "Connecting to server is too long and was aborted.");
+			Utility.StartAsyncBackgroundTask(this.OpenClient, RemoteModule.ProgressBarConnectingString, 10F, "Connecting to server is too long and was aborted.");
 		}
 
-		private void	OpenClient()
+		private void	OpenClient(object task)
 		{
 			try
 			{
@@ -490,6 +532,29 @@ namespace NGToolsEditor
 			this.client = null;
 		}
 
+		public bool		IsClientConnected()
+		{
+			return this.client != null &&
+				   this.client.tcpClient.Connected == true;
+		}
+
+		private void	OverrideAddressPort(object data)
+		{
+			string	server = data as string;
+
+			if (server == this.address + ":" + this.port && this.IsClientConnected() == true)
+				return;
+
+			int	separator = server.LastIndexOf(':');
+
+			this.address = server.Substring(0, separator);
+			this.port = int.Parse(server.Substring(separator + 1));
+
+			if (this.IsClientConnected() == true)
+				this.CloseClient();
+			this.AsyncOpenClient();
+		}
+
 		Row		IRows.GetRow(int i)
 		{
 			return this.rows[i];
@@ -500,25 +565,23 @@ namespace NGToolsEditor
 			return this.rows.Count;
 		}
 
-		private static byte[]	pollDiscBuffer = new byte[1];
-
 		private bool	DetectClientDisced(Client client)
 		{
 			if (client.tcpClient.Connected == false)
 				return true;
 
-			try
-			{
-				if (client.tcpClient.Client.Poll(0, SelectMode.SelectRead) == true &&
-					client.tcpClient.Client.Receive(pollDiscBuffer, SocketFlags.Peek) == 0)
-				{
-					return true;
-				}
-			}
-			catch (Exception ex)
-			{
-				InternalNGDebug.LogException(ex);
-			}
+			//try
+			//{
+			//	if (client.tcpClient.Client.Poll(0, SelectMode.SelectRead) == true &&
+			//		client.tcpClient.Client.Receive(pollDiscBuffer, SocketFlags.Peek) == 0)
+			//	{
+			//		return true;
+			//	}
+			//}
+			//catch (Exception ex)
+			//{
+			//	InternalNGDebug.LogException(ex);
+			//}
 
 			return false;
 		}

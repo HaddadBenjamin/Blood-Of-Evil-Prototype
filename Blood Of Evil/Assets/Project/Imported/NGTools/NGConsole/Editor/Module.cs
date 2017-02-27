@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
 	[Exportable(ExportableAttribute.ArrayOptions.Immutable)]
@@ -68,9 +68,7 @@ namespace NGToolsEditor
 					Utility.OpenModuleInWindow(this.console, this, Event.current.control);
 				}
 				else if (this.id != focusedModuleID)
-				{
 					this.Focus();
-				}
 			}
 		}
 

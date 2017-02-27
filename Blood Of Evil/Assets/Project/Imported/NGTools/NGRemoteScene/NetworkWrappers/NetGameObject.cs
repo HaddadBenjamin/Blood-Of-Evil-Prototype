@@ -1,5 +1,4 @@
-﻿using System.Text;
-namespace NGTools
+﻿namespace NGTools.NGRemoteScene
 {
 	public sealed class NetGameObject
 	{
@@ -20,9 +19,7 @@ namespace NGTools
 
 			this.children = new NetGameObject[length];
 			for (int i = 0; i < length; i++)
-			{
 				this.children[i] = new NetGameObject(buffer);
-			}
 		}
 	}
 }

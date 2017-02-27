@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class InputCommand
+	public sealed class InputCommand
 	{
 		/// <summary>
 		/// String appended to the name to fetch the locale.

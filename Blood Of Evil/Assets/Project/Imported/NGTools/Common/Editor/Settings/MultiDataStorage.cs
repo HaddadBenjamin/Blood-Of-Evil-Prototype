@@ -11,10 +11,10 @@ namespace NGToolsEditor
 	/// <para>Reduce single point of failure bottleneck in case of one element crashes during the deserialization.</para>
 	/// </summary>
 	[Serializable]
-	public class MultiDataStorage
+	public sealed class MultiDataStorage
 	{
 		[Serializable]
-		public class Data
+		private sealed class Data
 		{
 			public byte[]	data;
 		}
@@ -47,7 +47,7 @@ namespace NGToolsEditor
 			}
 			catch (Exception ex)
 			{
-				InternalNGDebug.LogException(ex);
+				InternalNGDebug.LogFileException(ex);
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace NGToolsEditor
 			}
 			catch (Exception ex)
 			{
-				InternalNGDebug.LogException(ex);
+				InternalNGDebug.LogFileException(ex);
 			}
 
 			return null;

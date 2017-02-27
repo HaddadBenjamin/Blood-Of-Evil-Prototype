@@ -1,11 +1,12 @@
-﻿using NGTools;
+﻿using NGTools.Network;
+using NGTools.NGRemoteScene;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[TypeHandlerDrawerFor(typeof(UnityObjectHandler))]
-	public class UnityObjectDrawer : TypeHandlerDrawer
+	internal sealed class UnityObjectDrawer : TypeHandlerDrawer
 	{
 		private const float	PickerButtonWidth = 20F;
 
@@ -29,7 +30,7 @@ namespace NGToolsEditor
 			{
 				UnityObject	nullObject = new UnityObject(unityObject.type, 0);
 
-				data.unityData.Client.AddPacket(new ClientUpdateFieldValuePacket(dataPath, this.typeHandler.Serialize(nullObject.type, nullObject), this.typeHandler));
+				data.unityData.AddPacket(new ClientUpdateFieldValuePacket(dataPath, this.typeHandler.Serialize(nullObject.type, nullObject), this.typeHandler));
 
 				Event.current.Use();
 			}
@@ -71,7 +72,7 @@ namespace NGToolsEditor
 
 					UnityObject	dragItem = DragAndDrop.GetGenericData("r") as UnityObject;
 
-					data.unityData.Client.AddPacket(new ClientUpdateFieldValuePacket(dataPath, this.typeHandler.Serialize(dragItem.type, dragItem), this.typeHandler));
+					data.unityData.AddPacket(new ClientUpdateFieldValuePacket(dataPath, this.typeHandler.Serialize(dragItem.type, dragItem), this.typeHandler));
 				}
 				else if (Event.current.type == EventType.Repaint &&
 						 DragAndDrop.visualMode == DragAndDropVisualMode.Move)
@@ -126,9 +127,7 @@ namespace NGToolsEditor
 						typeof(Object).IsAssignableFrom(unityObject.type) == true)
 					{
 						if (this.lastClick + Constants.DoubleClickTime < Time.realtimeSinceStartup)
-						{
 							data.inspector.Hierarchy.PingObject(unityObject.gameObjectInstanceID);
-						}
 						else
 						{
 							data.inspector.Hierarchy.SelectGameObject(unityObject.gameObjectInstanceID);

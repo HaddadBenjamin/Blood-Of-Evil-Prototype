@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[Priority(60)]
-	public class RectHandler : TypeHandler
+	internal sealed class RectHandler : TypeHandler
 	{
 		public	RectHandler() : base(typeof(Rect))
 		{

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NGTools;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -45,7 +46,8 @@ namespace NGToolsEditor
 			}
 		}
 
-		public const string	Title = "NG Settings";
+		public const string	Title = "ƝƓ Ȿettings";
+		public const string	LastSectionPrefKey = "NGSettings_lastSection";
 		public const float	SectionWidth = 140F;
 		public const int	SectionDefaultFontSize = 14;
 		public const int	SectionMinFontSize = 6;
@@ -62,16 +64,23 @@ namespace NGToolsEditor
 		private GUIStyle	sectionElement;
 		[NonSerialized]
 		private GUIStyle	selected;
-		
+
 		static	NGSettingsWindow()
 		{
 			Utility.AddMenuItemPicker(Constants.MenuItemPath + NGSettingsWindow.Title);
+
+			Preferences.SettingsChanged += NGSettingsWindow.Preferences_SettingsChanged;
 		}
 
 		[MenuItem(Constants.MenuItemPath + NGSettingsWindow.Title, priority = Constants.MenuItemPriority + 1)]
-		private static void	Open()
+		public static void	Open()
 		{
 			EditorWindow.GetWindow<NGSettingsWindow>(false, NGSettingsWindow.Title, true);
+		}
+
+		private static void	Preferences_SettingsChanged()
+		{
+			Utility.RepaintEditorWindow(typeof(NGSettingsWindow));
 		}
 
 		/// <summary></summary>
@@ -138,6 +147,35 @@ namespace NGToolsEditor
 		{
 			if (NGSettingsWindow.sections.Count > 0)
 				this.workingSection = NGSettingsWindow.sections[0];
+			
+			for (int i = 0; i < NGSettingsWindow.sections.Count; i++)
+			{
+				if (NGSettingsWindow.sections[i].title == NGEditorPrefs.GetString(NGSettingsWindow.LastSectionPrefKey))
+				{
+					this.workingSection = NGSettingsWindow.sections[i];
+					break;
+				}
+			}
+
+			Undo.undoRedoPerformed += this.Repaint;
+
+			EditorApplication.delayCall += () => {
+				EditorApplication.delayCall += () => {
+					EditorApplication.delayCall += () => {
+						// As crazy as it seems, we need 3 nested delayed calls. Because we need to ensure everybody is in the room to start the party.
+						this.Focus(NGEditorPrefs.GetString(NGSettingsWindow.LastSectionPrefKey));
+						this.Repaint();
+					};
+				};
+			};
+		}
+
+		protected virtual void	OnDisable()
+		{
+			Undo.undoRedoPerformed -= this.Repaint;
+
+			if (this.workingSection != null)
+				NGEditorPrefs.SetString(NGSettingsWindow.LastSectionPrefKey, this.workingSection.title);
 		}
 
 		public void	OnGUI()
@@ -168,26 +206,18 @@ namespace NGToolsEditor
 							});
 
 							if (NGSettingsWindow.sections[i] == this.workingSection && Event.current.type == EventType.Repaint)
-							{
 								this.selected.Draw(rect, false, false, false, false);
-							}
 
 							EditorGUI.BeginChangeCheck();
 							if (GUI.Toggle(rect, this.workingSection == NGSettingsWindow.sections[i], NGSettingsWindow.sections[i].title, this.sectionElement))
-							{
 								this.workingSection = NGSettingsWindow.sections[i];
-							}
 							if (EditorGUI.EndChangeCheck())
-							{
 								GUIUtility.keyboardControl = 0;
-							}
 						}
 						GUILayout.FlexibleSpace();
 
-#if NGT_DEBUG
-						if (Preferences.Settings != null)
+						if (Conf.DebugMode != Conf.DebugModes.None && Preferences.Settings != null)
 							GUILayout.Label("Version " + Preferences.Settings.version, this.sectionElement);
-#endif
 					}
 					GUILayout.EndVertical();
 				}
@@ -223,13 +253,16 @@ namespace NGToolsEditor
 			for (int i = 0; i < NGSettingsWindow.sections.Count; i++)
 			{
 				if (NGSettingsWindow.sections[i].title == title)
+				{
 					this.workingSection = NGSettingsWindow.sections[i];
+					NGEditorPrefs.SetString(NGSettingsWindow.LastSectionPrefKey, this.workingSection.title);
+				}
 			}
 		}
 
 		void	IHasCustomMenu.AddItemsToMenu(GenericMenu menu)
 		{
-			Utility.AddNGMenuItems(menu, this, NGSettingsWindow.Title, Constants.WikiBaseURL + "#markdown-header-114-ng-settings", true);
+			Utility.AddNGMenuItems(menu, this, NGSettingsWindow.Title, Constants.WikiBaseURL + "#markdown-header-117-ng-settings", true);
 		}
 	}
 }

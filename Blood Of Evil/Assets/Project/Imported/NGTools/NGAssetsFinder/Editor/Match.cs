@@ -1,11 +1,10 @@
 using NGTools;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGAssetsFinder
 {
-	public class Match
+	internal sealed class Match
 	{
 		public bool			valid;
 		public string		path;
@@ -47,9 +46,7 @@ namespace NGToolsEditor
 			this.open = true;
 
 			for (int i = 0; i < this.subMatches.Count; i++)
-			{
 				this.subMatches[i].PreCacheGUI();
-			}
 		}
 	}
 }

@@ -1,8 +1,8 @@
 using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	public class EnumInstance
+	internal class EnumInstance
 	{
 		public enum IsFlag
 		{
@@ -35,11 +35,11 @@ namespace NGTools
 	}
 
 	[Priority(0)]
-	public class EnumHandler : TypeHandler
+	internal sealed class EnumHandler : TypeHandler
 	{
 		public override bool	CanHandle(Type type)
 		{
-			return type.IsEnum == true;
+			return type.IsEnum == true || type == typeof(Enum);
 		}
 
 		public override void	Serialize(ByteBuffer buffer, Type fieldType, object instance)
@@ -55,7 +55,8 @@ namespace NGTools
 
 		public override object	DeserializeRealValue(NGServerScene manager, ByteBuffer buffer, Type fieldType)
 		{
-			buffer.position += buffer.ReadInt32();
+			Int32	count = buffer.ReadInt32();
+			buffer.Position += count;
 			return buffer.ReadInt32();
 		}
 	}

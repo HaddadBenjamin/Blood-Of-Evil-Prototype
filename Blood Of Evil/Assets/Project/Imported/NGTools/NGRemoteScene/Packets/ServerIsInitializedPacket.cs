@@ -1,9 +1,10 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Camera_ServerIsInitialized)]
-	public class ServerIsInitializedPacket : Packet
+	internal sealed class ServerIsInitializedPacket : Packet
 	{
 		public int						width;
 		public int						height;
@@ -11,7 +12,7 @@ namespace NGTools
 		public RenderTextureFormat		format;
 		public byte[]					modules;
 
-		protected	ServerIsInitializedPacket(ByteBuffer buffer) : base(buffer)
+		private	ServerIsInitializedPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

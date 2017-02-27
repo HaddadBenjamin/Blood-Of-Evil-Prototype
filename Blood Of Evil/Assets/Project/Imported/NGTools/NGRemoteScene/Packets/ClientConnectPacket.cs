@@ -1,9 +1,10 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Camera_ClientConnect)]
-	public class ClientConnectPacket : Packet
+	internal sealed class ClientConnectPacket : Packet
 	{
 		public int					width;
 		public int					height;
@@ -12,7 +13,7 @@ namespace NGTools
 		public RenderTextureFormat	format;
 		public byte[]				modulesAvailable;
 
-		protected	ClientConnectPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientConnectPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

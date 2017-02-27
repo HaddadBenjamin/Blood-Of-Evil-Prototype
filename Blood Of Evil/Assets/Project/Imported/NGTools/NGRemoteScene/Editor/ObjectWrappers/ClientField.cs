@@ -1,10 +1,11 @@
-﻿using NGTools;
+﻿using NGTools.Network;
+using NGTools.NGRemoteScene;
 using System;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
-	public class ClientField
+	public sealed class ClientField
 	{
 		public readonly	Type				fieldType;
 		public readonly	string				name;
@@ -34,12 +35,12 @@ namespace NGToolsEditor
 			this.dataDrawer = new DataDrawer(this.unityData);
 		}
 
-		public float	GetHeight(NGInspectorWindow inspector)
+		public float	GetHeight(NGRemoteInspectorWindow inspector)
 		{
 			return this.drawer.GetHeight(this.value);
 		}
 
-		public void		Draw(Rect r, NGInspectorWindow inspector)
+		public void		Draw(Rect r, NGRemoteInspectorWindow inspector)
 		{
 			this.dataDrawer.Init(this.parentBehaviour.parent.instanceID + "." + this.parentBehaviour.instanceID, inspector);
 

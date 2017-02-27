@@ -1,17 +1,10 @@
-﻿using System;
+﻿using NGTools.NGRemoteScene;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
-	public partial class PacketId
-	{
-		public const int	Logger_ServerSendLog = 1000;
-		public const int	CLI_ClientRequestCommandNodes = 2001;
-		public const int	CLI_ServerSendCommandNodes = 2002;
-		public const int	CLI_ClientSendCommand = 2003;
-		public const int	CLI_ServerSendCommandResponse = 2004;
-	}
-
 	/// <summary>
 	/// Gives the possibility to assign a class a description.
 	/// </summary>
@@ -38,6 +31,11 @@ namespace NGTools
 		public static char[]	ForbiddenChars = new char[] { ' ' };
 		public static string[]	EmptyArray = {};
 
+		private static List<NGCLI>	instances = new List<NGCLI>();
+
+		[Header("Keep NG CLI alive between scenes.")]
+		public bool	dontDestroyOnLoad = true;
+
 		[Header("[Required] Available commands to execute.")]
 		public AliasBehaviour[]	rootCommands;
 
@@ -59,8 +57,30 @@ namespace NGTools
 
 		private string	command = string.Empty;
 
+		protected virtual void Reset()
+		{
+			GUICallback.Open(() =>
+			{
+				this.highlightedMatchStyle = new GUIStyle(GUI.skin.label);
+				this.commandInputStyle = new GUIStyle(GUI.skin.textField);
+				this.execButtonStyle = new GUIStyle(GUI.skin.button);
+			});
+		}
+
 		protected virtual void	Awake()
 		{
+			if (this.parser != null)
+				return;
+
+			for (int i = 0; i < NGCLI.instances.Count; i++)
+			{
+				if (NGCLI.instances[i].GetType() == this.GetType())
+				{
+					UnityEngine.Object.Destroy(this.gameObject);
+					return;
+				}
+			}
+
 			this.parser = new LocalCommandParser(this);
 			this.parser.CallExec += this.Exec;
 
@@ -92,18 +112,30 @@ namespace NGTools
 			}
 			else
 				InternalNGDebug.Log(Errors.CLI_EmptyRootCommand, "There is not root command in your CLI.");
+
+			if (this.dontDestroyOnLoad == true)
+			{
+				NGCLI.instances.Add(this);
+				UnityEngine.Object.DontDestroyOnLoad(this.transform.root.gameObject);
+			}
 		}
 
 		protected virtual void	OnEnable()
 		{
 			if (this.gameConsole != null)
+			{
 				this.gameConsole.ReserveFootSpace(this.inputArea.height);
+				//this.gameConsole.AddSetting("NG CLI", this.GUISettings);
+			}
 		}
 
 		protected virtual void	OnDisable()
 		{
 			if (this.gameConsole != null)
+			{
 				this.gameConsole.ReserveFootSpace(-this.inputArea.height);
+				//this.gameConsole.RemoveSetting("NG CLI", this.GUISettings);
+			}
 		}
 
 		protected virtual void	OnGUI()
@@ -142,23 +174,18 @@ namespace NGTools
 			r.x += r.width;
 			r.width = this.execButtonWidth;
 			if (GUI.Button(r, "Exec", this.execButtonStyle) == true)
-			{
 				this.Exec();
-			}
 
 			r.x -= width - this.execButtonWidth;
 			r.width = width;
 			this.parser.PostGUI(r, ref this.command);
 		}
 
-#if UNITY_EDITOR
 		private void	OnValidate()
 		{
 			if (this.execButtonWidth < 10F)
 				this.execButtonWidth = 10F;
 		}
-#endif
-
 
 		private void	Exec()
 		{
@@ -188,6 +215,11 @@ namespace NGTools
 
 			this.command = string.Empty;
 			this.parser.Clear();
+		}
+
+		private void	GUISettings()
+		{
+			GUILayout.Button("Test");
 		}
 	}
 }

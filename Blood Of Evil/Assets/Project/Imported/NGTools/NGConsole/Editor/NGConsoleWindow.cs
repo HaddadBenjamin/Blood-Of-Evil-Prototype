@@ -1,13 +1,12 @@
 ﻿using NGTools;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditorInternal;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	using UnityEngine;
 
@@ -20,7 +19,7 @@ namespace NGToolsEditor
 			public RowLogHandlerAttribute	attribute;
 		}
 
-		public const string	Title = "NG Console";
+		public const string	Title = "ƝƓ Ҁonsole";
 		public const int	StartModuleID = 1; // Start ID at 1, because -1 is non-visible and 0 is default(int).
 
 		public static IEditorOpener[]		openers;
@@ -84,7 +83,7 @@ namespace NGToolsEditor
 		internal List<Row>				rows;
 		internal SyncLogs				syncLogs;
 
-		private bool					initialized;
+		internal bool					initialized;
 		private NGSettings				settings;
 
 		private Module[]	visibleModules;
@@ -98,13 +97,7 @@ namespace NGToolsEditor
 		private Vector2		scrollModulesPosition;
 		private bool		hasCompiled;
 
-		private int	lastExceptionHash;
-		private int	repeatedExceptionCounter = 0;
-
-#if NGT_DEBUG
-		private bool	delayErrorWitness;
-		private bool	errorWitness;
-#endif
+		private ErrorPopup	errorPopup = new ErrorPopup("An error occured, try to reopen " + NGConsoleWindow.Title + " or reset the settings.");
 
 		static	NGConsoleWindow()
 		{
@@ -181,9 +174,32 @@ namespace NGToolsEditor
 
 			NGConsoleWindow.openers = filteredOpeners.ToArray();
 
-			EditorApplication.delayCall += () => {
-				NGConsoleWindow.settingsEditor = new ConsoleSettingsEditor();
-			};
+			NGConsoleWindow.settingsEditor = new ConsoleSettingsEditor();
+
+			NGSettings.Initialize += NGConsoleWindow.OnInitializeConsole;
+		}
+
+		[MenuItem(Constants.MenuItemPath + NGConsoleWindow.Title, priority = Constants.MenuItemPriority + 101)]
+		public static void	Open()
+		{
+			EditorWindow.GetWindow<NGConsoleWindow>(false, NGConsoleWindow.Title, true);
+		}
+
+		[MenuItem(Constants.MenuItemPath + NGConsoleWindow.Title + " Clear %w", priority = Constants.MenuItemPriority + 102)]
+		public static void	ClearNGConsole()
+		{
+			NGConsoleWindow[]	instances = Resources.FindObjectsOfTypeAll<NGConsoleWindow>();
+
+			for (int i = 0; i < instances.Length; i++)
+				instances[i].Clear();
+		}
+
+		private static void	OnInitializeConsole(NGSettings settings)
+		{
+			if (EditorGUIUtility.isProSkin == true)
+				new DarkTheme().SetTheme(settings);
+			else
+				new LightTheme().SetTheme(settings);
 		}
 
 		private static void	AutoReplaceNativeConsole()
@@ -224,24 +240,6 @@ namespace NGToolsEditor
 			}
 		}
 
-		[MenuItem(Constants.MenuItemPath + NGConsoleWindow.Title, priority = Constants.MenuItemPriority + 101)]
-		private static void	Open()
-		{
-			EditorWindow.GetWindow<NGConsoleWindow>(false, NGConsoleWindow.Title, true);
-		}
-
-		[MenuItem(Constants.MenuItemPath + NGConsoleWindow.Title + " Clear %w", priority = Constants.MenuItemPriority + 102)]
-		private static void	ClearConsole()
-		{
-			NGConsoleWindow[]	instances = Resources.FindObjectsOfTypeAll<NGConsoleWindow>();
-
-			for (int i = 0; i < instances.Length; i++)
-			{
-				if (instances[i].initialized == true)
-					instances[i].Clear();
-			}
-		}
-
 		protected virtual void	OnEnable()
 		{
 			if (this.initialized == true || Preferences.Settings == null)
@@ -275,11 +273,11 @@ namespace NGToolsEditor
 					if (attributes.Length == 0)
 						continue;
 
-					MethodInfo	handler = c.GetMethod(RowLogHandlerAttribute.StaticMethodName, BindingFlags.Static | BindingFlags.NonPublic);
+					MethodInfo	handler = c.GetMethod(RowLogHandlerAttribute.StaticVerifierMethodName, BindingFlags.Static | BindingFlags.NonPublic);
 
 					if (handler == null)
 					{
-						InternalNGDebug.LogWarning("The class \"" + c + "\" inherits from \"" + typeof(Row) + "\" and has the attribute \"" + typeof(RowLogHandlerAttribute) + "\" must implement: private static bool " + RowLogHandlerAttribute.StaticMethodName + "(UnityLogEntryLog log).");
+						InternalNGDebug.LogWarning("The class \"" + c + "\" inherits from \"" + typeof(Row) + "\" and has the attribute \"" + typeof(RowLogHandlerAttribute) + "\" must implement: private static bool " + RowLogHandlerAttribute.StaticVerifierMethodName + "(UnityLogEntryLog log).");
 						continue;
 					}
 
@@ -349,14 +347,14 @@ namespace NGToolsEditor
 
 				GUI.FocusControl(null);
 
-				this.AfterGUIHeaderRightMenu += this.ConsoleErrorWitness;
-
 				Object[]	nativeConsoleInstances = Resources.FindObjectsOfTypeAll(NGConsoleWindow.nativeConsoleType) as Object[];
 
 				if (nativeConsoleInstances.Length > 0)
 					NGConsoleWindow.nativeConsoleWindowField.SetValue(null, nativeConsoleInstances[nativeConsoleInstances.Length - 1]);
 
 				this.settings = Preferences.Settings;
+
+				Undo.undoRedoPerformed += this.Repaint;
 
 				this.initialized = true;
 			}
@@ -374,8 +372,6 @@ namespace NGToolsEditor
 			this.initialized = false;
 
 			NGConsoleWindow.nativeConsoleWindowField.SetValue(null, null);
-
-			this.AfterGUIHeaderRightMenu -= this.ConsoleErrorWitness;
 
 			if (this.syncLogs != null)
 			{
@@ -398,22 +394,30 @@ namespace NGToolsEditor
 					for (int i = 0; i < this.modules.Length; i++)
 						this.modules[i].OnDisable();
 
-					this.settings.serializedModules.Serialize(this.modules);
-					Preferences.InvalidateSettings(this.settings);
+					this.SaveModules();
 				}
 				catch (Exception ex)
 				{
 					InternalNGDebug.LogException(new Exception(LC.G("Console_IssueEncoutered"), ex));
-#if !NGT_DEBUG
-					InternalNGDebug.LogError("NG Console has aborted its uninitialization and has closed for safety. Relaunch NG Console and contact the author using the Contact form through Preferences.");
-					this.Close();
-#endif
+					if (Conf.DebugMode == Conf.DebugModes.None)
+					{
+						InternalNGDebug.LogError("NG Console has aborted its uninitialization and has closed for safety. Relaunch NG Console and contact the author using the Contact form through Preferences.");
+						this.Close();
+					}
 				}
 
 				this.modules = null;
 			}
 
+			Undo.undoRedoPerformed -= this.Repaint;
+
 			this.settings = null;
+		}
+
+		public void	SaveModules()
+		{
+			this.settings.serializedModules.Serialize(this.modules);
+			Preferences.InvalidateSettings(this.settings);
 		}
 
 		protected virtual void	OnGUI()
@@ -422,11 +426,16 @@ namespace NGToolsEditor
 			{
 				GUILayout.Label(string.Format(LC.G("RequiringConfigurationFile"), NGConsoleWindow.Title));
 				if (GUILayout.Button(LC.G("ShoWPreferencesWindow")) == true)
-				{
 					Utility.ShowPreferencesWindowAt(Constants.PreferenceTitle);
-				}
 				return;
 			}
+
+			FreeOverlay.First(this, NGConsoleWindow.Title + " is restrained to:\n" +
+							  "• " + FreeConstants.MaxStreams + " streams.\n" +
+							  "• " + FreeConstants.MaxFilters + " filters per stream.\n" +
+							  "• " + FreeConstants.MaxColorMarkers + " color markers.\n" +
+							  "• " + FreeConstants.MaxCLICommandExecutions + " remote CLI command executions per session.\n" +
+							  "• You can not reach a stack frame deeper than " + FreeConstants.LowestRowGoToLineAllowed + ".");
 
 			Utility.drawingWindow = this;
 
@@ -451,7 +460,7 @@ namespace NGToolsEditor
 				}
 				catch (Exception ex)
 				{
-					this.HandleCatch(ex);
+					this.errorPopup.exception = ex;
 				}
 			}
 
@@ -463,15 +472,13 @@ namespace NGToolsEditor
 					r.width = this.position.width;
 					r.height = this.position.height - r.y;
 					this.GetModule(this.workingModuleId).OnGUI(r);
-
-					this.lastExceptionHash = 0;
 				}
 				catch (ExitGUIException)
 				{
 				}
 				catch (Exception ex)
 				{
-					this.HandleCatch(ex);
+					this.errorPopup.exception = ex;
 				}
 			}
 
@@ -482,26 +489,10 @@ namespace NGToolsEditor
 			}
 			catch (Exception ex)
 			{
-				this.HandleCatch(ex);
-			}
-		}
-
-		private void	HandleCatch(Exception ex)
-		{
-			this.ActiveErrorWitness();
-
-			int	hash = ex.GetHashCode();
-
-			if (this.lastExceptionHash != hash)
-			{
-				this.repeatedExceptionCounter = 0;
-				this.lastExceptionHash = hash;
+				this.errorPopup.exception = ex;
 			}
 
-			if (++this.repeatedExceptionCounter < 3)
-				InternalNGDebug.LogException("RowsCount=" + this.rows.Count, ex);
-			else if (this.repeatedExceptionCounter == 3)
-				InternalNGDebug.LogFile("...");
+			FreeOverlay.Last();
 		}
 
 		protected virtual void	Update()
@@ -516,9 +507,7 @@ namespace NGToolsEditor
 			try
 			{
 				if (EditorApplication.isCompiling == true)
-				{
 					this.hasCompiled = true;
-				}
 				else if (this.hasCompiled == true)
 				{
 					this.hasCompiled = false;
@@ -533,8 +522,7 @@ namespace NGToolsEditor
 			}
 			catch (Exception ex)
 			{
-				this.ActiveErrorWitness();
-				InternalNGDebug.LogFileException(ex);
+				this.errorPopup.exception = ex;
 			}
 
 			if (this.UpdateTick != null)
@@ -621,7 +609,6 @@ namespace NGToolsEditor
 						rows.Add(row);
 					else
 					{
-						this.ActiveErrorWitness();
 						InternalNGDebug.LogFile(rows.Count + " < " + i);
 						rows[i] = row;
 					}
@@ -645,8 +632,8 @@ namespace NGToolsEditor
 		/// <returns></returns>
 		private Rect	DrawHeader(Rect r)
 		{
-			// Draw Unity native features.
-			GUI.Box(r, GUIContent.none, "Toolbar");
+			// Draw Unity native features. This way is better because using style Toolbar in BeginHorizontal creates an unwanted left margin.
+			GUI.Box(r, GUIContent.none, GeneralStyles.Toolbar);
 
 			GUILayout.BeginArea(r);
 			{
@@ -684,7 +671,7 @@ namespace NGToolsEditor
 					}
 					catch (Exception ex)
 					{
-						this.HandleCatch(ex);
+						this.errorPopup.exception = ex;
 					}
 
 					GUILayout.Space(5F);
@@ -712,7 +699,7 @@ namespace NGToolsEditor
 							}
 							catch (Exception ex)
 							{
-								this.HandleCatch(ex);
+								this.errorPopup.exception = ex;
 							}
 						}
 						GUILayout.EndHorizontal();
@@ -726,7 +713,7 @@ namespace NGToolsEditor
 					}
 					catch (Exception ex)
 					{
-						this.HandleCatch(ex);
+						this.errorPopup.exception = ex;
 					}
 				}
 				GUILayout.EndHorizontal();
@@ -734,6 +721,14 @@ namespace NGToolsEditor
 			GUILayout.EndArea();
 
 			r.y += this.settings.general.menuHeight;
+
+			if (this.errorPopup.exception != null)
+			{
+				r.height = this.errorPopup.boxHeight;
+				this.errorPopup.OnGUIRect(r);
+
+				r.y += r.height;
+			}
 
 			return r;
 		}
@@ -749,8 +744,11 @@ namespace NGToolsEditor
 			this.Repaint();
 		}
 
-		private void	Clear()
+		public void	Clear()
 		{
+			if (this.initialized == false)
+				return;
+
 			for (int i = 0; i < this.rows.Count; i++)
 				this.rows[i].Uninit();
 			this.rows.Clear();
@@ -803,16 +801,11 @@ namespace NGToolsEditor
 			return aAttribute.position - bAttribute.position;
 		}
 
-		private void	ConsoleErrorWitness()
-		{
-			this.DebugConsoleErrorWitness();
-		}
-
 		Row	IRows.GetRow(int i)
 		{
 			if (i >= this.rows.Count)
 			{
-				this.ActiveErrorWitness();
+				this.errorPopup.exception = new Exception("Overflow " + i + " < " + this.rows.Count);
 				InternalNGDebug.LogFile("Overflow " + i + " < " + this.rows.Count);
 			}
 			return this.rows[i];
@@ -821,31 +814,6 @@ namespace NGToolsEditor
 		int	IRows.CountRows()
 		{
 			return this.rows.Count;
-		}
-
-		[Conditional(Constants.DebugSymbol)]
-		private void	DebugConsoleErrorWitness()
-		{
-#if NGT_DEBUG
-			if (this.errorWitness == true)
-			{
-				if (GUILayout.Button("ERROR", GeneralStyles.ErrorLabel))
-				{
-					this.delayErrorWitness = false;
-					this.errorWitness = false;
-				}
-			}
-			else if (this.delayErrorWitness == true && Event.current.type == EventType.Repaint)
-				this.errorWitness = true;
-#endif
-		}
-
-		[Conditional(Constants.DebugSymbol)]
-		private void	ActiveErrorWitness()
-		{
-#if NGT_DEBUG
-			this.delayErrorWitness = true;
-#endif
 		}
 
 		void	IHasCustomMenu.AddItemsToMenu(GenericMenu menu)
@@ -867,7 +835,7 @@ namespace NGToolsEditor
 #if UNITY_5_2 || UNITY_5_3
 				while (enumerator.MoveNext())
 				{
-					StackTraceLogType stackTraceLogType = (StackTraceLogType)((int)enumerator.Current);
+					StackTraceLogType	stackTraceLogType = (StackTraceLogType)((int)enumerator.Current);
 					menu.AddItem(new GUIContent("Stack Trace Logging/" + stackTraceLogType), Application.stackTraceLogType == stackTraceLogType, new GenericMenu.MenuFunction2(this.ToggleLogStackTraces), stackTraceLogType);
 				}
 #else
@@ -876,7 +844,7 @@ namespace NGToolsEditor
 					UnityEngine.LogType	logType = (UnityEngine.LogType)((int)enumerator2.Current);
 					while (enumerator.MoveNext())
 					{
-						StackTraceLogType stackTraceLogType = (StackTraceLogType)((int)enumerator.Current);
+						StackTraceLogType	stackTraceLogType = (StackTraceLogType)((int)enumerator.Current);
 						menu.AddItem(new GUIContent("Stack Trace Logging/" + logType + "/" + stackTraceLogType), Application.GetStackTraceLogType(logType) == stackTraceLogType,
 						() => {
 							Application.SetStackTraceLogType(logType, stackTraceLogType);
@@ -889,11 +857,9 @@ namespace NGToolsEditor
 			}
 			finally
 			{
-				IDisposable disposable = enumerator as IDisposable;
+				IDisposable	disposable = enumerator as IDisposable;
 				if (disposable != null)
-				{
 					disposable.Dispose();
-				}
 			}
 #if UNITY_5_2 || UNITY_5_3
 		}
@@ -905,7 +871,7 @@ namespace NGToolsEditor
 #endif
 		}
 
-#region Export Settings
+		#region Export Settings
 		public void	PreExport()
 		{
 		}
@@ -919,6 +885,6 @@ namespace NGToolsEditor
 		{
 			this.OnEnable();
 		}
-#endregion
+		#endregion
 	}
 }

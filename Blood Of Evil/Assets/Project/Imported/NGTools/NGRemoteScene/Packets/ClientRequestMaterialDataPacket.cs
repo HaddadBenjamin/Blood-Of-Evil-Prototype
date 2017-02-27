@@ -1,13 +1,14 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Scene_ClientRequestMaterialData)]
-	public class ClientRequestMaterialDataPacket : Packet
+	internal sealed class ClientRequestMaterialDataPacket : Packet
 	{
 		public int	instanceID;
 
-		protected	ClientRequestMaterialDataPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientRequestMaterialDataPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

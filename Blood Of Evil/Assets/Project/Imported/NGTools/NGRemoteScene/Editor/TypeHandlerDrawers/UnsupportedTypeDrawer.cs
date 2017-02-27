@@ -1,9 +1,9 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
-	public class UnsupportedTypeDrawer : TypeHandlerDrawer
+	internal sealed class UnsupportedTypeDrawer : TypeHandlerDrawer
 	{
 		public	UnsupportedTypeDrawer() : base(null)
 		{

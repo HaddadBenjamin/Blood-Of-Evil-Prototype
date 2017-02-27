@@ -1,12 +1,12 @@
 using System;
 using UnityEditor;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[ArgumentDrawerFor(typeof(Int32))]
-	public class Int32ArgumentDrawer : ArgumentDrawer
+	internal sealed class Int32ArgumentDrawer : ArgumentDrawer
 	{
-		public Int32ArgumentDrawer(string name) : base(name, typeof(Int32))
+		public Int32ArgumentDrawer(string name, Type type) : base(name, typeof(Int32))
 		{
 		}
 
@@ -15,12 +15,12 @@ namespace NGToolsEditor
 			this.value = EditorGUILayout.IntField(this.name, (Int32)this.value);
 		}
 
-		public override void	Serialize(string path)
+		public override void	Save(string path)
 		{
 			NGEditorPrefs.SetInt(path, (Int32)this.value);
 		}
 
-		public override void	Deserialize(string path)
+		public override void	Load(string path)
 		{
 			this.value = (Int32)NGEditorPrefs.GetInt(path);
 		}

@@ -1,14 +1,15 @@
 using NGTools;
+using NGTools.NGRemoteScene;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[CustomPropertyDrawer(typeof(ListingShaders))]
-	public class ListingShadersDrawer : PropertyDrawer
+	internal sealed class ListingShadersDrawer : PropertyDrawer
 	{
 		private SerializedProperty	shaders;
 		private SerializedProperty	properties;
@@ -38,30 +39,36 @@ namespace NGToolsEditor
 				position.x += position.width;
 				position.width = 75F;
 
-				if (GUI.Button(position, "Clear") == true)
+				using (BgColorContentRestorer.Get(GeneralStyles.HighlightActionButton))
 				{
-					this.shaders.arraySize = 0;
-					this.properties.arraySize = 0;
+					if (GUI.Button(position, "Clear") == true)
+					{
+						this.shaders.arraySize = 0;
+						this.properties.arraySize = 0;
+					}
 				}
 
 				position.x += position.width;
 			}
 
-			if (GUI.Button(position, "Scan") == true &&
-				EditorUtility.DisplayDialog("Confirm", "Referencing all shaders might take a while. It will scan all the files in the Assets folder.", LC.G("Yes"), LC.G("No")) == true)
+			using (BgColorContentRestorer.Get(GeneralStyles.HighlightActionButton))
 			{
-				try
+				if (GUI.Button(position, "Scan") == true &&
+					((Event.current.modifiers & Constants.ByPassPromptModifier) != 0 || EditorUtility.DisplayDialog("Confirm", "Referencing all shaders might take a while. It will scan all the files in the Assets folder.", LC.G("Yes"), LC.G("No")) == true))
 				{
-					this.ReferenceAll();
-				}
-				catch (Exception ex)
-				{
-					InternalNGDebug.LogException("The scan failed seeking for all shaders.", ex);
+					try
+					{
+						this.ReferenceAll();
+					}
+					catch (Exception ex)
+					{
+						InternalNGDebug.LogException("The scan failed seeking for all shaders.", ex);
+					}
 				}
 			}
 		}
 
-		public void	ReferenceAll()
+		private void	ReferenceAll()
 		{
 			List<Shader>	references = new List<Shader>();
 			string[]		assets = Directory.GetFiles(Application.dataPath, "*", SearchOption.AllDirectories);

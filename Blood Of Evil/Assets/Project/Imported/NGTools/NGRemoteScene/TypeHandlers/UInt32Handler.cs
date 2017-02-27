@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[Priority(0)]
-	public class UInt32Handler : TypeHandler
+	internal sealed class UInt32Handler : TypeHandler
 	{
 		public	UInt32Handler() : base(typeof(UInt32))
 		{

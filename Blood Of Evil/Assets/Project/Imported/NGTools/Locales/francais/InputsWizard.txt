@@ -1,2 +1,0 @@
-InputsWizard_Title=Gestionnaire des raccourcis
-InputsWizard_PressAnythingToEditCommand=Appuyez sur n'importe quelle touche pour pour modifier le raccourci.

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	public class VisualStudioOpener : IEditorOpener
+	internal sealed class VisualStudioOpener : IEditorOpener
 	{
 		public const string realPath = Constants.RootFolderName + @"\NGConsole\Editor\EditorOpeners\OpenLineVisualStudio.exe";
 

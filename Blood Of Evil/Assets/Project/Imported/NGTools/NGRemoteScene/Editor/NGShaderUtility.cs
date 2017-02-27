@@ -2,8 +2,11 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
+	/// <summary>A set of tools to serialize a Shader and its properties into a ByteBuffer.</summary>
+	/// <see cref="NGTools.NGRemoteScene.NGShader"/>
+	/// <see cref="NGTools.NGRemoteScene.NGShaderProperty"/>
 	public static class NGShaderUtility
 	{
 		public static void	SerializeShader(Shader mat, ByteBuffer buffer)

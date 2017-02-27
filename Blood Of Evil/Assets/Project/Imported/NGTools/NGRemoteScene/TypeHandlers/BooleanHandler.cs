@@ -1,9 +1,9 @@
 using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[Priority(0)]
-	public class BooleanHandler : TypeHandler
+	internal sealed class BooleanHandler : TypeHandler
 	{
 		public	BooleanHandler() : base(typeof(Boolean))
 		{

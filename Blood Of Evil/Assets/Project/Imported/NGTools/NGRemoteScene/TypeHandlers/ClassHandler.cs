@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Reflection;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	public class GenericClass
+	public sealed class GenericClass
 	{
 		public bool	isNull { get { return this.names.Length == 0; } }
 
@@ -72,7 +72,7 @@ namespace NGTools
 	}
 
 	[Priority(1000)]
-	public class ClassHandler : TypeHandler
+	internal sealed class ClassHandler : TypeHandler
 	{
 		public override bool	CanHandle(Type type)
 		{
@@ -84,9 +84,7 @@ namespace NGTools
 			FieldInfo[]	fields = fieldType.GetFields();
 
 			if (instance == null)
-			{
 				buffer.Append(true);
-			}
 			else
 			{
 				buffer.Append(false);

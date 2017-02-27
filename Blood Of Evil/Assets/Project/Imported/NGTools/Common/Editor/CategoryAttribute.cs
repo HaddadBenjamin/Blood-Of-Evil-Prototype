@@ -3,7 +3,7 @@
 namespace NGToolsEditor
 {
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-	public class CategoryAttribute : Attribute
+	public sealed class CategoryAttribute : Attribute
 	{
 		public const string	DefaultCategory = "None";
 

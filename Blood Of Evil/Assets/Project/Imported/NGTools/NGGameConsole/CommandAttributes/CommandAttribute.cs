@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-	public class CommandAttribute : Attribute
+	public sealed class CommandAttribute : Attribute
 	{
 		public readonly string	name;
 		public readonly string	description;

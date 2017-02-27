@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	public interface IStreams
 	{

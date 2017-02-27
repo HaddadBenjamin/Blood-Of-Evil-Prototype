@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	/// <summary>Describes information and value of a single shader property.</summary>
 	public sealed class NetMaterialProperty
@@ -62,7 +62,7 @@ namespace NGTools
 			{
 				typeHandler.Serialize(buffer, type, mat.GetTexture(prop.name));
 
-				TypeHandler vector2Handler = TypeHandlersManager.GetTypeHandler<Vector2>();
+				TypeHandler	vector2Handler = TypeHandlersManager.GetTypeHandler<Vector2>();
 
 				vector2Handler.Serialize(buffer, typeof(Vector2), mat.GetTextureOffset(prop.name));
 				vector2Handler.Serialize(buffer, typeof(Vector2), mat.GetTextureScale(prop.name));

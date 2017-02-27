@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	public class ColorMarkersWizard : ScriptableWizard
 	{
@@ -15,6 +15,12 @@ namespace NGToolsEditor
 		protected virtual void	OnEnable()
 		{
 			this.scrollView = new Vector2();
+			Undo.undoRedoPerformed += this.Repaint;
+		}
+
+		protected virtual void	OnDisable()
+		{
+			Undo.undoRedoPerformed -= this.Repaint;
 		}
 
 		protected virtual void	Update()
@@ -32,18 +38,19 @@ namespace NGToolsEditor
 			{
 				GUILayout.Label(string.Format(LC.G("RequiringConfigurationFile"), ColorMarkersWizard.Title));
 				if (GUILayout.Button(LC.G("ShoWPreferencesWindow")) == true)
-				{
 					Utility.ShowPreferencesWindowAt(Constants.PreferenceTitle);
-				}
 				return;
 			}
 
 			if (GUILayout.Button(LC.G("AddMarker")) == true)
 			{
-				ColorMarker	newMarker = new ColorMarker();
-				Preferences.Settings.colorMarkersModule.colorMarkers.Add(newMarker);
-				Preferences.InvalidateSettings();
-				Utility.RepaintEditorWindow(typeof(NGConsoleWindow));
+				if (FreeConstants.CheckMaxColorMarkers(Preferences.Settings.colorMarkersModule.colorMarkers.Count) == true)
+				{
+					Undo.RecordObject(Preferences.Settings, "Add color marker");
+					Preferences.Settings.colorMarkersModule.colorMarkers.Add(new ColorMarker());
+					Preferences.InvalidateSettings();
+					Utility.RepaintEditorWindow(typeof(NGConsoleWindow));
+				}
 			}
 
 			this.scrollView = GUILayout.BeginScrollView(this.scrollView);
@@ -51,15 +58,25 @@ namespace NGToolsEditor
 				for (int i = 0; i < Preferences.Settings.colorMarkersModule.colorMarkers.Count; i++)
 				{
 					while (this.folds.Count < Preferences.Settings.colorMarkersModule.colorMarkers.Count)
-						this.folds.Add(false);
+						this.folds.Add(true);
 
 					GUILayout.BeginVertical();
 					{
-						GUILayout.BeginHorizontal();
+						GUILayout.BeginHorizontal(GeneralStyles.Toolbar);
 						{
 							this.folds[i] = EditorGUILayout.Foldout(this.folds[i], LC.G("Marker") + " #" + (i + 1));
 
 							GUILayout.Space(155F);
+
+							EditorGUI.BeginChangeCheck();
+							Color	color = EditorGUILayout.ColorField(Preferences.Settings.colorMarkersModule.colorMarkers[i].backgroundColor);
+							if (EditorGUI.EndChangeCheck() == true)
+							{
+								Undo.RecordObject(Preferences.Settings, "Change color marker color");
+								Preferences.Settings.colorMarkersModule.colorMarkers[i].backgroundColor = color;
+								Preferences.InvalidateSettings();
+								Utility.RepaintEditorWindow(typeof(NGConsoleWindow));
+							}
 
 							Utility.content.text = "# # # # #";
 							Rect	rect = GUILayoutUtility.GetRect(Utility.content, GUI.skin.label, new GUILayoutOption[]
@@ -71,8 +88,9 @@ namespace NGToolsEditor
 							EditorGUI.LabelField(rect, "# # # # #");
 
 							GUI.enabled = i > 0;
-							if (GUILayout.Button("↑", GUILayout.Width(20F)) == true)
+							if (GUILayout.Button("↑", GeneralStyles.ToolbarButton, GUILayout.Width(20F)) == true)
 							{
+								Undo.RecordObject(Preferences.Settings, "Reorder color marker");
 								Preferences.Settings.colorMarkersModule.colorMarkers.Reverse(i - 1, 2);
 								Preferences.InvalidateSettings();
 								Utility.RepaintEditorWindow(typeof(NGConsoleWindow));
@@ -80,8 +98,9 @@ namespace NGToolsEditor
 							}
 
 							GUI.enabled = i < Preferences.Settings.colorMarkersModule.colorMarkers.Count - 1;
-							if (GUILayout.Button("↓", GUILayout.Width(20F)) == true)
+							if (GUILayout.Button("↓", GeneralStyles.ToolbarButton, GUILayout.Width(20F)) == true)
 							{
+								Undo.RecordObject(Preferences.Settings, "Reorder color marker");
 								Preferences.Settings.colorMarkersModule.colorMarkers.Reverse(i, 2);
 								Preferences.InvalidateSettings();
 								Utility.RepaintEditorWindow(typeof(NGConsoleWindow));
@@ -90,8 +109,9 @@ namespace NGToolsEditor
 
 							GUI.enabled = true;
 
-							if (GUILayout.Button("X", GUILayout.Width(20F)) == true)
+							if (GUILayout.Button("X", GeneralStyles.ToolbarCloseButton, GUILayout.Width(20F)) == true)
 							{
+								Undo.RecordObject(Preferences.Settings, "Delete color marker");
 								Preferences.Settings.colorMarkersModule.colorMarkers.RemoveAt(i);
 								Preferences.InvalidateSettings();
 								Utility.RepaintEditorWindow(typeof(NGConsoleWindow));
@@ -102,29 +122,14 @@ namespace NGToolsEditor
 
 						GUILayout.BeginHorizontal();
 						{
-							GUILayout.Space(16F);
-
-							GUILayout.BeginVertical();
+							if (this.folds[i] == true)
 							{
-								if (this.folds[i] == true)
+								EditorGUI.BeginChangeCheck();
+								GUILayout.BeginVertical();
 								{
-									EditorGUI.BeginChangeCheck();
-									Preferences.Settings.colorMarkersModule.colorMarkers[i].backgroundColor = EditorGUILayout.ColorField("Color", Preferences.Settings.colorMarkersModule.colorMarkers[i].backgroundColor);
-									if (EditorGUI.EndChangeCheck() == true)
-									{
-										Preferences.InvalidateSettings();
-										Utility.RepaintEditorWindow(typeof(NGConsoleWindow));
-									}
-
 									GUILayout.BeginHorizontal();
 									{
-										EditorGUI.BeginChangeCheck();
 										Preferences.Settings.colorMarkersModule.colorMarkers[i].groupFilters.OnGUI();
-										if (EditorGUI.EndChangeCheck() == true)
-										{
-											Preferences.InvalidateSettings();
-											Utility.RepaintEditorWindow(typeof(NGConsoleWindow));
-										}
 									}
 									GUILayout.EndHorizontal();
 
@@ -134,20 +139,19 @@ namespace NGToolsEditor
 										{
 											GUILayout.BeginHorizontal();
 											{
-												EditorGUI.BeginChangeCheck();
 												Preferences.Settings.colorMarkersModule.colorMarkers[i].groupFilters.filters[j].OnGUI();
-												if (EditorGUI.EndChangeCheck() == true)
-												{
-													Preferences.InvalidateSettings();
-													Utility.RepaintEditorWindow(typeof(NGConsoleWindow));
-												}
 											}
 											GUILayout.EndHorizontal();
 										}
 									}
 								}
+								GUILayout.EndVertical();
+								if (EditorGUI.EndChangeCheck() == true)
+								{
+									Preferences.InvalidateSettings();
+									Utility.RepaintEditorWindow(typeof(NGConsoleWindow));
+								}
 							}
-							GUILayout.EndVertical();
 						}
 						GUILayout.EndHorizontal();
 

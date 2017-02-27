@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Flags]
-	public enum ConsoleFlags
+	internal enum ConsoleFlags
 	{
 		Collapse = 1,
 		ClearOnPlay = 2,

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	using UnityEngine;
 
@@ -45,7 +45,7 @@ namespace NGTools
 		private	NetField(ByteBuffer buffer)
 		{
 			int	chunkFieldLength = buffer.ReadInt32();
-			int	fallbackEndPosition = buffer.position + chunkFieldLength;
+			int	fallbackEndPosition = buffer.Position + chunkFieldLength;
 
 			this.fieldType = Type.GetType(buffer.ReadUnicodeString());
 			this.name = buffer.ReadUnicodeString();
@@ -108,7 +108,7 @@ namespace NGTools
 				}
 			}
 
-			buffer.position = fallbackEndPosition;
+			buffer.Position = fallbackEndPosition;
 		}
 	}
 }

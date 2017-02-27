@@ -1,12 +1,14 @@
-namespace NGTools
+using NGTools.Network;
+
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Camera_ServerSendTexture)]
-	public class ServerSendTexturePacket : Packet
+	internal sealed class ServerSendTexturePacket : Packet
 	{
 		public float	time;
 		public byte[]	data;
 
-		protected	ServerSendTexturePacket(ByteBuffer buffer) : base(buffer)
+		private	ServerSendTexturePacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

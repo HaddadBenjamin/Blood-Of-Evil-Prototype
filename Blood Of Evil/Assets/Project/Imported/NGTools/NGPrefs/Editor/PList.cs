@@ -31,7 +31,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGPrefs
 {
     public static class Plist
     {

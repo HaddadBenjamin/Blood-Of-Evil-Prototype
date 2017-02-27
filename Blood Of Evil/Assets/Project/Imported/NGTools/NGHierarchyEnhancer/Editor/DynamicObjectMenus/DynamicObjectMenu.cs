@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGHierarchyEnhancer
 {
 	public abstract class DynamicObjectMenu
 	{

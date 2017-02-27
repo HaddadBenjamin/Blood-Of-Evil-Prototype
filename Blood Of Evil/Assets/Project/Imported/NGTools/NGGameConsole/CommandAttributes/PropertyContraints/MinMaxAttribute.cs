@@ -1,10 +1,9 @@
 ﻿using System;
-using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-	public class MinMaxAttribute : PropertyConstraintAttribute
+	public sealed class MinMaxAttribute : PropertyConstraintAttribute
 	{
 		public readonly decimal	min;
 		public readonly decimal	max;

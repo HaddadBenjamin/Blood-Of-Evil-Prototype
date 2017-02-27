@@ -7,7 +7,7 @@ using UnityEngine;
 namespace NGToolsEditor
 {
 	[CustomPropertyDrawer(typeof(GroupAttribute), true)]
-	public class GroupDrawer : PropertyDrawer
+	internal sealed class GroupDrawer : PropertyDrawer
 	{
 		public const float	Spacing = 2F;
 

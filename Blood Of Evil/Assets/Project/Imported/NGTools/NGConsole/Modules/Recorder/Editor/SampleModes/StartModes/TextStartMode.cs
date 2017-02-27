@@ -4,10 +4,10 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
 	[Serializable]
-	public class TextStartMode : StartMode
+	internal sealed class TextStartMode : StartMode
 	{
 		private enum SearchMode
 		{
@@ -144,9 +144,7 @@ namespace NGToolsEditor
 				EditorGUI.BeginChangeCheck();
 				GUILayout.Toggle(this.wholeWord, this.whole, GeneralStyles.ToolbarButton, GUILayout.Width(40F));
 				if (EditorGUI.EndChangeCheck() == true)
-				{
 					this.wholeWord = !this.wholeWord;
-				}
 
 				EditorGUI.BeginChangeCheck();
 				GUILayout.Toggle(this.useRegex, this.regex, GeneralStyles.ToolbarButton, GUILayout.Width(30F));
@@ -158,16 +156,14 @@ namespace NGToolsEditor
 
 				using (LabelWidthRestorer.Get(70F))
 				{
-					using (BgColorContentRestorer.Get(string.IsNullOrEmpty(this.regexSyntaxError) == false ? Color.red : GUI.backgroundColor))
+					using (BgColorContentRestorer.Get(string.IsNullOrEmpty(this.regexSyntaxError) == false, Color.red))
 					{
 						EditorGUI.BeginChangeCheck();
-						this.keyword = EditorGUILayout.TextField(this.keyword, GeneralStyles.ToolbarSeachTextField);
+						this.keyword = EditorGUILayout.TextField(this.keyword, GeneralStyles.ToolbarSearchTextField);
 						if (EditorGUI.EndChangeCheck() == true)
-						{
 							this.CheckRegex();
-						}
 
-						if (GUILayout.Button(GUIContent.none, GeneralStyles.ToolbarSeachCancelButton) == true)
+						if (GUILayout.Button(GUIContent.none, GeneralStyles.ToolbarSearchCancelButton) == true)
 						{
 							this.keyword = string.Empty;
 							this.regexSyntaxError = null;

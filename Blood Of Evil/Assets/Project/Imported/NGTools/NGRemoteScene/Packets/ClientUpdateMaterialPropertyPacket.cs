@@ -1,15 +1,16 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
-	[PacketLinkTo(PacketId.Scene_ClientUpdateMaterialProperty)]
-	public class ClientUpdateMaterialPropertyPacket : Packet
+	[PacketLinkTo(PacketId.Scene_ClientUpdateMaterialProperty, true)]
+	internal sealed class ClientUpdateMaterialPropertyPacket : Packet
 	{
 		public int		instanceID;
 		public string	propertyName;
 		public byte[]	rawValue;
 
-		protected	ClientUpdateMaterialPropertyPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientUpdateMaterialPropertyPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

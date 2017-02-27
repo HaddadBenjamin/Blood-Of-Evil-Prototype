@@ -1,35 +1,34 @@
 ﻿using NGTools;
+using NGTools.NGRemoteScene;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[InitializeOnLoad]
 	public class NGReplayWindow : EditorWindow, IHasCustomMenu
 	{
-		public const string		Title = "NG Replay";
+		public const string		Title = "ƝƓ Ʀeplay";
 		public static string	ReplayExtension = "ngreplay";
 		public static string[]	Filter = new string[] { "NG Replay", NGReplayWindow.ReplayExtension };
 
 		public  bool	keepAspectRatio = true;
 
-#if NGT_DEBUG
 		public  bool	showDBG = true;
-#endif
 
 		private int				currentReplay;
 		private List<Replay>	replays;
 
 		static	NGReplayWindow()
 		{
-			Utility.AddMenuItemPicker(Constants.MenuItemPath + NGReplayWindow.Title);
+			Utility.AddMenuItemPicker(Constants.MenuItemPath + NGReplayWindow.Title + "	[BETA]");
 		}
 
-		[MenuItem(Constants.MenuItemPath + NGReplayWindow.Title, priority = Constants.MenuItemPriority + 230)]
-		private static void	Open()
+		[MenuItem(Constants.MenuItemPath + NGReplayWindow.Title + "	[BETA]", priority = Constants.MenuItemPriority + 230)]
+		public static void	Open()
 		{
 			EditorWindow.GetWindow<NGReplayWindow>(NGReplayWindow.Title);
 		}
@@ -44,23 +43,7 @@ namespace NGToolsEditor
 			EditorGUILayout.BeginHorizontal(GeneralStyles.Toolbar);
 			{
 				if (GUILayout.Button("Open", GeneralStyles.ToolbarButton, GUILayout.Width(100F)) == true)
-				{
-#if !UNITY_4_5 && !UNITY_4_6 && !UNITY_4_7 && !UNITY_5_0 && !UNITY_5_1
-					string	filepath = EditorUtility.OpenFilePanelWithFilters("Open Replay", EditorPrefs.GetString(Replay.LastOpenReplayKey, "."), NGReplayWindow.Filter);
-#else
-					string	filepath = EditorUtility.OpenFilePanel("Open Replay", EditorPrefs.GetString(Replay.LastOpenReplayKey, "."), NGReplayWindow.ReplayExtension);
-#endif
-
-					if (string.IsNullOrEmpty(filepath) == false)
-					{
-						EditorPrefs.SetString(Replay.LastOpenReplayKey, filepath);
-
-						Replay	r = new Replay(Path.GetFileNameWithoutExtension(filepath));
-
-						if (r.Load(filepath) == true)
-							this.replays.Add(r);
-					}
-				}
+					this.OpenReplay();
 
 				for (int i = 0; i < this.replays.Count; i++)
 				{
@@ -94,6 +77,12 @@ namespace NGToolsEditor
 				GUILayout.FlexibleSpace();
 			}
 			EditorGUILayout.EndHorizontal();
+
+			if (this.replays.Count == 0)
+			{
+				if (GUILayout.Button("No replay yet, please open one.", GeneralStyles.BigCenterText, GUILayout.ExpandHeight(true)) == true)
+					this.OpenReplay();
+			}
 
 			if (this.currentReplay >= 0 && this.currentReplay < this.replays.Count)
 			{
@@ -174,12 +163,13 @@ namespace NGToolsEditor
 						menu.DropDown(r2);
 					}
 
-#if NGT_DEBUG
-					EditorGUI.BeginChangeCheck();
-					GUILayout.Toggle(this.showDBG, "DBG", GeneralStyles.ToolbarButton);
-					if (EditorGUI.EndChangeCheck() == true)
-						this.showDBG = !this.showDBG;
-#endif
+					if (Conf.DebugMode != Conf.DebugModes.None)
+					{
+						EditorGUI.BeginChangeCheck();
+						GUILayout.Toggle(this.showDBG, "DBG", GeneralStyles.ToolbarButton);
+						if (EditorGUI.EndChangeCheck() == true)
+							this.showDBG = !this.showDBG;
+					}
 				}
 				EditorGUILayout.EndHorizontal();
 
@@ -205,8 +195,7 @@ namespace NGToolsEditor
 						replay.modules[i].OnGUIReplay(r);
 				}
 
-#if NGT_DEBUG
-				if (this.showDBG == true)
+				if (Conf.DebugMode != Conf.DebugModes.None && this.showDBG == true)
 				{
 					EditorGUILayout.LabelField("Time Offset", replay.realTimeOffset.ToString());
 
@@ -216,15 +205,7 @@ namespace NGToolsEditor
 							replay.modules[i].OnGUIDBG();
 					}
 				}
-#endif
 			}
-		}
-
-		private void	ToggleModule(object data)
-		{
-			ReplayDataModule	module = (ReplayDataModule)data;
-
-			module.active = !module.active;
 		}
 
 		protected virtual void	Update()
@@ -243,9 +224,35 @@ namespace NGToolsEditor
 			this.currentReplay = Mathf.Clamp(this.currentReplay, 0, this.replays.Count - 1);
 		}
 
+		private void	OpenReplay()
+		{
+#if !UNITY_4_5 && !UNITY_4_6 && !UNITY_4_7 && !UNITY_5_0 && !UNITY_5_1
+			string	filepath = EditorUtility.OpenFilePanelWithFilters("Open Replay", EditorPrefs.GetString(Replay.LastOpenReplayKey, "."), NGReplayWindow.Filter);
+#else
+					string	filepath = EditorUtility.OpenFilePanel("Open Replay", EditorPrefs.GetString(Replay.LastOpenReplayKey, "."), NGReplayWindow.ReplayExtension);
+#endif
+
+			if (string.IsNullOrEmpty(filepath) == false)
+			{
+				EditorPrefs.SetString(Replay.LastOpenReplayKey, filepath);
+
+				Replay	r = new Replay(Path.GetFileNameWithoutExtension(filepath));
+
+				if (r.Load(filepath) == true)
+					this.replays.Add(r);
+			}
+		}
+
+		private void	ToggleModule(object data)
+		{
+			ReplayDataModule	module = (ReplayDataModule)data;
+
+			module.active = !module.active;
+		}
+
 		void	IHasCustomMenu.AddItemsToMenu(GenericMenu menu)
 		{
-			NGHierarchyWindow.AddTabMenus(menu);
+			NGRemoteHierarchyWindow.AddTabMenus(menu);
 			menu.AddSeparator("");
 			Utility.AddNGMenuItems(menu, this, NGReplayWindow.Title, Constants.WikiBaseURL + "#markdown-header-135-ng-replay");
 		}

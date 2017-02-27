@@ -1,77 +1,45 @@
 ﻿using NGTools;
+using NGTools.NGRemoteScene;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[CustomPropertyDrawer(typeof(ListingAssets))]
-	public class ListingAssetsDrawer : PropertyDrawer
+	internal sealed class ListingAssetsDrawer : PropertyDrawer
 	{
 		private class Folder
 		{
 			public class File
 			{
+				public readonly string	path;
 				public readonly string	name;
 
 				public bool		referenced;
 
-				public	File(string name)
+				public	File(string path, string name)
 				{
+					this.path = path;
 					this.name = name;
 				}
 			}
 
 			public readonly Folder			parent;
 			public readonly string			name;
-			public readonly List<Folder>	folders;
-			public readonly File[]			files;
+			public readonly List<Folder>	folders = new List<Folder>();
+			public readonly List<File>		files = new List<File>();
 
 			public bool	open;
 			public bool	referenced;
 
-			public	Folder(Folder parent, string path, string name, HashSet<string> existingList)
+			public	Folder(Folder parent, string name)
 			{
-				string[]	dirs = Directory.GetDirectories(path, "*", SearchOption.TopDirectoryOnly);
-				string[]	files = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly);
-
 				this.parent = parent;
 				this.name = name;
-				this.folders = new List<Folder>();
-
-				int	totalFiles = 0;
-
-				for (int j = 0; j < files.Length; j++)
-				{
-					if (files[j].EndsWith(".meta") == false)
-						++totalFiles;
-				}
-
-				this.files = new File[totalFiles];
-
-				for (int i = 0; i < dirs.Length; i++)
-				{
-					Folder	folder = new Folder(this, dirs[i], dirs[i].Substring(path.Length + 1), existingList);
-
-					if (folder.folders.Count > 0 || folder.files.Length > 0)
-						this.folders.Add(folder);
-				}
-
-				for (int j = 0, i = 0; j < files.Length; j++)
-				{
-					if (files[j].EndsWith(".meta") == false)
-					{
-						this.files[i] = new File(files[j]);
-
-						if (existingList.Contains(this.files[i].name) == true)
-							this.files[i].referenced = true;
-
-						++i;
-					}
-				}
-
-				this.Update(false);
+				this.open = EditorPrefs.GetBool(this.GetHierarchyPath());
 			}
 
 			public float	GetHeight()
@@ -82,13 +50,13 @@ namespace NGToolsEditor
 				{
 					for (int i = 0; i < this.folders.Count; i++)
 					{
-						if (this.folders[i].folders.Count == 0 && this.folders[i].files.Length == 0)
+						if (this.folders[i].folders.Count == 0 && this.folders[i].files.Count == 0)
 							continue;
 
 						height += this.folders[i].GetHeight();
 					}
 
-					height += this.files.Length * EditorGUIUtility.singleLineHeight;
+					height += this.files.Count * EditorGUIUtility.singleLineHeight;
 				}
 
 				return height;
@@ -96,8 +64,8 @@ namespace NGToolsEditor
 
 			public void	Draw(Rect r)
 			{
-				float x = r.x;
-				float w = r.width;
+				float	x = r.x;
+				float	w = r.width;
 
 				r.width = 16F;
 				EditorGUI.showMixedValue = this.HasMixedRefs();
@@ -115,7 +83,10 @@ namespace NGToolsEditor
 
 				r.x += r.width + 10F;
 				r.width = w;
+				EditorGUI.BeginChangeCheck();
 				this.open = EditorGUI.Foldout(r, this.open, this.name);
+				if (EditorGUI.EndChangeCheck() == true)
+					EditorPrefs.SetBool(this.GetHierarchyPath(), this.open);
 
 				if (this.open == true)
 				{
@@ -124,25 +95,40 @@ namespace NGToolsEditor
 
 					for (int i = 0; i < this.folders.Count; i++)
 					{
-						if (this.folders[i].folders.Count == 0 && this.folders[i].files.Length == 0)
+						if (this.folders[i].folders.Count == 0 && this.folders[i].files.Count == 0)
 							continue;
 
 						this.folders[i].Draw(r);
 						r.y += this.folders[i].GetHeight();
 					}
 
-					for (int i = 0; i < this.files.Length; i++)
+					for (int i = 0; i < this.files.Count; i++)
 					{
 						EditorGUI.BeginChangeCheck();
 						this.files[i].referenced = EditorGUI.ToggleLeft(r, this.files[i].name, this.files[i].referenced);
 						if (EditorGUI.EndChangeCheck() == true)
-						{
 							this.Update();
-						}
 
 						r.y += r.height;
 					}
 				}
+			}
+
+			private string	GetHierarchyPath()
+			{
+				StringBuilder	buffer = Utility.GetBuffer();
+
+				Folder	f = this;
+
+				while (f != null)
+				{
+					buffer.Insert(0, f.name);
+					buffer.Insert(0, '/');
+
+					f = f.parent;
+				}
+
+				return Utility.ReturnBuffer(buffer);
 			}
 
 			public bool	HasMixedRefs()
@@ -152,7 +138,7 @@ namespace NGToolsEditor
 
 				for (int i = 0; i < this.folders.Count; i++)
 				{
-					if (this.folders[i].folders.Count == 0 && this.folders[i].files.Length == 0)
+					if (this.folders[i].folders.Count == 0 && this.folders[i].files.Count == 0)
 						continue;
 
 					if (this.folders[i].referenced == true)
@@ -171,7 +157,7 @@ namespace NGToolsEditor
 					 ++j;
 				}
 
-				for (int i = 0; i < this.files.Length; i++)
+				for (int i = 0; i < this.files.Count; i++)
 				{
 					if (this.files[i].referenced == true)
 					{
@@ -194,7 +180,7 @@ namespace NGToolsEditor
 				for (int i = 0; i < this.folders.Count; i++)
 					this.folders[i].Reference();
 
-				for (int i = 0; i < this.files.Length; i++)
+				for (int i = 0; i < this.files.Count; i++)
 					this.files[i].referenced = true;
 
 				if (this.parent != null)
@@ -208,7 +194,7 @@ namespace NGToolsEditor
 				for (int i = 0; i < this.folders.Count; i++)
 					this.folders[i].Unreference();
 
-				for (int i = 0; i < this.files.Length; i++)
+				for (int i = 0; i < this.files.Count; i++)
 					this.files[i].referenced = false;
 
 				if (this.parent != null)
@@ -225,26 +211,26 @@ namespace NGToolsEditor
 						yield return reference;
 				}
 
-				for (int i = 0; i < this.files.Length; i++)
+				for (int i = 0; i < this.files.Count; i++)
 				{
 					if (this.files[i].referenced == true)
-						yield return this.files[i].name;
+						yield return this.files[i].path;
 				}
 			}
 
-			private void	Update(bool ascendentUpdate = true)
+			public void	Update(bool ascendentUpdate = true)
 			{
 				if (this.HasMixedRefs() == false)
 				{
 					for (int i = 0; i < this.folders.Count; i++)
 					{
-						if (this.folders[i].folders.Count == 0 && this.folders[i].files.Length == 0)
+						if (this.folders[i].folders.Count == 0 && this.folders[i].files.Count == 0)
 							continue;
 						this.referenced = this.folders[0].referenced;
 						goto skipFile;
 					}
 
-					if (this.files.Length > 0)
+					if (this.files.Count > 0)
 						this.referenced = this.files[0].referenced;
 				}
 
@@ -274,35 +260,47 @@ namespace NGToolsEditor
 			float	height = position.height;
 
 			position.height = EditorGUIUtility.singleLineHeight;
-			EditorGUI.LabelField(position, "NG Project Resources (" + this.assets.arraySize + ")");
+			EditorGUI.LabelField(position, "NG Remote Project Assets (" + this.assets.arraySize + ")");
 
 			position.y += position.height;
 			this.root.Draw(position);
 
-			position.y += height - EditorGUIUtility.singleLineHeight - EditorGUIUtility.singleLineHeight;
-			if (GUI.Button(position, "Reference Resources") == true)
+			using (BgColorContentRestorer.Get(GeneralStyles.HighlightActionButton))
 			{
-				assets.arraySize = 0;
-
-				foreach (var path in this.root.EachReference())
+				position.y += height - EditorGUIUtility.singleLineHeight - EditorGUIUtility.singleLineHeight;
+				if (GUI.Button(position, "Reference Resources") == true)
 				{
-					if (path.EndsWith(".unity") == true)
-						continue;
+					assets.arraySize = 0;
 
-					Object[]	references = AssetDatabase.LoadAllAssetsAtPath(path);
+					foreach (var path in this.root.EachReference())
+					{
+						if (path.EndsWith(".unity") == true)
+							continue;
 
-					if (references.Length == 0)
-						references = new Object[] { AssetDatabase.LoadMainAssetAtPath(path) };
+						Object[]	references = AssetDatabase.LoadAllAssetsAtPath("Assets/" + path);
 
-					this.assets.InsertArrayElementAtIndex(this.assets.arraySize);
-					SerializedProperty prop = this.assets.GetArrayElementAtIndex(this.assets.arraySize - 1);
-					prop.FindPropertyRelative("asset").stringValue = path;
+						if (references.Length == 0)
+						{
+							Object	mainAsset = AssetDatabase.LoadMainAssetAtPath(path);
+							if (mainAsset != null)
+								references = new Object[] { mainAsset };
+							else
+							{
+								InternalNGDebug.LogWarning("Assets at \"" + path + "\" can not be embedded.");
+								continue;
+							}
+						}
 
-					SerializedProperty	refField = prop.FindPropertyRelative("references");
-					refField.arraySize = references.Length;
+						this.assets.InsertArrayElementAtIndex(this.assets.arraySize);
+						SerializedProperty	prop = this.assets.GetArrayElementAtIndex(this.assets.arraySize - 1);
+						prop.FindPropertyRelative("asset").stringValue = path;
 
-					for (int i = 0; i < references.Length; i++)
-						refField.GetArrayElementAtIndex(i).objectReferenceValue = references[i];
+						SerializedProperty	refField = prop.FindPropertyRelative("references");
+						refField.arraySize = references.Length;
+
+						for (int i = 0; i < references.Length; i++)
+							refField.GetArrayElementAtIndex(i).objectReferenceValue = references[i];
+					}
 				}
 			}
 		}
@@ -315,7 +313,52 @@ namespace NGToolsEditor
 			for (int i = 0; i < this.assets.arraySize; i++)
 				this.existingList.Add(this.assets.GetArrayElementAtIndex(i).FindPropertyRelative("asset").stringValue);
 
-			this.root = new Folder(null, "Assets", "Assets", this.existingList);
+			string[]	assets = AssetDatabase.GetAllAssetPaths();
+
+			this.root = new Folder(null, "Assets");
+
+			for (int i = 0; i < assets.Length; i++)
+			{
+				if (assets[i].StartsWith("Assets/") == true &&
+					File.Exists(assets[i]) == true)
+				{
+					this.Generate(assets[i]);
+				}
+			}
+		}
+
+		private void	Generate(string path)
+		{
+			string[]	paths = path.Split('/');
+			Folder		folder = this.root;
+
+			for (int i = 1; i < paths.Length - 1; i++)
+			{
+				int	j = 0;
+				int	max = folder.folders.Count;
+
+				for (; j < max; j++)
+				{
+					if (folder.folders[j].name == paths[i])
+					{
+						folder = folder.folders[j];
+						break;
+					}
+				}
+
+				if (j >= max)
+				{
+					folder.folders.Add(new Folder(folder, paths[i]));
+					folder = folder.folders[folder.folders.Count - 1];
+				}
+			}
+
+			Folder.File	f = new Folder.File(path, paths[paths.Length - 1]);
+			if (existingList.Contains(f.path) == true)
+				f.referenced = true;
+			folder.files.Add(f);
+
+			folder.Update(true);
 		}
 	}
 }

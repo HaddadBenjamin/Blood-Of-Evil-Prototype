@@ -1,11 +1,17 @@
-using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine;
 
 namespace NGToolsEditor
 {
-	public class HorizontalScrollbar
+	public sealed class HorizontalScrollbar
 	{
+		private sealed class PointOfInterest
+		{
+			public float offset;
+			public Color color;
+		}
+
 		public float	innerMargin;
 		public float	speedScroll = 10F;
 		private float	__realWidth;
@@ -36,16 +42,23 @@ namespace NGToolsEditor
 		public float	maxWidth { get { return this.bgScrollRect.width; } }
 		public bool		interceiptEvent = true;
 
+		public bool	hasCustomArea = false;
+		public Rect	allowedMouseArea;
+
+		public float	interestSizeMargin = 4F;
+
 		private float	scrollX;
 		private float	scrollWidth;
 		private Rect	bgScrollRect;
 		private float	onDownXOffset;
 
+		private List<PointOfInterest>	pointsOfInterest = new List<PointOfInterest>();
+
 		// Cache variable
-		private GUIStyle	scrollStyle;
-		private Rect		scrollRect = default(Rect);
-		private Texture2D	focused;
-		private Texture2D	idle;
+		private Rect	scrollRect = default(Rect);
+		private Color	focused;
+		private Color	idle;
+		private Color	currentBackgroundColor;
 
 		public	HorizontalScrollbar(float x, float y, float width) : this(x, y, width, 15F, 4F)
 		{
@@ -59,16 +72,9 @@ namespace NGToolsEditor
 		{
 			this.innerMargin = innerMargin;
 
-			this.focused = new Texture2D(1, 1);
-			this.focused.SetPixel(0, 0, new Color(.5F, .5F, .5F));
-			this.focused.Apply();
-			this.idle = new Texture2D(1, 1);
-			this.idle.SetPixel(0, 0, new Color(.7F, .7F, .7F));
-			this.idle.Apply();
-
-			this.scrollStyle = new GUIStyle();
-			this.scrollStyle.normal.background = this.idle;
-			this.scrollStyle.focused.background = this.focused;
+			this.idle = EditorGUIUtility.isProSkin == true ? new Color(.6F, .6F, .6F) : new Color(.4F, .4F, .4F);
+			this.focused = EditorGUIUtility.isProSkin == true ? new Color(.7F, .7F, .7F) : new Color(.3F, .3F, .3F);
+			this.currentBackgroundColor = this.idle;
 
 			this.bgScrollRect = new Rect(x, y, width, height);
 		}
@@ -79,15 +85,20 @@ namespace NGToolsEditor
 		public void	OnGUI()
 		{
 			// Toggle scrollbar
-			if (this.bgScrollRect.width >= this.realWidth)
+			if (Event.current.type == EventType.Repaint &&
+				this.bgScrollRect.width >= this.realWidth)
 			{
-				this.offsetX = 0f;
+				this.offsetX = 0F;
+				this.DrawInterest();
 				return;
 			}
 
 			if (Event.current.type != EventType.Repaint &&
 				this.interceiptEvent == false &&
-				bgScrollRect.Contains(Event.current.mousePosition) == false)
+				bgScrollRect.Contains(Event.current.mousePosition) == false &&
+				(this.hasCustomArea == false ||
+				 this.allowedMouseArea.Contains(Event.current.mousePosition) == false) &&
+				 onDownXOffset == -1F)
 			{
 				return;
 			}
@@ -95,7 +106,7 @@ namespace NGToolsEditor
 			switch (Event.current.type)
 			{
 				case EventType.scrollWheel:
-					this.scrollX += Event.current.delta.y * this.speedScroll;
+					this.scrollX += Event.current.delta.y * this.speedScroll * this.bgScrollRect.width / this.__realWidth;
 					this.UpdateOffset();
 					HandleUtility.Repaint();
 					Event.current.Use();
@@ -117,26 +128,23 @@ namespace NGToolsEditor
 							Event.current.mousePosition.x < this.bgScrollRect.x + this.scrollX + this.scrollWidth)
 						{
 							this.onDownXOffset = Event.current.mousePosition.x - this.scrollX;
-							this.scrollStyle.normal.background = EditorGUIUtility.whiteTexture;
-							HandleUtility.Repaint();
 						}
 						else
 						{
-							this.onDownXOffset = this.scrollWidth * .5F;
-							this.scrollStyle.normal.background = EditorGUIUtility.whiteTexture;
-
-							this.scrollX = Event.current.mousePosition.x * 100F / this.bgScrollRect.width *
-										   this.bgScrollRect.width / 100F - this.onDownXOffset;
+							this.onDownXOffset = this.bgScrollRect.x + this.scrollWidth * .5F;
+							this.scrollX = Event.current.mousePosition.y - this.onDownXOffset;
 							this.UpdateOffset();
-							HandleUtility.Repaint();
 						}
 
+						this.currentBackgroundColor = this.focused;
+						HandleUtility.Repaint();
 						Event.current.Use();
 					}
 					break;
 
+				case EventType.MouseMove:
 				case EventType.mouseUp:
-					this.scrollStyle.normal.background = this.idle;
+					this.currentBackgroundColor = this.idle;
 					this.onDownXOffset = -1;
 					HandleUtility.Repaint();
 					break;
@@ -144,18 +152,53 @@ namespace NGToolsEditor
 				default:
 					break;
 			}
+
 			this.scrollRect.x = this.bgScrollRect.x + this.scrollX;
 			this.scrollRect.y = this.bgScrollRect.y;
 			this.scrollRect.width = this.scrollWidth;
 			this.scrollRect.height = this.bgScrollRect.height;
 			if (this.innerMargin != 0F)
 			{
-				this.scrollRect.xMin += this.innerMargin;
-				this.scrollRect.xMax -= this.innerMargin;
 				this.scrollRect.yMin += this.innerMargin;
 				this.scrollRect.yMax -= this.innerMargin;
 			}
-			EditorGUI.LabelField(this.scrollRect, "", this.scrollStyle);
+			EditorGUI.DrawRect(this.scrollRect, this.currentBackgroundColor);
+
+			this.DrawInterest();
+		}
+
+		private void	DrawInterest()
+		{
+			this.scrollRect.y = this.bgScrollRect.y + this.interestSizeMargin * .5F;
+			this.scrollRect.width = this.interestSizeMargin;
+			this.scrollRect.height = this.bgScrollRect.height - this.interestSizeMargin;
+
+			if (this.innerMargin != 0F)
+			{
+				this.scrollRect.yMin += this.innerMargin;
+				this.scrollRect.yMax -= this.innerMargin;
+			}
+
+			float	min = this.bgScrollRect.x - this.scrollRect.width * .5F;
+
+			if (this.bgScrollRect.height <= this.__realWidth)
+			{
+				float	factor = this.bgScrollRect.width / this.__realWidth;
+
+				for (int i = 0; i < this.pointsOfInterest.Count; i++)
+				{
+					this.scrollRect.x = min + this.pointsOfInterest[i].offset * factor;
+					EditorGUI.DrawRect(this.scrollRect, this.pointsOfInterest[i].color);
+				}
+			}
+			else
+			{
+				for (int i = 0; i < this.pointsOfInterest.Count; i++)
+				{
+					this.scrollRect.x = min + this.pointsOfInterest[i].offset;
+					EditorGUI.DrawRect(this.scrollRect, this.pointsOfInterest[i].color);
+				}
+			}
 		}
 
 		public void	SetPosition(float x, float y)
@@ -176,9 +219,19 @@ namespace NGToolsEditor
 			{
 				this.bgScrollRect.width = width;
 				// Update width, function of the max content width
-				this.scrollWidth = this.bgScrollRect.width * this.bgScrollRect.width / this.realWidth;
+				this.scrollWidth = this.bgScrollRect.width * this.bgScrollRect.width / this.__realWidth;
 				this.UpdateOffset();
 			}
+		}
+
+		public void	AddInterest(float offset, Color color)
+		{
+			this.pointsOfInterest.Add(new PointOfInterest() { offset = offset, color = color });
+		}
+
+		public void	ClearInterests()
+		{
+			this.pointsOfInterest.Clear();
 		}
 
 		private void	UpdateOffset()
@@ -192,7 +245,7 @@ namespace NGToolsEditor
 				this.offsetX = 0F;
 			else
 				this.offsetX = (this.scrollX / (this.bgScrollRect.width - this.scrollWidth)) *
-							   (this.realWidth - this.bgScrollRect.width);
+							   (this.__realWidth - this.bgScrollRect.width);
 		}
 	}
 }

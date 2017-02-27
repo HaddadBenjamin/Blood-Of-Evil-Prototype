@@ -1,13 +1,14 @@
+using NGTools.Network;
 using System.Collections.Generic;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Scene_ServerDeleteGameObjects)]
-	public class ServerDeleteGameObjectsPacket : Packet
+	internal sealed class ServerDeleteGameObjectsPacket : Packet
 	{
 		public List<int>	instanceIDs;
 
-		protected	ServerDeleteGameObjectsPacket(ByteBuffer buffer) : base(buffer)
+		private	ServerDeleteGameObjectsPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

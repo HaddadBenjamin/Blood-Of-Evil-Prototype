@@ -28,6 +28,9 @@ namespace NGToolsEditor
 		[DefaultValueEditorPref(true)]
 		public bool		hardwareInformation;
 
+		[NonSerialized]
+		public string	complementaryInformation = string.Empty;
+
 		protected virtual void	OnEnable()
 		{
 			Utility.LoadEditorPref(this);
@@ -38,23 +41,23 @@ namespace NGToolsEditor
 			Utility.SaveEditorPref(this);
 		}
 
-		private void	OnGUI()
+		protected virtual void	OnGUI()
 		{
 			GUILayout.Label(LC.G("ContactFormWizard_Title"), GeneralStyles.MainTitle);
 
 			this.contactName = EditorGUILayout.TextField(LC.G("ContactFormWizard_ContactName"), this.contactName);
+			if (string.IsNullOrEmpty(this.contactName) == true)
+				EditorGUILayout.HelpBox(LC.G("ContactFormWizard_NameRequired"), MessageType.Warning);
+
 			this.contactEMail = EditorGUILayout.TextField(LC.G("ContactFormWizard_ContactEMail"), this.contactEMail);
+			if (Regex.IsMatch(this.contactEMail, @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", RegexOptions.IgnoreCase) == false)
+				EditorGUILayout.HelpBox(LC.G("ContactFormWizard_ValidEMailRequired"), MessageType.Warning);
+
 			this.unityInformation = EditorGUILayout.Toggle(LC.G("ContactFormWizard_UnityInformation"), this.unityInformation);
 			this.osInformation = EditorGUILayout.Toggle(LC.G("ContactFormWizard_OSInformation"), this.osInformation);
 			this.hardwareInformation = EditorGUILayout.Toggle(LC.G("ContactFormWizard_HardwareInformation"), this.hardwareInformation);
-
-			GUILayout.FlexibleSpace();
-
-			if (string.IsNullOrEmpty(this.contactName) == true)
-				GUILayout.Label(LC.G("ContactFormWizard_NameRequired"), "CN EntryError");
-
-			if (Regex.IsMatch(this.contactEMail, @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", RegexOptions.IgnoreCase) == false)
-				GUILayout.Label(LC.G("ContactFormWizard_ValidEMailRequired"), "CN EntryError");
+			EditorGUILayout.LabelField(LC.G("ContactFormWizard_ComplementaryInformation"));
+			this.complementaryInformation = EditorGUILayout.TextArea(this.complementaryInformation, GUILayout.MaxHeight(500F));
 
 			if (this.subject == Subject.BugReport)
 			{
@@ -62,23 +65,23 @@ namespace NGToolsEditor
 					this.osInformation == false ||
 					this.hardwareInformation == false)
 				{
-					GUILayout.Label(LC.G("ContactFormWizard_BugReportRecommendation"), "CN EntryWarn");
+					EditorGUILayout.HelpBox(LC.G("ContactFormWizard_BugReportRecommendation"), MessageType.Info);
 				}
 			}
 
-			GUILayout.BeginHorizontal();
+			if (GUILayout.Button(LC.G("ContactFormWizard_PrepareTheEMail")) == true)
+				this.PrepareTheEmail();
+
+			if (Event.current.type == EventType.Repaint)
 			{
-				GUILayout.FlexibleSpace();
+				Rect	r = GUILayoutUtility.GetLastRect();
 
-				if (GUILayout.Button(LC.G("ContactFormWizard_PrepareTheEMail"), GUILayout.ExpandWidth(false)) == true)
-				{
-					this.OnWizardCreate();
-				}
+				if (r.yMax != this.position.height)
+					this.position = new Rect(this.position.x, this.position.y, this.position.width, r.yMax);
 			}
-			GUILayout.EndHorizontal();
 		}
 
-		private void	OnWizardCreate()
+		private void	PrepareTheEmail()
 		{
 			EditorUtility.DisplayDialog("", LC.G("ContactFormWizard_SupportLanguagesWarning"), LC.G("Ok"));
 

@@ -1,13 +1,14 @@
+using NGTools.Network;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[PacketLinkTo(PacketId.Scene_ClientRequestEnumData)]
-	public class ClientRequestEnumDataPacket : Packet
+	internal sealed class ClientRequestEnumDataPacket : Packet
 	{
 		public string	type;
 
-		protected	ClientRequestEnumDataPacket(ByteBuffer buffer) : base(buffer)
+		private	ClientRequestEnumDataPacket(ByteBuffer buffer) : base(buffer)
 		{
 		}
 

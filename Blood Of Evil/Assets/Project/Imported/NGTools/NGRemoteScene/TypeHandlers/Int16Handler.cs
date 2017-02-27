@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace NGTools
+namespace NGTools.NGRemoteScene
 {
 	[Priority(0)]
-	public class Int16Handler : TypeHandler
+	internal sealed class Int16Handler : TypeHandler
 	{
 		public	Int16Handler() : base(typeof(Int16))
 		{

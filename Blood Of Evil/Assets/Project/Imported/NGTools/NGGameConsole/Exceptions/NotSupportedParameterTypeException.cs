@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Reflection;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	/// <summary>
 	/// Thrown when calling GetSetInvoke on an unhandled property type.
 	/// </summary>
-	public class NotSupportedPropertyTypeException : Exception
+	internal sealed class NotSupportedPropertyTypeException : Exception
 	{
 		public readonly	PropertyInfo	type;
 

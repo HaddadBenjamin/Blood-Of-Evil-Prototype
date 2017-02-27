@@ -1,12 +1,12 @@
-﻿using NGTools;
+﻿using NGTools.NGRemoteScene;
 using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
 	[TypeDrawerFor(typeof(Rect))]
-	public class RectDrawer : TypeHandlerDrawer
+	internal sealed class RectDrawer : TypeHandlerDrawer
 	{
 		private BgColorContentAnimator	animX;
 		private BgColorContentAnimator	animY;

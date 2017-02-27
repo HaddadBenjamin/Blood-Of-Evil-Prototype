@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace NGTools
+namespace NGTools.NGGameConsole
 {
 	public class NGGameConsole : MonoBehaviour
 	{
@@ -11,7 +11,8 @@ namespace NGTools
 		{
 			Logs,
 			//CommandLine,
-			Data
+			Data,
+			Settings
 		}
 
 		public enum TerminalMode
@@ -21,10 +22,16 @@ namespace NGTools
 		}
 
 		public const float	LogTypeSquareWidth = 5F;
+		public const string	WindowStylesGroup = "<color=green>[Window Styles]</color>";
 		public const string	LogModeGroup = "<color=green>[Log Mode]</color>";
 		public const string	RawTextModeGroup = "<color=green>[Raw Text Mode]</color>";
 
-		public bool				visible;
+		private static List<NGGameConsole>	instances = new List<NGGameConsole>();
+
+		[Header("Keep game console alive between scenes.")]
+		public bool	dontDestroyOnLoad = true;
+
+		public bool				visible = false;
 		public RenderingMode	renderingMode = RenderingMode.Logs;
 		public TerminalMode		terminalMode = TerminalMode.RawText;
 
@@ -64,22 +71,28 @@ namespace NGTools
 		public GUIContent	warningLogButton;
 		[Group(NGGameConsole.LogModeGroup)]
 		public GUIContent	errorLogButton;
+		[Group(NGGameConsole.LogModeGroup)]
+		public GUIStyle		timeStyle;
+		[Group(NGGameConsole.LogModeGroup)]
+		public GUIStyle		logStyle;
 
 		[Group(NGGameConsole.LogModeGroup)]
 		public Texture2D	evenBackgroundLog;
 		[Group(NGGameConsole.LogModeGroup)]
 		public Texture2D	oddBackgroundLog;
 
+		[Group(NGGameConsole.WindowStylesGroup)]
 		public GUIStyle	titleStyle;
+		[Group(NGGameConsole.WindowStylesGroup)]
 		public GUIStyle	tabButtonStyle;
+		[Group(NGGameConsole.WindowStylesGroup)]
 		public GUIStyle	closeButtonStyle;
+		[Group(NGGameConsole.WindowStylesGroup)]
 		public GUIStyle	dataConsoleGroupStyle;
+		[Group(NGGameConsole.WindowStylesGroup)]
 		public GUIStyle	dataConsoleShortStyle;
+		[Group(NGGameConsole.WindowStylesGroup)]
 		public GUIStyle	dataConsoleFullStyle;
-		[Group(NGGameConsole.LogModeGroup)]
-		public GUIStyle	timeStyle;
-		[Group(NGGameConsole.LogModeGroup)]
-		public GUIStyle	logStyle;
 
 		private int			normalLogsCount;
 		private int			warningLogsCount;
@@ -114,6 +127,7 @@ namespace NGTools
 		private Rect	windowDragArea;
 		private Rect	titleRect;
 		private Rect	tabRect;
+		private Rect	settingsButtonRect;
 		private Rect	closeButtonRect;
 		private Rect	copyRect;
 
@@ -128,8 +142,34 @@ namespace NGTools
 
 		private bool	isScrollStickingBottom;
 
+		private Dictionary<string, List<Action>>	settings = new Dictionary<string, List<Action>>();
+
+		protected virtual void Reset()
+		{
+			GUICallback.Open(() =>
+			{
+				this.timeStyle = new GUIStyle(GUI.skin.label);
+				this.logStyle = new GUIStyle(GUI.skin.label);
+				this.titleStyle = new GUIStyle(GUI.skin.label);
+				this.tabButtonStyle = new GUIStyle(GUI.skin.button);
+				this.closeButtonStyle = new GUIStyle(GUI.skin.button);
+			});
+		}
+
 		protected virtual void	Awake()
 		{
+			if (this.logs != null)
+				return;
+
+			for (int i = 0; i < NGGameConsole.instances.Count; i++)
+			{
+				if (NGGameConsole.instances[i].GetType() == this.GetType())
+				{
+					UnityEngine.Object.Destroy(this.gameObject);
+					return;
+				}
+			}
+
 			this.logs = new List<GameLog>(this.maxLogs);
 
 			if (this.displayNormalLog == true)
@@ -168,8 +208,15 @@ namespace NGTools
 
 			this.titleRect = new Rect(10F, 0F, 150F, this.windowDragArea.height);
 			this.tabRect = new Rect(160F, 0F, 100F, this.windowDragArea.height);
-			this.closeButtonRect = new Rect(this.windowSize.width - 18F, 0F, 20F, this.windowDragArea.height);
+			this.settingsButtonRect = new Rect(this.windowSize.width - this.windowDragArea.height - this.windowDragArea.height, 0F, this.windowDragArea.height, this.windowDragArea.height);
+			this.closeButtonRect = new Rect(this.windowSize.width - this.windowDragArea.height, 0F, this.windowDragArea.height, this.windowDragArea.height);
 			this.copyRect = new Rect(5F, 0F, 100F, 16F);
+
+			if (this.dontDestroyOnLoad == true)
+			{
+				NGGameConsole.instances.Add(this);
+				UnityEngine.Object.DontDestroyOnLoad(this.transform.root.gameObject);
+			}
 		}
 
 		protected virtual void	OnDestroy()
@@ -241,14 +288,15 @@ namespace NGTools
 
 			this.titleRect.height = this.windowDragArea.height;
 			this.tabRect.height = this.windowDragArea.height;
-			this.closeButtonRect.x = this.windowSize.width - 18F;
+			this.closeButtonRect.x = this.windowSize.width - this.windowDragArea.height;
 			this.closeButtonRect.height = this.windowDragArea.height;
+			this.settingsButtonRect.x = this.closeButtonRect.x - this.windowDragArea.height;
+			this.settingsButtonRect.height = this.windowDragArea.height;
 			this.copyRect.y = this.windowSize.height - 18F;
 
 			this.windowSize = GUILayout.Window(1, this.windowSize, this.DrawOnGUI, GUIContent.none, this.windowStyle);
 		}
 
-#if UNITY_EDITOR
 		private void	OnValidate()
 		{
 			if (this.maxLogs < 1)
@@ -269,7 +317,6 @@ namespace NGTools
 			if (this.windowSize.y < 0)
 				this.windowSize.y = 0F;
 		}
-#endif
 
 		private void	DrawOnGUI(int id)
 		{
@@ -284,8 +331,19 @@ namespace NGTools
 				{
 					if (this.renderingMode == RenderingMode.Data)
 						this.renderingMode = RenderingMode.Logs;
-					else
-						this.renderingMode = this.renderingMode + 1;
+					else if (this.renderingMode == RenderingMode.Logs)
+						this.renderingMode = RenderingMode.Data;
+					else if (this.renderingMode == RenderingMode.Settings)
+						this.renderingMode = RenderingMode.Logs;
+				}
+			}
+
+			if (this.settings.Count > 0)
+			{
+				if (GUI.Button(this.settingsButtonRect, "@", this.closeButtonStyle) == true)
+				{
+					this.renderingMode = RenderingMode.Settings;
+					return;
 				}
 			}
 
@@ -360,7 +418,7 @@ namespace NGTools
 					Utility.ClipBoard = Utility.sharedBuffer.ToString();
 				}
 			}
-			else
+			else if (this.renderingMode == RenderingMode.Logs)
 			{
 				this.shortDataScrollPosition = GUILayout.BeginScrollView(this.shortDataScrollPosition);
 				{
@@ -370,8 +428,6 @@ namespace NGTools
 						{
 							if (this.dataConsole[i] != null)
 								this.dataConsole[i].ShortGUI();
-
-							GUILayout.Space(5F);
 						}
 
 						GUILayout.FlexibleSpace();
@@ -380,16 +436,18 @@ namespace NGTools
 				}
 				GUILayout.EndScrollView();
 
-				if (this.renderingMode == RenderingMode.Logs)
-				{
-					GUILayout.Space(2F);
+				GUILayout.Space(2F);
 
-					this.DrawLogs();
+				this.DrawLogs();
+			}
+			else if (this.renderingMode == RenderingMode.Settings)
+			{
+				foreach (var pair in this.settings)
+				{
+					GUILayout.Label(pair.Key, this.dataConsoleGroupStyle, GUILayout.ExpandWidth(true));
+					for (int i = 0; i < pair.Value.Count; i++)
+						pair.Value[i]();
 				}
-				//else if (this.mode == Mode.CommandLine)
-				//{
-				//	this.DrawCommandLine();
-				//}
 			}
 
 			if (this.movable == true)
@@ -410,6 +468,32 @@ namespace NGTools
 				this.renderingMode = RenderingMode.Data;
 			else
 				this.renderingMode -= 1;
+		}
+
+		public void	AddSetting(string title, Action callback)
+		{
+			List<Action>	section;
+
+			if (this.settings.TryGetValue(title, out section) == false)
+			{
+				section = new List<Action>();
+				this.settings.Add(title, section);
+			}
+
+			section.Add(callback);
+		}
+
+		public void	RemoveSetting(string title, Action callback)
+		{
+			List<Action>	section;
+
+			if (this.settings.TryGetValue(title, out section) == true)
+			{
+				section.Remove(callback);
+
+				if (section.Count == 0)
+					this.settings.Remove(title);
+			}
 		}
 
 		public void	AddGameLog(GameLog log)
@@ -631,32 +715,27 @@ namespace NGTools
 							r.width = rTotal.width - r.x;
 							r.height = logStyle.CalcHeight(new GUIContent(this.logs[i].condition), r.width);
 							if (GUI.Button(r, this.logs[i].condition, logStyle) == true)
-							{
 								this.logs[i].opened = false;
-							}
 							r.y += r.height;
 
 							r.height = logStyle.CalcHeight(new GUIContent(this.logs[i].stackTrace), r.width);
 							if (GUI.Button(r, this.logs[i].stackTrace, logStyle) == true)
-							{
 								this.logs[i].opened = false;
-							}
 						}
 						else
 						{
 							r.width = rTotal.width - r.x;
 							r.height = logStyle.CalcHeight(new GUIContent(this.logs[i].firstLine), r.width);
 							if (GUI.Button(r, this.logs[i].firstLine, logStyle) == true)
-							{
 								this.logs[i].opened = true;
-							}
 						}
 
 						r.y += r.height;
-					
+
 						this.collapseContent.text = "(" + this.logs[i].count + ")";
-						r.width = GUI.skin.label.CalcSize(this.collapseContent).x;
-						r.height = GUI.skin.label.CalcSize(this.collapseContent).y;
+						Vector2	size = GUI.skin.label.CalcSize(this.collapseContent);
+						r.width = size.x;
+						r.height = size.y;
 						r.x = rTotal.width - scrollOn - NGGameConsole.LogTypeSquareWidth - r.width;
 						r.y -= r.height;
 						GUI.Label(r, this.collapseContent.text);

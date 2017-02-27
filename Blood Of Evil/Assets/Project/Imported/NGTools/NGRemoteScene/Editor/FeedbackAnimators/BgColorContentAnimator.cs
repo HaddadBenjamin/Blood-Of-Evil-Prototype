@@ -2,9 +2,9 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGRemoteScene
 {
-	public class BgColorContentAnimator : ConsoleSettingsEditor.Timer
+	public sealed class BgColorContentAnimator : GUITimer
 	{
 		private BgColorContentRestorer	restorer;
 

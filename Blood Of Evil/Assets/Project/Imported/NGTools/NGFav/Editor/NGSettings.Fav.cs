@@ -1,4 +1,5 @@
 ﻿using NGTools;
+using NGToolsEditor.NGFav;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,7 +27,7 @@ namespace NGToolsEditor
 			public EventModifiers	deleteModifiers = (EventModifiers)((int)(EventModifiers.Control | EventModifiers.Shift) << 1);
 
 			[HideInInspector]
-			public List<NGFavWindow.Favorites>	favorites = new List<NGFavWindow.Favorites>();
+			public List<Favorites>	favorites = new List<Favorites>();
 		}
 		public FavSettings	fav = new FavSettings();
 	}

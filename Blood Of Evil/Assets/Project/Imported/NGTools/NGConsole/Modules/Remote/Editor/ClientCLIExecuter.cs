@@ -1,8 +1,10 @@
-﻿using NGTools;
+﻿using NGTools.Network;
+using NGTools.NGConsole;
+using NGTools.NGGameConsole;
 
-namespace NGToolsEditor
+namespace NGToolsEditor.NGConsole
 {
-	public class ClientCLIExecuter : PacketExecuter
+	internal sealed class ClientCLIExecuter : PacketExecuter
 	{
 		private RemoteModule	logClientModule;
 
@@ -81,9 +83,7 @@ namespace NGToolsEditor
 				if (this.logClientModule.pendingCommands[i].id == serverSendCommandResponse.requestId)
 				{
 					if (serverSendCommandResponse.returnValue == ExecResult.Success)
-					{
 						this.logClientModule.pendingCommands[i].row.result = serverSendCommandResponse.response;
-					}
 					else
 					{
 						this.logClientModule.pendingCommands[i].row.error = serverSendCommandResponse.response;
