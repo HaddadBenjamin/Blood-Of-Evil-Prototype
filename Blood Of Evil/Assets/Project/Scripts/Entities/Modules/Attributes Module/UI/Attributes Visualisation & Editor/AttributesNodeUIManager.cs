@@ -54,7 +54,7 @@ namespace BloodOfEvil.Entities.Modules.Attributes.UI
         /// <param name="attributeSubCategory"></param>
         private void CreateAndInitializeAttributeNodeUI(EntityAttributes entityAttribute, string attributeSubCategory)
         {
-            GameObject attributeNodeGameobject = this.pool.AddObjectInPool(this.attributeNodeUIContentTransform);
+            GameObject attributeNodeGameobject = this.pool.AddResponsiveObjectInPool(this.attributeNodeUIContentTransform);
 
             AttributeNodeUI attributeNodeUIScript = attributeNodeGameobject.GetComponent<AttributeNodeUI>();
 

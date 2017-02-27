@@ -99,7 +99,7 @@ namespace BloodOfEvil.Player.Services.Language.UI
 
             for (int index = 0; index < defaultLanguageCategoryTexts.Length; index++)
             {
-                Transform languageNodeUITransform = this.pool.AddObjectInPool(this.languageUINodeContentTransform).transform;
+                Transform languageNodeUITransform = this.pool.AddResponsiveObjectInPool(this.languageUINodeContentTransform).transform;
 
                 languageNodeUITransform.FindChild("ID Text").GetComponent<Text>().text = defaultLanguageCategoryTexts[index];
 

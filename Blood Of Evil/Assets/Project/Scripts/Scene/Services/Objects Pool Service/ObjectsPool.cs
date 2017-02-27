@@ -228,14 +228,27 @@ namespace BloodOfEvil.Scene.Services.ObjectPool
         /// <summary>
         /// Ajoute un objet dans la pool et lui défini le parent "parent".
         /// </summary>
-        /// <param name="parent"></param>
-        /// <returns></returns>
         public GameObject AddObjectInPool(Transform parent)
         {
             GameObject objectToAdd = this.AddObjectInPool(Vector3.zero, Vector3.zero, parent);
 
             return objectToAdd;
         }
+
+        /// <summary>
+        /// Gère la responsivité d'un objet d'une pool.
+        /// </summary>
+        public GameObject AddResponsiveObjectInPool(Transform parent)
+        {
+            GameObject objectToAdd = this.AddObjectInPool(Vector3.zero, Vector3.zero, parent);
+
+            RectTransform objectToAddRectTransform= objectToAdd.GetComponent<RectTransform>();
+            objectToAddRectTransform.localPosition = Vector3.zero;
+            objectToAddRectTransform.localScale = Vector3.one;
+
+            return objectToAdd;
+        }
+
 
         public GameObject AddObjectInPool(Vector3 position)
         {
