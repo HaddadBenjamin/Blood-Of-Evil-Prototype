@@ -5,6 +5,7 @@ namespace BloodOfEvil.Scene.Services.References
 {
     using Helpers;
     using ObjectInScene;
+    using Extensions;
 
     [System.Serializable]
     public sealed class PrefabReferencesService : AInitializableComponent
@@ -59,12 +60,27 @@ namespace BloodOfEvil.Scene.Services.References
             return newObject;
         }
 
-        public GameObject Instantiate(string gameobjectName, Transform parent, float timeToDestroy = 0.0f)
+        public GameObject InstantiateResponsive(string gameobjectName,
+            Transform parent,
+            float timeToDestroy = 0.0f)
+        {
+            GameObject newObject = this.Instantiate(gameobjectName, parent, timeToDestroy);
+
+            newObject.GetComponent<RectTransform>().ResetPositionAndScaleForResponsivity();
+
+
+            return newObject;
+        }
+
+        public GameObject Instantiate(string gameobjectName, Transform parent, float timeToDestroy = 0.0f, bool responsive = false)
         {
             GameObject newObject = this.Instantiate(gameobjectName);
 
             newObject.transform.SetParent(parent);
             newObject.transform.localEulerAngles = newObject.transform.localPosition = Vector3.zero;
+
+            if (responsive)
+                newObject.transform.localScale = Vector3.one;
 
             if (timeToDestroy > 0.0f)
                 Destroy(newObject, timeToDestroy);

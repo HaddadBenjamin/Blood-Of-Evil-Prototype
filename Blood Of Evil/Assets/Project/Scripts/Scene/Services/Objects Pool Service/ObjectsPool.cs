@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using BloodOfEvil.Extensions;
 using UnityEngine;
 
 namespace BloodOfEvil.Scene.Services.ObjectPool
@@ -242,9 +243,7 @@ namespace BloodOfEvil.Scene.Services.ObjectPool
         {
             GameObject objectToAdd = this.AddObjectInPool(Vector3.zero, Vector3.zero, parent);
 
-            RectTransform objectToAddRectTransform= objectToAdd.GetComponent<RectTransform>();
-            objectToAddRectTransform.localPosition = Vector3.zero;
-            objectToAddRectTransform.localScale = Vector3.one;
+            objectToAdd.GetComponent<RectTransform>().ResetPositionAndScaleForResponsivity();
 
             return objectToAdd;
         }

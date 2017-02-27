@@ -68,7 +68,7 @@ namespace BloodOfEvil.Player.Services.Keys.UI
                     Color.white;
             }
         }
-        #endregion
+        #endregion`
 
         #region Unity Behaviour
         void Update()

@@ -29,7 +29,7 @@ namespace BloodOfEvil.Player.Services.Language.UI
         {
             Array.ForEach(EnumerationHelper.EnumerationToEnumerationValuesArray<ELanguageCategory>(), languageCategory =>
             {
-                PlayerServicesAndModulesContainer.Instance.PrefabReferencesService.Instantiate("Language Category Button", this.myTransform).
+                PlayerServicesAndModulesContainer.Instance.PrefabReferencesService.Instantiate("Language Category Button", this.myTransform, responsive:true).
                     GetComponent<LanguageCategoryButton>().
                     Initialize(languageCategory);
             });

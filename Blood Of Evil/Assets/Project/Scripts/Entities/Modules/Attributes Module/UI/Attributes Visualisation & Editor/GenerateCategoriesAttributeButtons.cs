@@ -27,7 +27,7 @@ namespace BloodOfEvil.Entities.Modules.Attributes.UI
         {
             for (int i = 0; i < EnumerationHelper.EnumerationToEnumerationValuesArray<EEntityCategoriesAttributes>().Length; i++)
             {
-                PlayerServicesAndModulesContainer.Instance.PrefabReferencesService.Instantiate("Category Attribute Button", this.myTransform).
+                PlayerServicesAndModulesContainer.Instance.PrefabReferencesService.Instantiate("Category Attribute Button", this.myTransform, responsive: true).
                     GetComponent<CategoryAttributeButton>().
                     Initialize(EnumerationHelper.EnumerationToEnumerationValuesArray<EEntityCategoriesAttributes>()[i]);
             }

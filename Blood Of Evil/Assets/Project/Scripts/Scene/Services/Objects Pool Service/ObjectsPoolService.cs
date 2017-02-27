@@ -8,6 +8,7 @@ namespace BloodOfEvil.Scene.Services.ObjectPool
 {
     using Helpers;
     using ObjectInScene;
+    using  Extensions;
 
     /// <summary>
     /// Permet d'éviter de faire des news et des deletes sur des gameobjects en run-time.

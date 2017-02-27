@@ -6,6 +6,15 @@ namespace BloodOfEvil.Extensions
     public static class RectTransformExtension
     {
         /// <summary>
+        /// Replace l'objet en position 0 et remet sa taille à 1.
+        /// </summary>
+        public static void ResetPositionAndScaleForResponsivity(this RectTransform rectTransform)
+        {
+            rectTransform.localPosition = Vector3.zero;
+            rectTransform.localScale = Vector3.one;
+        }
+
+        /// <summary>
         /// Modifie la position locale d'un rectTransform.
         /// </summary>
         public static void SetPosition(this RectTransform rectTransform, Vector3 position)
