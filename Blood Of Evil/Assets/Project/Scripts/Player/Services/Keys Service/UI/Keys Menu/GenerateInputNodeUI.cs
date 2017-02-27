@@ -98,11 +98,20 @@ namespace BloodOfEvil.Player.Services.Keys.UI
 
             this.inputDataConfigurations = inputDataConfigurations;
 
-            for (int inputDataConfigurationIndex = 0; inputDataConfigurationIndex < inputDataConfigurations.Length; inputDataConfigurationIndex++)
-                pool.AddObjectInPool(this.myTransform).GetComponent<InputNodeUI>().Initialize(
+            for (int inputDataConfigurationIndex = 0; inputDataConfigurationIndex < inputDataConfigurations.Length;
+                inputDataConfigurationIndex++)
+            {
+                GameObject keyLine = pool.AddObjectInPool(this.myTransform);
+
+                RectTransform keyLineRectTransform = keyLine.GetComponent<RectTransform>();
+                keyLineRectTransform.localPosition = Vector3.zero;
+                keyLineRectTransform.localScale = Vector3.one;
+
+                keyLine.GetComponent<InputNodeUI>().Initialize(
                     inputDataConfigurations,
                     inputDataConfigurationIndex,
                     Array.Exists(this.inputsThatCantBeModifiable, input => input == EnumerationHelper.IntegerToEnumeration<EPlayerInput>(inputDataConfigurationIndex)));
+            }
         }
 
         private IEnumerator GenerateInputAtEndFrame()
