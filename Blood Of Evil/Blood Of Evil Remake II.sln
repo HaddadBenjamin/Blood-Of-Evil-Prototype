@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blood Of Evil Remake II.CSharp.Plugins", "Blood Of Evil Remake II.CSharp.Plugins.csproj", "{22D46625-F4B0-F13E-4571-00F2824E07A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blood Of Evil Remake II.CSharp", "Blood Of Evil Remake II.CSharp.csproj", "{BFF2C39C-8E91-F354-223C-0356EC10F004}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blood Of Evil Remake II.CSharp.Editor.Plugins", "Blood Of Evil Remake II.CSharp.Editor.Plugins.csproj", "{EB0A912B-5C97-49DE-4518-553BE793A893}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blood Of Evil Remake II.CSharp.Editor", "Blood Of Evil Remake II.CSharp.Editor.csproj", "{FDC7AF41-341B-28FA-B5F3-C883E0F2A25B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{22D46625-F4B0-F13E-4571-00F2824E07A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22D46625-F4B0-F13E-4571-00F2824E07A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22D46625-F4B0-F13E-4571-00F2824E07A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22D46625-F4B0-F13E-4571-00F2824E07A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFF2C39C-8E91-F354-223C-0356EC10F004}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFF2C39C-8E91-F354-223C-0356EC10F004}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFF2C39C-8E91-F354-223C-0356EC10F004}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFF2C39C-8E91-F354-223C-0356EC10F004}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB0A912B-5C97-49DE-4518-553BE793A893}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB0A912B-5C97-49DE-4518-553BE793A893}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB0A912B-5C97-49DE-4518-553BE793A893}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB0A912B-5C97-49DE-4518-553BE793A893}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDC7AF41-341B-28FA-B5F3-C883E0F2A25B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDC7AF41-341B-28FA-B5F3-C883E0F2A25B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDC7AF41-341B-28FA-B5F3-C883E0F2A25B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDC7AF41-341B-28FA-B5F3-C883E0F2A25B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
