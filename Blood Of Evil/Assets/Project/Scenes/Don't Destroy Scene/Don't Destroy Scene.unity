@@ -1444,7 +1444,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 58159734}
   m_HandleRect: {fileID: 608597247}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -2894,7 +2894,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -13.7500725, y: 0.0040130615}
+  m_AnchoredPosition: {x: -13.7500725, y: 0.0038452148}
   m_SizeDelta: {x: -715.6501, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &135443500
@@ -3571,6 +3571,31 @@ Prefab:
     - target: {fileID: 114000013493230626, guid: 9a81c3f741f5b3a4781084131baff8d6,
         type: 2}
       propertyPath: updateLanguage
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000012406975756, guid: 9a81c3f741f5b3a4781084131baff8d6,
+        type: 2}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000012406975756, guid: 9a81c3f741f5b3a4781084131baff8d6,
+        type: 2}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000012406975756, guid: 9a81c3f741f5b3a4781084131baff8d6,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: -0.000015258789
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000012406975756, guid: 9a81c3f741f5b3a4781084131baff8d6,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -62.00008
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000012406975756, guid: 9a81c3f741f5b3a4781084131baff8d6,
+        type: 2}
+      propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -12063,7 +12088,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2073835862}
   m_HandleRect: {fileID: 2073835861}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -14242,7 +14267,7 @@ CanvasGroup:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 714770276}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
@@ -14724,6 +14749,10 @@ Prefab:
         type: 2}
       propertyPath: updateLanguage
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000012730756690, guid: 9a81c3f741f5b3a4781084131baff8d6, type: 2}
+      propertyPath: m_Name
+      value: Language Dropdown
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9a81c3f741f5b3a4781084131baff8d6, type: 2}
@@ -33029,7 +33058,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 646849899}
   m_HandleRect: {fileID: 646849898}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -36934,7 +36963,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 96552106}
   m_HandleRect: {fileID: 96552105}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

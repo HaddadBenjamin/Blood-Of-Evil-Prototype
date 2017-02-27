@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using BloodOfEvil.Extensions;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -80,6 +81,7 @@ namespace BloodOfEvil.Utilities.UI
         {
             GameObject dropdownElementGameObject = PlayerServicesAndModulesContainer.Instance.PrefabReferencesService.Instantiate(this.dropdownElementPrefabName, contentRectTransform);
 
+            dropdownElementGameObject.GetComponent<RectTransform>().ResetPositionAndScaleForResponsivity();
             dropdownElementGameObject.GetComponent<UnityEngine.UI.LayoutElement>().minHeight = this.dropdownElementMinSize;
 
             CustomDropdownElement customDropdownElement = dropdownElementGameObject.GetComponent<CustomDropdownElement>();
