@@ -150,11 +150,11 @@ namespace BloodOfEvil.Helpers
 		    .ToArray();
 	    }
 
-	    /// <summary>
-	    /// Affiche tous les fichiers d'un répertoire "directoryPath" de manière récursive et d'une des extensions de "extensions"  et
-	    /// ne contenant pas un des filtres de "exclusiveIgnoreFilters".
-	    /// </summary>
-	    public static void ListAllFilesRecursivelyInADirectory(
+        /// <summary>
+        /// Affiche tous les fichiers d'un répertoire "directoryPath" de manière récursive et d'une des extensions de "extensions"  et
+        /// ne contenant pas un des filtres de "exclusiveIgnoreFilters".
+        /// </summary>
+        public static void ListAllFilesRecursivelyInADirectory(
 		string directoryPath,
 		string[] extensions,
 		string[] exclusiveIgnoreFilters)
@@ -197,9 +197,9 @@ namespace BloodOfEvil.Helpers
 	    /// <summary>
 	    /// Renvoie le nom de tous les sous répertoires du répertoire "repositoryPath".
 	    /// </summary>
-	    public static string[] GetSubDirectories(string repositoryPath)
+	    public static string[] GetSubDirectories(string directoryPath)
 	    {
-		return Directory.GetDirectories(repositoryPath);
+		    return Directory.GetDirectories(directoryPath);
 	    }
 
 	    /// <summary>

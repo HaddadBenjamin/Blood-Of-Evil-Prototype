@@ -50,17 +50,16 @@ namespace BloodOfEvil.Helpers
         {
             SceneServicesContainer.Instance.SceneStateModule.Reset();
 
-            /// Réinitialise la taille des barres de vie et évite un bug comme quoi les barres de vie réaparaisait plusieurs fois.
-            //foreach (var crados in SceneServicesContainer.Instance.ObjectsPoolService.GetPool("HealthBarExample").GetGameobjects())
-            //    crados.transform.localScale = Vector3.one;
-            //SceneServicesContainer.Instance.ObjectsPoolService.RemoveAllObjectInPool("HealthBarExample");
-            SceneServicesContainer.Instance.GameObjectInSceneReferencesService.Get("[UI] Enemies Health Bars").transform.DestroyAllChilds();
-
             SceneServicesContainer.Instance.AudioReferencesArraysService.DisalbleAllSoundFromMusicCategory();
 
-            if (loadSceneIfDefaultScene || 
+            if (loadSceneIfDefaultScene ||
                 !DoesCurrentSceneIsConfigurationScene())
+            {
+                // Détruit les barres de vies.
+                SceneServicesContainer.Instance.GameObjectInSceneReferencesService.Get("[UI] Enemies Health Bars").transform.DestroyAllChilds();
+
                 SceneManager.LoadScene(sceneName);
+            }
 
             // Permet de vider les références valant null du tas de façon explicite.
             System.GC.Collect();

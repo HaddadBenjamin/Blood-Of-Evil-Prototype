@@ -221,6 +221,13 @@ namespace BloodOfEvil.Player.Services.Configuration
                 EnemiesDirectoryName,
                 enemySaveIndex);
         }
+
+        public string GetEnemyDirectoryName()
+        {
+            return string.Format("{0}/{1}",
+                this.GetCurrentSceneDirectory(),
+                EnemiesDirectoryName);
+        }
         #endregion
     }
 }

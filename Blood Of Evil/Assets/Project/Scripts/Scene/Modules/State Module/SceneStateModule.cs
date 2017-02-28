@@ -134,13 +134,33 @@ namespace BloodOfEvil.Scene.Modules.State
             // Attend que les ennemis se soient iniialiser et que le scenestate est bien initialisé l'index de chaque ennemis puis charge leurs données.
             yield return new WaitForSeconds(0.25f);
 
-            for (int enemyIndex = 0; enemyIndex < this.enemies.Count; enemyIndex++)
+            int enemyIndex = 0;
+            foreach (
+                string subDirectoryName in
+                FileSystemHelper.GetSubDirectories(
+                   UnityFileSystemHelper.GetCrossPlatformAndAdaptativePath(
+                    fileName: SceneServicesContainer.Instance.FileSystemConfiguration.GetEnemyDirectoryName(),
+                    isReplicatedNextTheBuild: false,
+                    addExtension: false)))
             {
-                if (
-                    SerializerHelper.DoesSaveDirectoryExists(
-                        SceneServicesContainer.Instance.FileSystemConfiguration.GetEnemyDirectory(enemyIndex)))
-                    ((ISerializable) this.enemies[enemyIndex].GetComponent<EnemyServicesAndModulesContainer>()).Load();
+                EnemyServicesAndModulesContainer enemyServiceContainer =
+                    this.enemies[enemyIndex].GetComponent<EnemyServicesAndModulesContainer>();
+
+                Debug.LogFormat("path : {0}, saveIndex : {1}", subDirectoryName, enemyServiceContainer.SaveIndex);
+                enemyServiceContainer.SaveIndex = Int32.Parse(subDirectoryName.Substring(subDirectoryName.LastIndexOf('\\') + 1, subDirectoryName.Length - subDirectoryName.LastIndexOf('\\') - 1));
+
+                Debug.LogFormat("path : {0}, saveIndex : {1}", subDirectoryName, enemyServiceContainer.SaveIndex);
+                ((ISerializable)enemyServiceContainer).Load();
+
+                ++enemyIndex;
             }
+            //for (int enemyIndex = 0; enemyIndex < this.enemies.Count; enemyIndex++)
+            //{
+            //    if (
+            //        SerializerHelper.DoesSaveDirectoryExists(
+            //            SceneServicesContainer.Instance.FileSystemConfiguration.GetEnemyDirectory(enemyIndex)))
+            //        ((ISerializable) this.enemies[enemyIndex].GetComponent<EnemyServicesAndModulesContainer>()).Load();
+            //}
         }
 
         void ISerializable.Save()
