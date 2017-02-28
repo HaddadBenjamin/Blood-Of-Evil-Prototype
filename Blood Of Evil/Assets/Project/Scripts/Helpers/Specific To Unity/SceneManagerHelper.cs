@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Runtime.CompilerServices;
+using BloodOfEvil.Extensions;
 using UnityEngine.SceneManagement;
 
 namespace BloodOfEvil.Helpers
@@ -52,7 +53,9 @@ namespace BloodOfEvil.Helpers
             /// Réinitialise la taille des barres de vie et évite un bug comme quoi les barres de vie réaparaisait plusieurs fois.
             //foreach (var crados in SceneServicesContainer.Instance.ObjectsPoolService.GetPool("HealthBarExample").GetGameobjects())
             //    crados.transform.localScale = Vector3.one;
-            SceneServicesContainer.Instance.ObjectsPoolService.RemoveAllObjectInPool("HealthBarExample");
+            //SceneServicesContainer.Instance.ObjectsPoolService.RemoveAllObjectInPool("HealthBarExample");
+            SceneServicesContainer.Instance.GameObjectInSceneReferencesService.Get("[UI] Enemies Health Bars").transform.DestroyAllChilds();
+
             SceneServicesContainer.Instance.AudioReferencesArraysService.DisalbleAllSoundFromMusicCategory();
 
             if (loadSceneIfDefaultScene || 
