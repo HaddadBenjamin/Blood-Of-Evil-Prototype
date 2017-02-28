@@ -58,7 +58,7 @@ namespace BloodOfEvil.Player.Modules.Attributes
             base.InitialzeAttributes();
 
             base.GetAttribute(EEntityCategoriesAttributes.Attack, "Attack Speed Percentage").AtStart.Value = 150.0f;
-            base.GetAttribute(EEntityCategoriesAttributes.Attack, "Attack Range").Initialize("Attack Range", 0.5f);
+            base.GetAttribute(EEntityCategoriesAttributes.Attack, "Attack Range").Initialize("Attack Range", 1.0f);
         }
 
         public override void CreateCallbacksAttributes()
