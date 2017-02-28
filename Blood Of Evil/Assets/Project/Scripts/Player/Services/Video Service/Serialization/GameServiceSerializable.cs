@@ -11,6 +11,10 @@
         public float AutoSaveEveryXSeconds;
         #endregion
 
+        #region Constructor
+        public GameServiceSerializable() { }
+        #endregion
+
         #region Save & Load Behaviour.
         /// <summary>
         /// Save.

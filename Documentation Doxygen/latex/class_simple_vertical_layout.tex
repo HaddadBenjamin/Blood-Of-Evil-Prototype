@@ -1,0 +1,213 @@
+\hypertarget{class_simple_vertical_layout}{}\section{Simple\+Vertical\+Layout Class Reference}
+\label{class_simple_vertical_layout}\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+
+
+Cette classe vient de Manzalab. Vertical layout that doesn\textquotesingle{}t change its children size  
+
+
+
+
+Inheritance diagram for Simple\+Vertical\+Layout\+:
+% FIG 0
+
+
+Collaboration diagram for Simple\+Vertical\+Layout\+:
+% FIG 1
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{class_simple_vertical_layout_a7c7f78ba7afa7d7f616bd5dbad9add09}{Force\+Refresh} ()
+\begin{DoxyCompactList}\small\item\em Forces the layout to compute \end{DoxyCompactList}\item 
+override void \hyperlink{class_simple_vertical_layout_ab051655845a7b1cde35991eadebeb66b}{Calculate\+Layout\+Input\+Vertical} ()
+\begin{DoxyCompactList}\small\item\em Sets the layout height \end{DoxyCompactList}\item 
+override void \hyperlink{class_simple_vertical_layout_a076d9de03a2bedd0369f7fbf97d0dcde}{Set\+Layout\+Horizontal} ()
+\begin{DoxyCompactList}\small\item\em Does nothing \end{DoxyCompactList}\item 
+override void \hyperlink{class_simple_vertical_layout_a72ce969a47a265c22f5b8fd6772176cc}{Set\+Layout\+Vertical} ()
+\begin{DoxyCompactList}\small\item\em Sets the children position \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{class_simple_vertical_layout_ac7e7b55272bbe3968b87392a6f313d31}{Arrange\+Height} = false
+\begin{DoxyCompactList}\small\item\em If true \+: changes the height of the layout \end{DoxyCompactList}\item 
+bool \hyperlink{class_simple_vertical_layout_ab2e42919543ab91be8672e129fcd649f}{Minimum\+Layout\+Height\+From\+Parent}
+\item 
+float \hyperlink{class_simple_vertical_layout_adf920fc252e7d6450220edbf8ed32a81}{Minimum\+Layout\+Height}
+\item 
+float \hyperlink{class_simple_vertical_layout_a91ac3fb56d8ffb4f2377e1e28b73b845}{Minimum\+Element\+Height}
+\item 
+bool \hyperlink{class_simple_vertical_layout_a08b5cd713452d59ca8d38b504d2891d6}{Check\+Update} = false
+\item 
+float \hyperlink{class_simple_vertical_layout_a5c23f05dce287e2bee4189a31dbf0e78}{spacing} = 0
+\begin{DoxyCompactList}\small\item\em Space between two children \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+Rect\+Transform \hyperlink{class_simple_vertical_layout_ad795359277af9d73e622eeaa9feb1b56}{rt}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Returns the layout rect\+Transform \end{DoxyCompactList}\item 
+override float \hyperlink{class_simple_vertical_layout_a6a2d31b8f453ebb0c301f3ff5dfe985f}{min\+Height}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em The minimum height this layout element may be allocated. \end{DoxyCompactList}\item 
+override float \hyperlink{class_simple_vertical_layout_a902b0211bd997ab57b046d814de46c78}{preferred\+Height}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em The preferred height this layout element should be allocated if there is sufficient space. (0) \end{DoxyCompactList}\item 
+override float \hyperlink{class_simple_vertical_layout_a0f9f9d3c7f50f644a7db913b693a1563}{flexible\+Height}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em The extra relative height this layout element should be allocated if there is additional available space. (0) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Events}
+\begin{DoxyCompactItemize}
+\item 
+Action$<$ float $>$ \hyperlink{class_simple_vertical_layout_a3e176b9b3570154346427aa218f8eae8}{Resized}
+\begin{DoxyCompactList}\small\item\em Called when the height of the layout changed \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Cette classe vient de Manzalab. Vertical layout that doesn\textquotesingle{}t change its children size 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_simple_vertical_layout_ab051655845a7b1cde35991eadebeb66b}\label{class_simple_vertical_layout_ab051655845a7b1cde35991eadebeb66b}} 
+\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}!Calculate\+Layout\+Input\+Vertical@{Calculate\+Layout\+Input\+Vertical}}
+\index{Calculate\+Layout\+Input\+Vertical@{Calculate\+Layout\+Input\+Vertical}!Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+\subsubsection{\texorpdfstring{Calculate\+Layout\+Input\+Vertical()}{CalculateLayoutInputVertical()}}
+{\footnotesize\ttfamily override void Simple\+Vertical\+Layout.\+Calculate\+Layout\+Input\+Vertical (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the layout height 
+
+\mbox{\Hypertarget{class_simple_vertical_layout_a7c7f78ba7afa7d7f616bd5dbad9add09}\label{class_simple_vertical_layout_a7c7f78ba7afa7d7f616bd5dbad9add09}} 
+\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}!Force\+Refresh@{Force\+Refresh}}
+\index{Force\+Refresh@{Force\+Refresh}!Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+\subsubsection{\texorpdfstring{Force\+Refresh()}{ForceRefresh()}}
+{\footnotesize\ttfamily void Simple\+Vertical\+Layout.\+Force\+Refresh (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Forces the layout to compute 
+
+\mbox{\Hypertarget{class_simple_vertical_layout_a076d9de03a2bedd0369f7fbf97d0dcde}\label{class_simple_vertical_layout_a076d9de03a2bedd0369f7fbf97d0dcde}} 
+\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}!Set\+Layout\+Horizontal@{Set\+Layout\+Horizontal}}
+\index{Set\+Layout\+Horizontal@{Set\+Layout\+Horizontal}!Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+\subsubsection{\texorpdfstring{Set\+Layout\+Horizontal()}{SetLayoutHorizontal()}}
+{\footnotesize\ttfamily override void Simple\+Vertical\+Layout.\+Set\+Layout\+Horizontal (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Does nothing 
+
+\mbox{\Hypertarget{class_simple_vertical_layout_a72ce969a47a265c22f5b8fd6772176cc}\label{class_simple_vertical_layout_a72ce969a47a265c22f5b8fd6772176cc}} 
+\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}!Set\+Layout\+Vertical@{Set\+Layout\+Vertical}}
+\index{Set\+Layout\+Vertical@{Set\+Layout\+Vertical}!Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+\subsubsection{\texorpdfstring{Set\+Layout\+Vertical()}{SetLayoutVertical()}}
+{\footnotesize\ttfamily override void Simple\+Vertical\+Layout.\+Set\+Layout\+Vertical (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the children position 
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_simple_vertical_layout_ac7e7b55272bbe3968b87392a6f313d31}\label{class_simple_vertical_layout_ac7e7b55272bbe3968b87392a6f313d31}} 
+\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}!Arrange\+Height@{Arrange\+Height}}
+\index{Arrange\+Height@{Arrange\+Height}!Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+\subsubsection{\texorpdfstring{Arrange\+Height}{ArrangeHeight}}
+{\footnotesize\ttfamily bool Simple\+Vertical\+Layout.\+Arrange\+Height = false}
+
+
+
+If true \+: changes the height of the layout 
+
+\mbox{\Hypertarget{class_simple_vertical_layout_a08b5cd713452d59ca8d38b504d2891d6}\label{class_simple_vertical_layout_a08b5cd713452d59ca8d38b504d2891d6}} 
+\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}!Check\+Update@{Check\+Update}}
+\index{Check\+Update@{Check\+Update}!Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+\subsubsection{\texorpdfstring{Check\+Update}{CheckUpdate}}
+{\footnotesize\ttfamily bool Simple\+Vertical\+Layout.\+Check\+Update = false}
+
+\mbox{\Hypertarget{class_simple_vertical_layout_a91ac3fb56d8ffb4f2377e1e28b73b845}\label{class_simple_vertical_layout_a91ac3fb56d8ffb4f2377e1e28b73b845}} 
+\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}!Minimum\+Element\+Height@{Minimum\+Element\+Height}}
+\index{Minimum\+Element\+Height@{Minimum\+Element\+Height}!Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+\subsubsection{\texorpdfstring{Minimum\+Element\+Height}{MinimumElementHeight}}
+{\footnotesize\ttfamily float Simple\+Vertical\+Layout.\+Minimum\+Element\+Height}
+
+\mbox{\Hypertarget{class_simple_vertical_layout_adf920fc252e7d6450220edbf8ed32a81}\label{class_simple_vertical_layout_adf920fc252e7d6450220edbf8ed32a81}} 
+\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}!Minimum\+Layout\+Height@{Minimum\+Layout\+Height}}
+\index{Minimum\+Layout\+Height@{Minimum\+Layout\+Height}!Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+\subsubsection{\texorpdfstring{Minimum\+Layout\+Height}{MinimumLayoutHeight}}
+{\footnotesize\ttfamily float Simple\+Vertical\+Layout.\+Minimum\+Layout\+Height}
+
+\mbox{\Hypertarget{class_simple_vertical_layout_ab2e42919543ab91be8672e129fcd649f}\label{class_simple_vertical_layout_ab2e42919543ab91be8672e129fcd649f}} 
+\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}!Minimum\+Layout\+Height\+From\+Parent@{Minimum\+Layout\+Height\+From\+Parent}}
+\index{Minimum\+Layout\+Height\+From\+Parent@{Minimum\+Layout\+Height\+From\+Parent}!Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+\subsubsection{\texorpdfstring{Minimum\+Layout\+Height\+From\+Parent}{MinimumLayoutHeightFromParent}}
+{\footnotesize\ttfamily bool Simple\+Vertical\+Layout.\+Minimum\+Layout\+Height\+From\+Parent}
+
+\mbox{\Hypertarget{class_simple_vertical_layout_a5c23f05dce287e2bee4189a31dbf0e78}\label{class_simple_vertical_layout_a5c23f05dce287e2bee4189a31dbf0e78}} 
+\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}!spacing@{spacing}}
+\index{spacing@{spacing}!Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+\subsubsection{\texorpdfstring{spacing}{spacing}}
+{\footnotesize\ttfamily float Simple\+Vertical\+Layout.\+spacing = 0}
+
+
+
+Space between two children 
+
+
+
+\subsection{Property Documentation}
+\mbox{\Hypertarget{class_simple_vertical_layout_a0f9f9d3c7f50f644a7db913b693a1563}\label{class_simple_vertical_layout_a0f9f9d3c7f50f644a7db913b693a1563}} 
+\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}!flexible\+Height@{flexible\+Height}}
+\index{flexible\+Height@{flexible\+Height}!Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+\subsubsection{\texorpdfstring{flexible\+Height}{flexibleHeight}}
+{\footnotesize\ttfamily override float Simple\+Vertical\+Layout.\+flexible\+Height\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+The extra relative height this layout element should be allocated if there is additional available space. (0) 
+
+\mbox{\Hypertarget{class_simple_vertical_layout_a6a2d31b8f453ebb0c301f3ff5dfe985f}\label{class_simple_vertical_layout_a6a2d31b8f453ebb0c301f3ff5dfe985f}} 
+\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}!min\+Height@{min\+Height}}
+\index{min\+Height@{min\+Height}!Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+\subsubsection{\texorpdfstring{min\+Height}{minHeight}}
+{\footnotesize\ttfamily override float Simple\+Vertical\+Layout.\+min\+Height\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+The minimum height this layout element may be allocated. 
+
+\mbox{\Hypertarget{class_simple_vertical_layout_a902b0211bd997ab57b046d814de46c78}\label{class_simple_vertical_layout_a902b0211bd997ab57b046d814de46c78}} 
+\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}!preferred\+Height@{preferred\+Height}}
+\index{preferred\+Height@{preferred\+Height}!Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+\subsubsection{\texorpdfstring{preferred\+Height}{preferredHeight}}
+{\footnotesize\ttfamily override float Simple\+Vertical\+Layout.\+preferred\+Height\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+The preferred height this layout element should be allocated if there is sufficient space. (0) 
+
+\mbox{\Hypertarget{class_simple_vertical_layout_ad795359277af9d73e622eeaa9feb1b56}\label{class_simple_vertical_layout_ad795359277af9d73e622eeaa9feb1b56}} 
+\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}!rt@{rt}}
+\index{rt@{rt}!Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+\subsubsection{\texorpdfstring{rt}{rt}}
+{\footnotesize\ttfamily Rect\+Transform Simple\+Vertical\+Layout.\+rt\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+Returns the layout rect\+Transform 
+
+
+
+\subsection{Event Documentation}
+\mbox{\Hypertarget{class_simple_vertical_layout_a3e176b9b3570154346427aa218f8eae8}\label{class_simple_vertical_layout_a3e176b9b3570154346427aa218f8eae8}} 
+\index{Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}!Resized@{Resized}}
+\index{Resized@{Resized}!Simple\+Vertical\+Layout@{Simple\+Vertical\+Layout}}
+\subsubsection{\texorpdfstring{Resized}{Resized}}
+{\footnotesize\ttfamily Action$<$float$>$ Simple\+Vertical\+Layout.\+Resized}
+
+
+
+Called when the height of the layout changed 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Utilities/\+Specific To Unity/\+U\+I/\+Responsive U\+I/\hyperlink{_simple_vertical_layout_8cs}{Simple\+Vertical\+Layout.\+cs}\end{DoxyCompactItemize}

@@ -83,28 +83,31 @@ namespace BloodOfEvil.Entities.Modules.Attributes
         #region Interfaces Behaviour
         void ISerializable.Load()
         {
-            string fileName = this.GetFileName();
+            SerializerHelper.Load<EntityAttributesArrayOfArraySerializable>(
+                filename: this.GetFileName(),
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true,
+                onLoadSuccess: (EntityAttributesArrayOfArraySerializable attributesSerialized) =>
+                {
+                    this.ClearOtherAttributesFromAllAttributesCategories();
 
-            if (SerializerHelper.DoesCompletSavePathExists(fileName, ".json"))
-            {
-                this.ClearOtherAttributesFromAllAttributesCategories();
+                    int lifeCategoryIndex = EnumerationHelper.GetIndex<EEntityCategoriesAttributes>(EEntityCategoriesAttributes.Life);
+                    float currentLifeOfSerialization = attributesSerialized.EntityAttributesArrayOfArray[lifeCategoryIndex].
+                        EntityAttributeArray[ObjectContainerHelper.GetHashCodeIndex("Life", this.attributeHashIds[lifeCategoryIndex])].Current.Value;
 
-                EntityAttributesArrayOfArraySerializable attributesSerialized =
-                    SerializerHelper.JsonDeserializeLoadWithEncryption<EntityAttributesArrayOfArraySerializable>(this.GetFileName());
+                    attributesSerialized.Load(this.attributes);
 
-                int lifeCategoryIndex = EnumerationHelper.GetIndex<EEntityCategoriesAttributes>(EEntityCategoriesAttributes.Life);
-                float currentLifeOfSerialization = attributesSerialized.EntityAttributesArrayOfArray[lifeCategoryIndex].
-                    EntityAttributeArray[ObjectContainerHelper.GetHashCodeIndex("Life", this.attributeHashIds[lifeCategoryIndex])].Current.Value;
-
-                attributesSerialized.Load(this.attributes);
-
-                GetAttribute(EEntityCategoriesAttributes.Life, "Life").Current.Value = currentLifeOfSerialization;
-            }
+                    GetAttribute(EEntityCategoriesAttributes.Life, "Life").Current.Value = currentLifeOfSerialization;
+                });
         }
 
         void ISerializable.Save()
         {
-            SerializerHelper.JsonSerializeSaveWithEncryption(new EntityAttributesArrayOfArraySerializable(this.attributes), this.GetFileName());
+            SerializerHelper.Save< EntityAttributesArrayOfArraySerializable>(
+                filename: this.GetFileName(),
+                dataToSave: new EntityAttributesArrayOfArraySerializable(this.attributes),
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true);
         }
         #endregion
 

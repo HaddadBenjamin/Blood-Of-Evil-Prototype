@@ -10,6 +10,10 @@ namespace BloodOfEvil.Enemies.Serialization
         public EEnemyCategory Data;
         #endregion
 
+        #region Constructor
+        public SerializableEEnemyCategory() { }
+        #endregion
+
         #region Save & Load
         /// <summary>
         /// Save.

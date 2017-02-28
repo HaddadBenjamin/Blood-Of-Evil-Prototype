@@ -11,6 +11,14 @@ namespace BloodOfEvil.Utilities.Serialization
         public Vector3 EulerAngles;
         #endregion
 
+        #region Constructor
+        public SerializablePositionAndRotation()
+        {
+            
+        }
+        #endregion
+
+
         #region Save & Load
         /// <summary>
         /// Save.

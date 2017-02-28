@@ -338,13 +338,23 @@ namespace BloodOfEvil.Enemies.Modules.IA
         #region Interfaces Behaviour
         void ISerializable.Load()
         {
-            if (SerializerHelper.DoesCompletSavePathExists(this.GetFileName(), ".json"))
-                SerializerHelper.JsonDeserializeLoadWithEncryption<SerializablePositionAndRotation>(this.GetFileName()).Load(this.initialPosition);
+            SerializerHelper.Load<SerializablePositionAndRotation>(
+                filename: this.GetFileName(),
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true,
+                onLoadSuccess: (SerializablePositionAndRotation data) =>
+                {
+                    data.Load(this.initialPosition);
+                });
         }
 
         void ISerializable.Save()
         {
-            SerializerHelper.JsonSerializeSaveWithEncryption(new SerializablePositionAndRotation(this.initialPosition), this.GetFileName());
+            SerializerHelper.Save< SerializablePositionAndRotation>(
+                filename: this.GetFileName(),
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true,
+                dataToSave : new SerializablePositionAndRotation(this.initialPosition));
         }
 
         private string GetFileName()

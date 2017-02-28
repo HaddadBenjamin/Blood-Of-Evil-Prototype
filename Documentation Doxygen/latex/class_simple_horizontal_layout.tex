@@ -1,0 +1,252 @@
+\hypertarget{class_simple_horizontal_layout}{}\section{Simple\+Horizontal\+Layout Class Reference}
+\label{class_simple_horizontal_layout}\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+
+
+Cette classe vient de Manzalab. Horizontal layout that doesn\textquotesingle{}t change its children size  
+
+
+
+
+Inheritance diagram for Simple\+Horizontal\+Layout\+:
+% FIG 0
+
+
+Collaboration diagram for Simple\+Horizontal\+Layout\+:
+% FIG 1
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03f}{Mode} \{ \hyperlink{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03fab3c79047c3a18f754e66d17ef17552c9}{Mode.\+Dont\+Set\+Width}, 
+\hyperlink{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03fadc1445e941c98968ee22f8bca2c11614}{Mode.\+Set\+Layout\+Width}, 
+\hyperlink{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03fa362a8f26c823d46b3b806a608f17fcf2}{Mode.\+Set\+Elements\+Width}, 
+\hyperlink{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03fab5860197d2ec3428daabf7a15882a098}{Mode.\+Set\+Last\+Element\+Width}
+ \}\begin{DoxyCompactList}\small\item\em Layout mode \end{DoxyCompactList}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+override void \hyperlink{class_simple_horizontal_layout_a2001b1a1883166a444d7e68adfc48134}{Set\+Layout\+Horizontal} ()
+\begin{DoxyCompactList}\small\item\em Sets the width of the layout and of the children \end{DoxyCompactList}\item 
+float \hyperlink{class_simple_horizontal_layout_a403b4af594efdeb489c640f644de4f93}{Next\+X\+Position} ()
+\begin{DoxyCompactList}\small\item\em Get next children X position \end{DoxyCompactList}\item 
+override void \hyperlink{class_simple_horizontal_layout_ae09e6c347baf860b63cb9ab1f42d3d95}{Set\+Layout\+Vertical} ()
+\begin{DoxyCompactList}\small\item\em Does nothing \end{DoxyCompactList}\item 
+override void \hyperlink{class_simple_horizontal_layout_a1c2204c6555314295d51ce633ed08b09}{Calculate\+Layout\+Input\+Vertical} ()
+\begin{DoxyCompactList}\small\item\em Sets the width of the layout \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03f}{Mode} \hyperlink{class_simple_horizontal_layout_acb490833b59e67c1306b2c8d7aba534a}{layout\+Mode}
+\begin{DoxyCompactList}\small\item\em Layout mode \end{DoxyCompactList}\item 
+float \hyperlink{class_simple_horizontal_layout_a3e305d4ee78354f8ce8650c5409c358d}{max\+Children\+Width} = 250
+\begin{DoxyCompactList}\small\item\em Maximum child width if Set\+Elements\+Width setted \end{DoxyCompactList}\item 
+bool \hyperlink{class_simple_horizontal_layout_afd08bf7970a6d9e82943384e44ef8339}{Arrange\+Height}
+\item 
+float \hyperlink{class_simple_horizontal_layout_a360ce2c814e5fcb8f8e352578608bd32}{Minimum\+Layout\+Height}
+\item 
+float \hyperlink{class_simple_horizontal_layout_ab0fb3dccf8a62c18d489c17cc5ac1521}{spacing} = 0
+\begin{DoxyCompactList}\small\item\em Space between children \end{DoxyCompactList}\item 
+bool \hyperlink{class_simple_horizontal_layout_a40dbd72e1ea4e2924300162e5ca4d409}{SetY}
+\begin{DoxyCompactList}\small\item\em Sets the Y value \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+override float \hyperlink{class_simple_horizontal_layout_a6419ca81d876404a5a67bc0d8b23ae51}{min\+Width}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Minimum layout width \end{DoxyCompactList}\item 
+override float \hyperlink{class_simple_horizontal_layout_ac248bb3c170c1e087fe1b347518c0a08}{preferred\+Width}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Preferred layout width (=0) \end{DoxyCompactList}\item 
+override float \hyperlink{class_simple_horizontal_layout_a85f36db62a7155c16bfdb0cec50102b0}{flexible\+Width}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Flexible layout width (=0) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Events}
+\begin{DoxyCompactItemize}
+\item 
+Action$<$ float $>$ \hyperlink{class_simple_horizontal_layout_a75ae5219de178cf2a3329b74a7641649}{Resized}
+\begin{DoxyCompactList}\small\item\em Called when the height of the layout changed \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Cette classe vient de Manzalab. Horizontal layout that doesn\textquotesingle{}t change its children size 
+
+
+
+\subsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03f}\label{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03f}} 
+\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!Mode@{Mode}}
+\index{Mode@{Mode}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+\subsubsection{\texorpdfstring{Mode}{Mode}}
+{\footnotesize\ttfamily enum \hyperlink{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03f}{Simple\+Horizontal\+Layout.\+Mode}\hspace{0.3cm}{\ttfamily [strong]}}
+
+
+
+Layout mode 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Dont\+Set\+Width@{Dont\+Set\+Width}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!Dont\+Set\+Width@{Dont\+Set\+Width}}}\mbox{\Hypertarget{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03fab3c79047c3a18f754e66d17ef17552c9}\label{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03fab3c79047c3a18f754e66d17ef17552c9}} 
+Dont\+Set\+Width&Don\textquotesingle{}t change any rect\+Transform width \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Set\+Layout\+Width@{Set\+Layout\+Width}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!Set\+Layout\+Width@{Set\+Layout\+Width}}}\mbox{\Hypertarget{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03fadc1445e941c98968ee22f8bca2c11614}\label{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03fadc1445e941c98968ee22f8bca2c11614}} 
+Set\+Layout\+Width&Changes the layout width \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Set\+Elements\+Width@{Set\+Elements\+Width}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!Set\+Elements\+Width@{Set\+Elements\+Width}}}\mbox{\Hypertarget{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03fa362a8f26c823d46b3b806a608f17fcf2}\label{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03fa362a8f26c823d46b3b806a608f17fcf2}} 
+Set\+Elements\+Width&Changes children width \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Set\+Last\+Element\+Width@{Set\+Last\+Element\+Width}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!Set\+Last\+Element\+Width@{Set\+Last\+Element\+Width}}}\mbox{\Hypertarget{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03fab5860197d2ec3428daabf7a15882a098}\label{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03fab5860197d2ec3428daabf7a15882a098}} 
+Set\+Last\+Element\+Width&Changes last child width \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_simple_horizontal_layout_a1c2204c6555314295d51ce633ed08b09}\label{class_simple_horizontal_layout_a1c2204c6555314295d51ce633ed08b09}} 
+\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!Calculate\+Layout\+Input\+Vertical@{Calculate\+Layout\+Input\+Vertical}}
+\index{Calculate\+Layout\+Input\+Vertical@{Calculate\+Layout\+Input\+Vertical}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+\subsubsection{\texorpdfstring{Calculate\+Layout\+Input\+Vertical()}{CalculateLayoutInputVertical()}}
+{\footnotesize\ttfamily override void Simple\+Horizontal\+Layout.\+Calculate\+Layout\+Input\+Vertical (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the width of the layout 
+
+\mbox{\Hypertarget{class_simple_horizontal_layout_a403b4af594efdeb489c640f644de4f93}\label{class_simple_horizontal_layout_a403b4af594efdeb489c640f644de4f93}} 
+\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!Next\+X\+Position@{Next\+X\+Position}}
+\index{Next\+X\+Position@{Next\+X\+Position}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+\subsubsection{\texorpdfstring{Next\+X\+Position()}{NextXPosition()}}
+{\footnotesize\ttfamily float Simple\+Horizontal\+Layout.\+Next\+X\+Position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get next children X position 
+
+\begin{DoxyReturn}{Returns}
+next child x-\/position
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_simple_horizontal_layout_a2001b1a1883166a444d7e68adfc48134}\label{class_simple_horizontal_layout_a2001b1a1883166a444d7e68adfc48134}} 
+\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!Set\+Layout\+Horizontal@{Set\+Layout\+Horizontal}}
+\index{Set\+Layout\+Horizontal@{Set\+Layout\+Horizontal}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+\subsubsection{\texorpdfstring{Set\+Layout\+Horizontal()}{SetLayoutHorizontal()}}
+{\footnotesize\ttfamily override void Simple\+Horizontal\+Layout.\+Set\+Layout\+Horizontal (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the width of the layout and of the children 
+
+\mbox{\Hypertarget{class_simple_horizontal_layout_ae09e6c347baf860b63cb9ab1f42d3d95}\label{class_simple_horizontal_layout_ae09e6c347baf860b63cb9ab1f42d3d95}} 
+\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!Set\+Layout\+Vertical@{Set\+Layout\+Vertical}}
+\index{Set\+Layout\+Vertical@{Set\+Layout\+Vertical}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+\subsubsection{\texorpdfstring{Set\+Layout\+Vertical()}{SetLayoutVertical()}}
+{\footnotesize\ttfamily override void Simple\+Horizontal\+Layout.\+Set\+Layout\+Vertical (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Does nothing 
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_simple_horizontal_layout_afd08bf7970a6d9e82943384e44ef8339}\label{class_simple_horizontal_layout_afd08bf7970a6d9e82943384e44ef8339}} 
+\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!Arrange\+Height@{Arrange\+Height}}
+\index{Arrange\+Height@{Arrange\+Height}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+\subsubsection{\texorpdfstring{Arrange\+Height}{ArrangeHeight}}
+{\footnotesize\ttfamily bool Simple\+Horizontal\+Layout.\+Arrange\+Height}
+
+\mbox{\Hypertarget{class_simple_horizontal_layout_acb490833b59e67c1306b2c8d7aba534a}\label{class_simple_horizontal_layout_acb490833b59e67c1306b2c8d7aba534a}} 
+\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!layout\+Mode@{layout\+Mode}}
+\index{layout\+Mode@{layout\+Mode}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+\subsubsection{\texorpdfstring{layout\+Mode}{layoutMode}}
+{\footnotesize\ttfamily \hyperlink{class_simple_horizontal_layout_a84c3989f969567fef94985df15d7d03f}{Mode} Simple\+Horizontal\+Layout.\+layout\+Mode}
+
+
+
+Layout mode 
+
+\mbox{\Hypertarget{class_simple_horizontal_layout_a3e305d4ee78354f8ce8650c5409c358d}\label{class_simple_horizontal_layout_a3e305d4ee78354f8ce8650c5409c358d}} 
+\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!max\+Children\+Width@{max\+Children\+Width}}
+\index{max\+Children\+Width@{max\+Children\+Width}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+\subsubsection{\texorpdfstring{max\+Children\+Width}{maxChildrenWidth}}
+{\footnotesize\ttfamily float Simple\+Horizontal\+Layout.\+max\+Children\+Width = 250}
+
+
+
+Maximum child width if Set\+Elements\+Width setted 
+
+\mbox{\Hypertarget{class_simple_horizontal_layout_a360ce2c814e5fcb8f8e352578608bd32}\label{class_simple_horizontal_layout_a360ce2c814e5fcb8f8e352578608bd32}} 
+\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!Minimum\+Layout\+Height@{Minimum\+Layout\+Height}}
+\index{Minimum\+Layout\+Height@{Minimum\+Layout\+Height}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+\subsubsection{\texorpdfstring{Minimum\+Layout\+Height}{MinimumLayoutHeight}}
+{\footnotesize\ttfamily float Simple\+Horizontal\+Layout.\+Minimum\+Layout\+Height}
+
+\mbox{\Hypertarget{class_simple_horizontal_layout_a40dbd72e1ea4e2924300162e5ca4d409}\label{class_simple_horizontal_layout_a40dbd72e1ea4e2924300162e5ca4d409}} 
+\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!SetY@{SetY}}
+\index{SetY@{SetY}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+\subsubsection{\texorpdfstring{SetY}{SetY}}
+{\footnotesize\ttfamily bool Simple\+Horizontal\+Layout.\+SetY}
+
+
+
+Sets the Y value 
+
+\mbox{\Hypertarget{class_simple_horizontal_layout_ab0fb3dccf8a62c18d489c17cc5ac1521}\label{class_simple_horizontal_layout_ab0fb3dccf8a62c18d489c17cc5ac1521}} 
+\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!spacing@{spacing}}
+\index{spacing@{spacing}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+\subsubsection{\texorpdfstring{spacing}{spacing}}
+{\footnotesize\ttfamily float Simple\+Horizontal\+Layout.\+spacing = 0}
+
+
+
+Space between children 
+
+
+
+\subsection{Property Documentation}
+\mbox{\Hypertarget{class_simple_horizontal_layout_a85f36db62a7155c16bfdb0cec50102b0}\label{class_simple_horizontal_layout_a85f36db62a7155c16bfdb0cec50102b0}} 
+\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!flexible\+Width@{flexible\+Width}}
+\index{flexible\+Width@{flexible\+Width}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+\subsubsection{\texorpdfstring{flexible\+Width}{flexibleWidth}}
+{\footnotesize\ttfamily override float Simple\+Horizontal\+Layout.\+flexible\+Width\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+Flexible layout width (=0) 
+
+\mbox{\Hypertarget{class_simple_horizontal_layout_a6419ca81d876404a5a67bc0d8b23ae51}\label{class_simple_horizontal_layout_a6419ca81d876404a5a67bc0d8b23ae51}} 
+\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!min\+Width@{min\+Width}}
+\index{min\+Width@{min\+Width}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+\subsubsection{\texorpdfstring{min\+Width}{minWidth}}
+{\footnotesize\ttfamily override float Simple\+Horizontal\+Layout.\+min\+Width\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+Minimum layout width 
+
+\mbox{\Hypertarget{class_simple_horizontal_layout_ac248bb3c170c1e087fe1b347518c0a08}\label{class_simple_horizontal_layout_ac248bb3c170c1e087fe1b347518c0a08}} 
+\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!preferred\+Width@{preferred\+Width}}
+\index{preferred\+Width@{preferred\+Width}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+\subsubsection{\texorpdfstring{preferred\+Width}{preferredWidth}}
+{\footnotesize\ttfamily override float Simple\+Horizontal\+Layout.\+preferred\+Width\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+Preferred layout width (=0) 
+
+
+
+\subsection{Event Documentation}
+\mbox{\Hypertarget{class_simple_horizontal_layout_a75ae5219de178cf2a3329b74a7641649}\label{class_simple_horizontal_layout_a75ae5219de178cf2a3329b74a7641649}} 
+\index{Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}!Resized@{Resized}}
+\index{Resized@{Resized}!Simple\+Horizontal\+Layout@{Simple\+Horizontal\+Layout}}
+\subsubsection{\texorpdfstring{Resized}{Resized}}
+{\footnotesize\ttfamily Action$<$float$>$ Simple\+Horizontal\+Layout.\+Resized}
+
+
+
+Called when the height of the layout changed 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Utilities/\+Specific To Unity/\+U\+I/\+Responsive U\+I/\hyperlink{_simple_horizontal_layout_8cs}{Simple\+Horizontal\+Layout.\+cs}\end{DoxyCompactItemize}

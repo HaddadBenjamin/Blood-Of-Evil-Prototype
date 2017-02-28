@@ -74,15 +74,21 @@ namespace BloodOfEvil.Player.Services.Game
 
         void ISerializable.Load()
         {
-            string gameFileName = this.GetFileName();
-
-            if (SerializerHelper.DoesCompletSavePathExists(gameFileName, ".json"))
-                SerializerHelper.JsonDeserializeLoad<GameServiceSerializable>(gameFileName).Load(this);
+            SerializerHelper.Load<GameServiceSerializable>(
+                filename: this.GetFileName(),
+                isReplicatedNextTheBuild: false,
+                onLoadSuccess: (GameServiceSerializable data) =>
+                {
+                    data.Load(this);
+                });
         }
 
         void ISerializable.Save()
         {
-            SerializerHelper.JsonSerializeSave(new GameServiceSerializable(this), this.GetFileName());
+            SerializerHelper.Save<GameServiceSerializable>(
+                filename : this.GetFileName(),
+                dataToSave: new GameServiceSerializable(this),
+                isReplicatedNextTheBuild: false);
         }
 
         void IDataUpdatable.Update()

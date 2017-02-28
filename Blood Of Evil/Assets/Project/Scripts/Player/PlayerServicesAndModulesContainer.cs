@@ -230,16 +230,22 @@ namespace BloodOfEvil.Player
         // Charge seulement les fichiers spécifique à CHAQUE scène.
         void ISerializable.Load()
         {
-            string positionAndRotationFilename = SceneServicesContainer.Instance.FileSystemConfiguration.PositionAndRotationFilename;
-
-            if (SerializerHelper.DoesCompletSavePathExists(positionAndRotationFilename, ".json"))
-                SerializerHelper.JsonDeserializeLoadWithEncryption<SerializablePositionAndRotation>(positionAndRotationFilename).Load(this.transform);
+            SerializerHelper.Load<SerializablePositionAndRotation>(
+                filename: SceneServicesContainer.Instance.FileSystemConfiguration.PositionAndRotationFilename,
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true,
+                onLoadSuccess: (SerializablePositionAndRotation data) =>
+                {
+                    data.Load(this.transform);
+                });
         }
 
         void ISerializable.Save()
         {
-            SerializerHelper.JsonSerializeSaveWithEncryption<SerializablePositionAndRotation>(new SerializablePositionAndRotation(this.transform),
-                SceneServicesContainer.Instance.FileSystemConfiguration.PositionAndRotationFilename);
+            SerializerHelper.Save(
+                filename : SceneServicesContainer.Instance.FileSystemConfiguration.PositionAndRotationFilename,
+                dataToSave: new SerializablePositionAndRotation(this.transform),
+                isEncrypted: true);
 
             ((ISerializable)this.AttributesModule).Save();
 

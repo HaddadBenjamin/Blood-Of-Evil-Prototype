@@ -10,6 +10,10 @@ namespace BloodOfEvil.Utilities.Serialization
         public string Data;
         #endregion
 
+        #region Constructor
+        public SerializableString() { }
+        #endregion
+
         #region Save & Load
         /// <summary>
         /// Save.

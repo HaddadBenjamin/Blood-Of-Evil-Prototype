@@ -17,7 +17,8 @@ namespace BloodOfEvil.Helpers
         public static string GetCrossPlatformAndAdaptativePath(
             string fileName,
             bool isReplicatedNextTheBuild = false,
-            EFileExtension fileExtension = EFileExtension.Json)
+            EFileExtension fileExtension = EFileExtension.Json,
+            bool addExtension = true)
         {
             string directory = "";
 
@@ -33,7 +34,7 @@ namespace BloodOfEvil.Helpers
             return string.Format("{0}/{1}{2}",
                                     directory,
                                     fileName,
-                                    GetFileExtension(fileExtension));
+                                    addExtension ? GetFileExtension(fileExtension) : "");
         }
 
         /// <summary>

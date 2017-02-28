@@ -7,6 +7,13 @@
         public EntityAttributesArraySerializable[] EntityAttributesArrayOfArray;
         #endregion
 
+        #region Constructor
+        public EntityAttributesArrayOfArraySerializable()
+        {
+            
+        }
+        #endregion
+
         #region
         /// <summary>
         /// Save.

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using UnityEngine.SceneManagement;
 
 namespace BloodOfEvil.Helpers
@@ -16,16 +17,17 @@ namespace BloodOfEvil.Helpers
         /// </summary>
         public static void SaveCurrentScene()
         {
-            FileSystemHelper.SafeDeleteDirectoryRecursively(
-                SerializerHelper.GetCompleteSavePath(
-                SceneServicesContainer.Instance.FileSystemConfiguration.GetCurrentSceneDirectory(),
-                ""));
+            SerializerHelper.DeleteSaveDirectory(
+                filename: SceneServicesContainer.Instance.FileSystemConfiguration.GetCurrentSceneDirectory(),
+                isReplicatedNextTheBuild: false);
 
             ((ISerializable)SceneServicesContainer.Instance.SceneStateModule).Save();
 
-            SerializerHelper.JsonSerializeSaveWithEncryption(
-                new SerializableString(GetCurrentSceneName()),
-                    SceneServicesContainer.Instance.FileSystemConfiguration.SceneNameFilename);
+            SerializerHelper.Save<SerializableString>(
+                filename: SceneServicesContainer.Instance.FileSystemConfiguration.SceneNameFilename,
+                dataToSave: new SerializableString(GetCurrentSceneName()),
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true);
 
             ((ISerializable)PlayerServicesAndModulesContainer.Instance.AttributesModule).Save();
         }

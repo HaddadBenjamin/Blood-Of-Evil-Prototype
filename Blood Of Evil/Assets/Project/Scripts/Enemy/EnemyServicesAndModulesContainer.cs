@@ -104,10 +104,14 @@ namespace BloodOfEvil.Enemies
 
             ((ISerializable)this.AttributesModule).Load(); // Charge tous les attributs.
 
-            string positionAndRotationFilename = this.GetPositionAndRotationFilename();
-
-            if (SerializerHelper.DoesCompletSavePathExists(positionAndRotationFilename, ".json"))
-                SerializerHelper.JsonDeserializeLoadWithEncryption<SerializablePositionAndRotation>(positionAndRotationFilename).Load(this.myTransform);
+            SerializerHelper.Load<SerializablePositionAndRotation>(
+                filename: this.GetPositionAndRotationFilename(),
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true,
+                onLoadSuccess: (SerializablePositionAndRotation data) =>
+                {
+                    data.Load(this.myTransform);
+                });
 
             // Il ne faut pas load son IA ici, c'est son initialisation qui doit l'appeler.
             //((ISerializable)this.IAModule).Load();
@@ -118,7 +122,11 @@ namespace BloodOfEvil.Enemies
             this.AttributesModule.SaveEEnemyCategory(); // Sauvegarde juste la catégorie de l'ennemi.
             ((ISerializable)this.AttributesModule).Save(); // Sauvegarde tous les attributs.
 
-            SerializerHelper.JsonSerializeSaveWithEncryption(new SerializablePositionAndRotation(this.myTransform), this.GetPositionAndRotationFilename());
+            SerializerHelper.Save<SerializablePositionAndRotation>(
+                filename: this.GetPositionAndRotationFilename(),
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true,
+                dataToSave: new SerializablePositionAndRotation(this.myTransform));
 
             ((ISerializable)this.IAModule).Save();
         }

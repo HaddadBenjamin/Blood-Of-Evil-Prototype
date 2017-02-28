@@ -80,16 +80,24 @@ namespace BloodOfEvil.Enemies.Modules.Attributes
         {
             string categoryFilename = this.GetCategoryFilename();
 
-            if (SerializerHelper.DoesCompletSavePathExists(categoryFilename, ".json"))
-            {
-                this.EnemyCategoryHaveBeenLoad = true;
-                this.Category = SerializerHelper.JsonDeserializeLoadWithEncryption<SerializableEEnemyCategory>(categoryFilename).Data;
-            }
+            SerializerHelper.Load<SerializableEEnemyCategory>(
+                filename: this.GetCategoryFilename(), 
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true,
+                onLoadSuccess: (SerializableEEnemyCategory data) =>
+                {
+                    this.EnemyCategoryHaveBeenLoad = true;
+                    this.Category = data.Data;
+                });
         }
 
         public void SaveEEnemyCategory()
         {
-            SerializerHelper.JsonSerializeSaveWithEncryption(new SerializableEEnemyCategory(this.Category), this.GetCategoryFilename());
+            SerializerHelper.Save<SerializableEEnemyCategory>(
+                filename: this.GetCategoryFilename(),
+                dataToSave: new SerializableEEnemyCategory(this.Category),
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true);
         }
 
         public string GetCategoryFilename()

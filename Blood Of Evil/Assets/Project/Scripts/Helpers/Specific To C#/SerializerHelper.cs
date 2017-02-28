@@ -13,7 +13,7 @@ namespace BloodOfEvil.Helpers
     public static class SerializerHelper
     {
         public static void Load<TTypeToSave>(
-           string path,
+           string filename,
            bool isReplicatedNextTheBuild = false,
            bool isEncrypted = false,
            EFileExtension fileExtension = EFileExtension.Json,
@@ -21,7 +21,7 @@ namespace BloodOfEvil.Helpers
            Action onLoadError = null) where TTypeToSave : class, new()
         {
             SerializationService.Instance.CallSafeAndCrossPlatformLoadFileContent<TTypeToSave>(
-                path,
+                filename,
                 isReplicatedNextTheBuild: isReplicatedNextTheBuild,
                 isEncrypted: isEncrypted,
                 fileExtension: fileExtension,
@@ -33,13 +33,13 @@ namespace BloodOfEvil.Helpers
         /// Créé le chemin si il n'éxiste pas puis lui rajoute le contenu.
         /// </summary>
         public static void Save<TTypeToSave>(
-            string path,
+            string filename,
             TTypeToSave dataToSave,
             bool isReplicatedNextTheBuild = false,
             bool isEncrypted = false,
             EFileExtension fileExtension = EFileExtension.Json) where TTypeToSave : class, new()
         {
-            path = UnityFileSystemHelper.GetCrossPlatformAndAdaptativePath(path, isReplicatedNextTheBuild, fileExtension);
+            filename = UnityFileSystemHelper.GetCrossPlatformAndAdaptativePath(filename, isReplicatedNextTheBuild, fileExtension);
 
             string fileContent = "";
 
@@ -65,14 +65,25 @@ namespace BloodOfEvil.Helpers
             if (isEncrypted)
                 fileContent = EncryptionHelper.Encrypt(fileContent);
 
-            FileSystemHelper.SafeWriteAllText(path, fileContent);
+            FileSystemHelper.SafeWriteAllText(filename, fileContent);
 
             Debug.LogFormat("Save at {0} with {1}",
-                path,
+                filename,
                 fileContent);
         }
 
-
+        /// <summary>
+        /// Permet de supprimer proprement un répertoire de sauvegarde.
+        /// </summary>
+        public static void DeleteSaveDirectory(string filename,
+            bool isReplicatedNextTheBuild = false)
+        {
+             FileSystemHelper.SafeDeleteDirectoryRecursively(
+                 UnityFileSystemHelper.GetCrossPlatformAndAdaptativePath(
+                     fileName : filename, 
+                     isReplicatedNextTheBuild : isReplicatedNextTheBuild, 
+                     addExtension: false));
+        }
 
 
 
