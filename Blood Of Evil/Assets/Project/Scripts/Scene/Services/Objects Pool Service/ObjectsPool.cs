@@ -398,11 +398,7 @@ namespace BloodOfEvil.Scene.Services.ObjectPool
         public void RemoveAllObjectInPool()
         {
             if (EObjecstPoolContainerType.Array == this.ContainerType)
-            {
                 Array.ForEach(this.arrayPool, gameObject => gameObject.SetActive(false));
-
-                Debug.Log("remove");
-            }
             else
                 this.listPool.ForEach(gameObject => gameObject.SetActive(false));
         }

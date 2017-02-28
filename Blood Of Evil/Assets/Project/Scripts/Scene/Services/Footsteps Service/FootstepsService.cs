@@ -133,7 +133,7 @@ namespace BloodOfEvil.Scene.Services.Footsteps
             {
                 AudioClip footstepClip = this.clips[MathHelper.GenerateRandomBeetweenTwoInts(0, this.clips.Length - 1)];
 
-                Debug.LogFormat("Footstep sound : {0}", i++);
+                //Debug.LogFormat("Footstep sound : {0}", i++);
 
                 audioSource.volume = PlayerServicesAndModulesContainer.Instance.AudioService.GeVolumeOfAnAudioCategory(Player.Services.Audio.EAudioCategory.SFX);
 

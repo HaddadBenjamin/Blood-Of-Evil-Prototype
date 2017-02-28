@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.IO;
 using BloodOfEvil.Helpers;
 
 namespace BloodOfEvil.Scene.Modules.State
@@ -135,24 +136,31 @@ namespace BloodOfEvil.Scene.Modules.State
             yield return new WaitForSeconds(0.25f);
 
             int enemyIndex = 0;
-            foreach (
-                string subDirectoryName in
-                FileSystemHelper.GetSubDirectories(
-                   UnityFileSystemHelper.GetCrossPlatformAndAdaptativePath(
-                    fileName: SceneServicesContainer.Instance.FileSystemConfiguration.GetEnemyDirectoryName(),
-                    isReplicatedNextTheBuild: false,
-                    addExtension: false)))
+            string path = UnityFileSystemHelper.GetCrossPlatformAndAdaptativePath(
+                fileName: SceneServicesContainer.Instance.FileSystemConfiguration.GetEnemyDirectoryName());
+
+            if (Directory.Exists(path))
             {
-                EnemyServicesAndModulesContainer enemyServiceContainer =
-                    this.enemies[enemyIndex].GetComponent<EnemyServicesAndModulesContainer>();
+                foreach (
+                    string subDirectoryName in
+                    FileSystemHelper.GetSubDirectories(
+                        UnityFileSystemHelper.GetCrossPlatformAndAdaptativePath(
+                            fileName: SceneServicesContainer.Instance.FileSystemConfiguration.GetEnemyDirectoryName(),
+                            isReplicatedNextTheBuild: false,
+                            addExtension: false)))
+                {
+                    EnemyServicesAndModulesContainer enemyServiceContainer =
+                        this.enemies[enemyIndex].GetComponent<EnemyServicesAndModulesContainer>();
 
-                Debug.LogFormat("path : {0}, saveIndex : {1}", subDirectoryName, enemyServiceContainer.SaveIndex);
-                enemyServiceContainer.SaveIndex = Int32.Parse(subDirectoryName.Substring(subDirectoryName.LastIndexOf('\\') + 1, subDirectoryName.Length - subDirectoryName.LastIndexOf('\\') - 1));
+                    enemyServiceContainer.SaveIndex =
+                        Int32.Parse(subDirectoryName.Substring(subDirectoryName.LastIndexOf('\\') + 1,
+                            subDirectoryName.Length - subDirectoryName.LastIndexOf('\\') - 1));
 
-                Debug.LogFormat("path : {0}, saveIndex : {1}", subDirectoryName, enemyServiceContainer.SaveIndex);
-                ((ISerializable)enemyServiceContainer).Load();
+                    //Debug.LogFormat("path : {0}, saveIndex : {1}", subDirectoryName, enemyServiceContainer.SaveIndex);
+                    ((ISerializable) enemyServiceContainer).Load();
 
-                ++enemyIndex;
+                    ++enemyIndex;
+                }
             }
             //for (int enemyIndex = 0; enemyIndex < this.enemies.Count; enemyIndex++)
             //{
@@ -169,6 +177,7 @@ namespace BloodOfEvil.Scene.Modules.State
 
             for (int enemyIndex = 0; enemyIndex < this.enemies.Count; enemyIndex++)
             {
+                Debug.Log("save an enemy");
                 ((ISerializable)this.enemies[enemyIndex].GetComponent<EnemyServicesAndModulesContainer>()).Save();
             }
         }
