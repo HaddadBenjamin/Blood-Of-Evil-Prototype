@@ -23,6 +23,10 @@ namespace BloodOfEvil.Player.Services.Video.Serialization
         #endregion
 
         #region Constructor
+        public SerializableVideoService() {  }
+        #endregion
+
+        #region Constructor
         public SerializableVideoService(Player.Services.Video.VideoService videoService)
         {
             this.LightIntensity = videoService.LightIntensity;

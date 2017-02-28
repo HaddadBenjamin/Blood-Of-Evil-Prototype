@@ -51,16 +51,17 @@ namespace BloodOfEvil.Player.Services.Audio
         #region Interfaces Behaviour
         void ISerializable.Load()
         {
-            string audioFileName = this.GetAudioFileName();
+            SerializerHelper.Load< SerializableFloatArray>(
+                filename: this.GetAudioFileName(),
+                isReplicatedNextTheBuild: false,
+                isEncrypted: false,
+                onLoadSuccess: (SerializableFloatArray serializableFloatArray) =>
+                {
+                    float[] floatArray = serializableFloatArray.floatArray;
 
-            if (SerializerHelper.DoesCompletSavePathExists(audioFileName, ".json"))
-            {
-                SerializableFloatArray serializableFloatArray = SerializerHelper.JsonDeserializeLoad<SerializableFloatArray>(audioFileName);
-                float[] floatArray = serializableFloatArray.floatArray;
-
-                for (int floatArrayIndex = 0; floatArrayIndex < floatArray.Length; floatArrayIndex++)
-                    this.audioCategories[floatArrayIndex].Volume = floatArray[floatArrayIndex];
-            }
+                    for (int floatArrayIndex = 0; floatArrayIndex < floatArray.Length; floatArrayIndex++)
+                        this.audioCategories[floatArrayIndex].Volume = floatArray[floatArrayIndex];
+                });
         }
 
         void ISerializable.Save()
@@ -68,7 +69,11 @@ namespace BloodOfEvil.Player.Services.Audio
             float[] floatArray = Array.ConvertAll(this.audioCategories, soundCategory => soundCategory.Volume);
             SerializableFloatArray serializableFloatArray = new SerializableFloatArray(floatArray);
 
-            SerializerHelper.JsonSerializeSave(serializableFloatArray, this.GetAudioFileName());
+            SerializerHelper.Save< SerializableFloatArray>(
+                filename: this.GetAudioFileName(),
+                dataToSave: serializableFloatArray,
+                isReplicatedNextTheBuild: false,
+                isEncrypted: false);
         }
         #endregion
 

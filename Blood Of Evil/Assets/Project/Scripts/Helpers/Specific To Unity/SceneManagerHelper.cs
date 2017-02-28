@@ -88,15 +88,19 @@ namespace BloodOfEvil.Helpers
         {
             string playerSceneNameFilename = SceneServicesContainer.Instance.FileSystemConfiguration.SceneNameFilename;
 
-            if (SerializerHelper.DoesCompletSavePathExists(playerSceneNameFilename, ".json"))
-            {
-                string lastPlayerSceneName = SerializerHelper.JsonDeserializeLoadWithEncryption<SerializableString>(SceneServicesContainer.Instance.FileSystemConfiguration.SceneNameFilename).Data;
+            SerializerHelper.Load<SerializableString>(
+                filename: SceneServicesContainer.Instance.FileSystemConfiguration.SceneNameFilename,
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true,
+                onLoadSuccess: (SerializableString data) =>
+                {
+                    string lastPlayerSceneName = data.Data;
 
-                if (lastPlayerSceneName == "Don't Destroy Scene")
-                    PlayerServicesAndModulesContainer.Instance.FirstLoadApplication();
-                else
-                    LoadScene(lastPlayerSceneName);
-            }
+                    if (lastPlayerSceneName == "Don't Destroy Scene")
+                        PlayerServicesAndModulesContainer.Instance.FirstLoadApplication();
+                    else
+                        LoadScene(lastPlayerSceneName);
+                });
         }
     }
 }

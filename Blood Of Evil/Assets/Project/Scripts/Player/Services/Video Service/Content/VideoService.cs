@@ -188,30 +188,34 @@ namespace BloodOfEvil.Player.Services.Video
         #region Interfaces Behaviour
         void ISerializable.Load()
         {
-            string videoFileName = this.GetFileName();
+            SerializerHelper.Load<SerializableVideoService>(
+                filename: this.GetFileName(),
+                isReplicatedNextTheBuild: false,
+                isEncrypted: false,
+                onLoadSuccess: (SerializableVideoService serializableVideoService) =>
+                {
+                    this.Resolution = serializableVideoService.Resolution;
+                    this.FullScreen = serializableVideoService.FullScreen;
+                    this.AntiAliasing = serializableVideoService.AntiAliasing;
+                    this.LightIntensity = serializableVideoService.LightIntensity;
+                    this.CameraBlur = serializableVideoService.CameraBlur;
+                    this.QualityIndex = serializableVideoService.QualityIndex;
 
-            if (SerializerHelper.DoesCompletSavePathExists(videoFileName, ".json"))
-            {
-                SerializableVideoService serializableVideoService = SerializerHelper.JsonDeserializeLoad<SerializableVideoService>(videoFileName);
-
-                this.Resolution = serializableVideoService.Resolution;
-                this.FullScreen = serializableVideoService.FullScreen;
-                this.AntiAliasing = serializableVideoService.AntiAliasing;
-                this.LightIntensity = serializableVideoService.LightIntensity;
-                this.CameraBlur = serializableVideoService.CameraBlur;
-                this.QualityIndex = serializableVideoService.QualityIndex;
-
-                this.SunShafts = serializableVideoService.SunShafts;
-                this.Bloom = serializableVideoService.Bloom;
-                this.VignetteAndChromaticAberation = serializableVideoService.VignetteAndChromaticAberation;
-                this.ColorCorrectionCurves = serializableVideoService.ColorCorrectionCurves;
-                this.GlobalFog = serializableVideoService.GlobalFog;
-            }
+                    this.SunShafts = serializableVideoService.SunShafts;
+                    this.Bloom = serializableVideoService.Bloom;
+                    this.VignetteAndChromaticAberation = serializableVideoService.VignetteAndChromaticAberation;
+                    this.ColorCorrectionCurves = serializableVideoService.ColorCorrectionCurves;
+                    this.GlobalFog = serializableVideoService.GlobalFog;
+                });
         }
 
         void ISerializable.Save()
         {
-            SerializerHelper.JsonSerializeSave(new SerializableVideoService(this), this.GetFileName());
+            SerializerHelper.Save<SerializableVideoService>(
+                filename: this.GetFileName(),
+                dataToSave : new SerializableVideoService(this),
+                isReplicatedNextTheBuild: false,
+                isEncrypted: false);
         }
         #endregion
 

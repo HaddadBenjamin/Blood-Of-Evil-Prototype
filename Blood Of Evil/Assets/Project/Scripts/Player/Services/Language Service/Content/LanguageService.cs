@@ -46,16 +46,24 @@ namespace BloodOfEvil.Player.Services.Language
         // la modification de CurrentLanguage = value provoquerai une boucle infini.
         void ISerializable.Load()
         {
-            string languageChooseFileName = this.GetLanguageChooseFileName();
-
-            if (SerializerHelper.DoesCompletSavePathExists(languageChooseFileName, ".json"))
-                this.CurrentLanguage = SerializerHelper.JsonDeserializeLoad<ELanguageSerializable>(languageChooseFileName).ELanguage;
+            SerializerHelper.Load<ELanguageSerializable>(
+                filename: this.GetLanguageChooseFileName(),
+                isReplicatedNextTheBuild: true,
+                isEncrypted: false,
+                onLoadSuccess: (ELanguageSerializable data) =>
+                {
+                    this.currentLanguage = data.ELanguage;
+                });
         }
 
         // Sauvegarde l'énumération du langage choisi. Ne peut contenir le contenu de la méthode SaveLanguage car le fait de sauvegarder le nom du langage choisi et son contenu son 2 actions différentes.
         void ISerializable.Save()
         {
-            SerializerHelper.JsonSerializeSave(new ELanguageSerializable(this.currentLanguage), this.GetLanguageChooseFileName());
+            SerializerHelper.Save<ELanguageSerializable>(
+                filename: this.GetLanguageChooseFileName(),
+                dataToSave : new ELanguageSerializable(this.currentLanguage),
+                isReplicatedNextTheBuild: true,
+                isEncrypted: false);
         }
 
         void IDataInitializable.Initialize()
@@ -136,7 +144,11 @@ namespace BloodOfEvil.Player.Services.Language
         {
             if (!this.DoesCurrentLangageIsDefaultLanguage())
             {
-                SerializerHelper.JsonSerializeSave<SerializableStringArrayArray>(new SerializableStringArrayArray(this.currentLanguageTexts), this.GetFileName());
+                SerializerHelper.Save< SerializableStringArrayArray>(
+                    filename: this.GetFileName(),
+                    dataToSave: new SerializableStringArrayArray(this.currentLanguageTexts),
+                    isReplicatedNextTheBuild: true,
+                    isEncrypted: false);
 
                 PlayerServicesAndModulesContainer.Instance.TextInformationService.AddTextInformation(
                     string.Format("{0} {1} {2}.",
@@ -217,13 +229,14 @@ namespace BloodOfEvil.Player.Services.Language
             // Si le langage courant n'est pas le langage par défault on peutremplir notre fichier.
             if (!this.DoesCurrentLangageIsDefaultLanguage())
             {
-                // Si le fichier de sauvegarde existe on récupère alors toutes ces informations
-                if (SerializerHelper.DoesCompletSavePathExists(this.GetFileName(), ".json"))
-                {
-                    SerializableStringArrayArray stringArrayArraySerializable = SerializerHelper.JsonDeserializeLoad<SerializableStringArrayArray>(this.GetFileName());
-
-                    stringArrayArraySerializable.StringArrayArrayToSerializableStringArrayArray(ref this.currentLanguageTexts);
-                }
+                SerializerHelper.Load< SerializableStringArrayArray>(
+                    filename: this.GetFileName(),
+                    isReplicatedNextTheBuild: true,
+                    isEncrypted: false,
+                    onLoadSuccess: (SerializableStringArrayArray data) =>
+                    {
+                        data.StringArrayArrayToSerializableStringArrayArray(ref this.currentLanguageTexts);
+                    });
             }
 
             PlayerServicesAndModulesContainer.Instance.TextInformationService.AddTextInformation(

@@ -11,6 +11,10 @@ namespace BloodOfEvil.Player.Services.Language.Serialization
         #endregion
 
         #region Constructor
+        public ELanguageSerializable() { }
+        #endregion
+
+        #region Constructor
         public ELanguageSerializable(ELanguage ELanguage)
         {
             this.ELanguage = ELanguage;

@@ -48,24 +48,32 @@ namespace BloodOfEvil.Player.Services.Keys.UI
 
                 this.inputDataSerializable.inputDataConfigurations = this.inputDataConfigurations;
 
-                SerializerHelper.JsonSerializeSave(this.inputDataSerializable, SceneServicesContainer.Instance.FileSystemConfiguration.KeysSettingsFilename);
+                SerializerHelper.Save<InputDataConfigurationArraySerializable>(
+                    filename: SceneServicesContainer.Instance.FileSystemConfiguration.KeysSettingsFilename,
+                    dataToSave: this.inputDataSerializable,
+                    isReplicatedNextTheBuild: false,
+                    isEncrypted: false);
 
                 PlayerServicesAndModulesContainer.Instance.InputService.SetInputsDataConfiguration(this.inputDataSerializable.inputDataConfigurations);
                     // le service d'input doit récupérer ces informations.
 
-                    SceneServicesContainer.Instance.AudioReferencesArraysService.Play2DSound(EAudioCategory.SFX, "Click Button");
+                SceneServicesContainer.Instance.AudioReferencesArraysService.Play2DSound(EAudioCategory.SFX, "Click Button");
             });
 
             this.cancelButton.onClick.AddListener(delegate ()
             {
-                if (SerializerHelper.DoesCompletSavePathExists("Keys", ".json"))
-                {
-                    InputDataConfigurationArraySerializable inputDataSerializable = SerializerHelper.JsonDeserializeLoad<InputDataConfigurationArraySerializable>("Keys");
-
-                    this.Generate(inputDataSerializable.inputDataConfigurations);
-                }
-                else
-                    this.Generate(PlayerServicesAndModulesContainer.Instance.InputService.GetCopyDefaultInputsDataConfiguration());
+                SerializerHelper.Load<InputDataConfigurationArraySerializable>(
+                    filename: "Keys",
+                    isReplicatedNextTheBuild: false,
+                    isEncrypted: false,
+                    onLoadSuccess: (InputDataConfigurationArraySerializable data) =>
+                    {
+                        this.Generate(data.inputDataConfigurations);
+                    },
+                    onLoadError: () =>
+                    {
+                        this.Generate(PlayerServicesAndModulesContainer.Instance.InputService.GetCopyDefaultInputsDataConfiguration());
+                    });
 
                 SceneServicesContainer.Instance.AudioReferencesArraysService.Play2DSound(EAudioCategory.SFX, "Click Button");
             });

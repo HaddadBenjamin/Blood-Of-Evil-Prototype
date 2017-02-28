@@ -10,6 +10,10 @@ namespace BloodOfEvil.Utilities.Serialization
         public float[] floatArray;
         #endregion
 
+        #region Constructor
+        public SerializableFloatArray() { }
+        #endregion
+
         #region Public Behaviour
         public SerializableFloatArray(float[] floatArray)
         {

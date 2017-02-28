@@ -258,10 +258,14 @@ namespace BloodOfEvil.Player.Services.Keys
 
         private void LoadConfigFile()
         {
-            string keysFileName = this.GetFileName();
-
-            if (SerializerHelper.DoesCompletSavePathExists(keysFileName, ".json"))
-                this.SetInputsDataConfiguration(SerializerHelper.JsonDeserializeLoad<InputDataConfigurationArraySerializable>(keysFileName).inputDataConfigurations);
+            SerializerHelper.Load< InputDataConfigurationArraySerializable>(
+                filename: this.GetFileName(),
+                isReplicatedNextTheBuild: false,
+                isEncrypted: false,
+                onLoadSuccess: (InputDataConfigurationArraySerializable data) =>
+                {
+                    this.SetInputsDataConfiguration(data.inputDataConfigurations);
+                });
         }
 
         // Code sale et redondant
