@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections;
+using System.Globalization;
 using System.Xml.Serialization;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -67,9 +68,9 @@ namespace BloodOfEvil.Helpers
 
             FileSystemHelper.SafeWriteAllText(filename, fileContent);
 
-            Debug.LogFormat("Save at {0} with {1}",
-                filename,
-                fileContent);
+            //Debug.LogFormat("Save at {0} with {1}",
+            //    filename,
+            //    fileContent);
         }
 
         /// <summary>
@@ -83,6 +84,19 @@ namespace BloodOfEvil.Helpers
                      fileName : filename, 
                      isReplicatedNextTheBuild : isReplicatedNextTheBuild, 
                      addExtension: false));
+        }
+
+        /// <summary>
+        /// Renvoie si le répertoire de sauvegarde éxiste.
+        /// </summary>
+        public static bool DoesSaveDirectoryExists(string filename,
+            bool isReplicatedNextTheBuild = false)
+        {
+            return Directory.Exists(
+                UnityFileSystemHelper.GetCrossPlatformAndAdaptativePath(
+                    fileName: filename,
+                    isReplicatedNextTheBuild: isReplicatedNextTheBuild,
+                    addExtension: false));
         }
 
         #region Json Serializer

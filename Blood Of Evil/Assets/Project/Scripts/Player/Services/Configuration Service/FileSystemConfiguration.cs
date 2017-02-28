@@ -214,7 +214,7 @@ namespace BloodOfEvil.Player.Services.Configuration
                 "Category");
         }
 
-        private string GetEnemyDirectory(int enemySaveIndex)
+        public string GetEnemyDirectory(int enemySaveIndex)
         {
             return string.Format("{0}/{1}/{2}",
                 this.GetCurrentSceneDirectory(),

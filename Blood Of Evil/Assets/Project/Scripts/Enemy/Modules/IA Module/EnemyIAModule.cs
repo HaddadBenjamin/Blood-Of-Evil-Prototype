@@ -345,6 +345,10 @@ namespace BloodOfEvil.Enemies.Modules.IA
                 onLoadSuccess: (SerializablePositionAndRotation data) =>
                 {
                     data.Load(this.initialPosition);
+                },
+                onLoadError: () =>
+                {
+                    Debug.Log("ne t'inquiète pas c'est normal.");
                 });
         }
 

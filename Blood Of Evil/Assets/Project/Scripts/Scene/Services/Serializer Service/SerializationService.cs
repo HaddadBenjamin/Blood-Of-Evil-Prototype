@@ -95,14 +95,15 @@ namespace BloodOfEvil.Helpers
 
             yield return null;
 
-            if (isEncrypted)
-                fileContent = EncryptionHelper.Decrypt(fileContent);
-
+           
             //Debug.LogFormat("path : {0}", @path);
             //Debug.Log(fileContent);
 
             if (!string.IsNullOrEmpty(fileContent))
             {
+                if (isEncrypted)
+                    fileContent = EncryptionHelper.Decrypt(fileContent);
+
                 try
                 {
                     if (EFileExtension.Json == fileExtension)

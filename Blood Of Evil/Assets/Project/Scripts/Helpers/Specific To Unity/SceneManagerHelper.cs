@@ -12,6 +12,8 @@ namespace BloodOfEvil.Helpers
 
     public static class SceneManagerHelper
     {
+        private const string configurationSceneName = "Don't Destroy Scene";
+
         /// <summary>
         /// Sauvegarde la scène courante.
         /// </summary>
@@ -43,7 +45,7 @@ namespace BloodOfEvil.Helpers
             ((ISerializable)SceneServicesContainer.Instance.SceneStateModule).Load();
         }
 
-        public static void LoadSceneWithoutLoadFiles(string sceneName)
+        public static void LoadSceneWithoutLoadFiles(string sceneName, bool loadSceneIfDefaultScene = true)
         {
             SceneServicesContainer.Instance.SceneStateModule.Reset();
 
@@ -53,7 +55,9 @@ namespace BloodOfEvil.Helpers
             SceneServicesContainer.Instance.ObjectsPoolService.RemoveAllObjectInPool("HealthBarExample");
             SceneServicesContainer.Instance.AudioReferencesArraysService.DisalbleAllSoundFromMusicCategory();
 
-            SceneManager.LoadScene(sceneName);
+            if (loadSceneIfDefaultScene || 
+                !DoesCurrentSceneIsConfigurationScene())
+                SceneManager.LoadScene(sceneName);
 
             // Permet de vider les références valant null du tas de façon explicite.
             System.GC.Collect();
@@ -101,6 +105,11 @@ namespace BloodOfEvil.Helpers
                     else
                         LoadScene(lastPlayerSceneName);
                 });
+        }
+
+        public static bool DoesCurrentSceneIsConfigurationScene()
+        {
+            return SceneManager.GetActiveScene().name.Equals(configurationSceneName);
         }
     }
 }

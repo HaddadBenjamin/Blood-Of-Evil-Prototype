@@ -12,7 +12,7 @@ namespace BloodOfEvil.Player.Services.Game.UI
         #region Override Behaviour
         public override void ButtonActionOnClick()
         {
-            SceneManagerHelper.LoadSceneWithoutLoadFiles(SceneManagerHelper.GetCurrentSceneName());
+            SceneManagerHelper.LoadSceneWithoutLoadFiles(SceneManagerHelper.GetCurrentSceneName(), false);
         }
         #endregion
     }

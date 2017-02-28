@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using BloodOfEvil.Helpers;
 
 namespace BloodOfEvil.Scene.Modules.State
 {
@@ -30,10 +31,7 @@ namespace BloodOfEvil.Scene.Modules.State
         public Transform Player
         {
             get { return player; }
-            private set
-            {
-                player = value;
-            }
+            private set { player = value; }
         }
         #endregion
 
@@ -49,7 +47,8 @@ namespace BloodOfEvil.Scene.Modules.State
             this.player = playerTransform;
         }
 
-        public void RegisterEnemy(Transform enemyTransform, bool raiseEnemyIndex = false)
+        public void RegisterEnemy(Transform enemyTransform,
+            bool raiseEnemyIndex = false)
         {
             if (!this.enemies.Contains(enemyTransform))
             {
@@ -57,8 +56,8 @@ namespace BloodOfEvil.Scene.Modules.State
 
                 enemyTransform.GetComponent<EnemyServicesAndModulesContainer>().Instance.SaveIndex =
                     raiseEnemyIndex ?
-                    this.enemyIndex++ :
-                    this.enemyIndex;
+                        this.enemyIndex++ :
+                        this.enemyIndex;
             }
         }
 
@@ -92,7 +91,8 @@ namespace BloodOfEvil.Scene.Modules.State
             return this.enemies.Exists(enemy => enemy == enemyTransform);
         }
 
-        public AEntityAttributesModule GetTargetAttributesModules(Transform targetTransform, EEntity targetType)
+        public AEntityAttributesModule GetTargetAttributesModules(Transform targetTransform,
+            EEntity targetType)
         {
             if (null == targetTransform)
                 return null;
@@ -102,16 +102,16 @@ namespace BloodOfEvil.Scene.Modules.State
                 var playerServicesContainer = PlayerServicesAndModulesContainer.Instance;
 
                 return null != playerServicesContainer ?
-                        playerServicesContainer.AttributesModule :
-                        null;
+                    playerServicesContainer.AttributesModule :
+                    null;
             }
             else
             {
                 var enemyServicesContainer = targetTransform.GetComponent<EnemyServicesAndModulesContainer>();
 
                 return null != enemyServicesContainer ?
-                        enemyServicesContainer.Instance.AttributesModule :
-                        null;
+                    enemyServicesContainer.Instance.AttributesModule :
+                    null;
             }
         }
 
@@ -124,7 +124,7 @@ namespace BloodOfEvil.Scene.Modules.State
         #region Interface Behaviour
         void ISerializable.Load()
         {
-            ((ISerializable)PlayerServicesAndModulesContainer.Instance).Load();
+            ((ISerializable) PlayerServicesAndModulesContainer.Instance).Load();
 
             StartCoroutine(this.LoadDiffered());
         }
@@ -135,7 +135,12 @@ namespace BloodOfEvil.Scene.Modules.State
             yield return new WaitForSeconds(0.25f);
 
             for (int enemyIndex = 0; enemyIndex < this.enemies.Count; enemyIndex++)
-                ((ISerializable)this.enemies[enemyIndex].GetComponent<EnemyServicesAndModulesContainer>()).Load();
+            {
+                if (
+                    SerializerHelper.DoesSaveDirectoryExists(
+                        SceneServicesContainer.Instance.FileSystemConfiguration.GetEnemyDirectory(enemyIndex)))
+                    ((ISerializable) this.enemies[enemyIndex].GetComponent<EnemyServicesAndModulesContainer>()).Load();
+            }
         }
 
         void ISerializable.Save()
@@ -143,7 +148,9 @@ namespace BloodOfEvil.Scene.Modules.State
             ((ISerializable)PlayerServicesAndModulesContainer.Instance).Save();
 
             for (int enemyIndex = 0; enemyIndex < this.enemies.Count; enemyIndex++)
+            {
                 ((ISerializable)this.enemies[enemyIndex].GetComponent<EnemyServicesAndModulesContainer>()).Save();
+            }
         }
         #endregion
     }

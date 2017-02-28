@@ -54,7 +54,7 @@ public class HealthBar : MonoBehaviour
 
     public void Initialize(float minLife, float maxLife)
 	{
-        this.canvas = SceneServicesContainer.Instance.GameObjectInSceneReferencesService.Get("[UI] Enemies Health Bars").GetComponent<Canvas>();
+        this.canvas = SceneServicesContainer.Instance.GameObjectInSceneReferencesService.Get("[UI] Enemies Health Bars").transform.parent.GetComponent<Canvas>();
 
         this.SetMaximumLife(maxLife);
         lastHealth = maxLife;

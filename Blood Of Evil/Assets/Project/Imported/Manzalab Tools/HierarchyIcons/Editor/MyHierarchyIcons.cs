@@ -29,7 +29,7 @@ class MyHierarchyIcons
                         }
                         catch (System.Exception e)
                         {
-                            Debug.Log(e);
+                            //Debug.Log(e);
                         }
                     }
                     else
