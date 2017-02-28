@@ -117,6 +117,7 @@ namespace BloodOfEvil.Player.Modules.Attributes
             SerializerHelper.Load<EntityAttributesArrayOfArraySerializable>(
                 filename: this.GetFileName(),
                 isReplicatedNextTheBuild: false,
+                isEncrypted: true,
                 onLoadSuccess: (EntityAttributesArrayOfArraySerializable attributesSerializable) =>
                 {
                     this.ClearOtherAttributesFromAllAttributesCategories();

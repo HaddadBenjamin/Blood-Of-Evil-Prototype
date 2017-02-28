@@ -18,7 +18,7 @@ namespace BloodOfEvil.Player.Services.Canvases
         void Start()
         {
             this.myTransform = transform;
-            this.canvas = transform.parent.GetComponent<Canvas>();
+            this.canvas = transform.parent.parent.GetComponent<Canvas>();
         }
         #endregion
 

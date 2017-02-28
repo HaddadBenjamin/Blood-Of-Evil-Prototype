@@ -34,9 +34,6 @@ namespace BloodOfEvil.Player.Services.Language
                 // Ne doit pas tester si le language courant à été modifié car le bouton reload de l'interface ne marchera pas.
                 // Ne doit pas tester si le language modifié est le courant car pareil l'interface doit se modifier.
                 this.LoadLanguage();
-
-                if (null != this.NewLanguageHaveBeenLoaded)
-                    NewLanguageHaveBeenLoaded();
             }
         }
         #endregion
@@ -52,7 +49,7 @@ namespace BloodOfEvil.Player.Services.Language
                 isEncrypted: false,
                 onLoadSuccess: (ELanguageSerializable data) =>
                 {
-                    this.currentLanguage = data.ELanguage;
+                    this.CurrentLanguage = data.ELanguage;
                 });
         }
 
@@ -236,14 +233,17 @@ namespace BloodOfEvil.Player.Services.Language
                     onLoadSuccess: (SerializableStringArrayArray data) =>
                     {
                         data.StringArrayArrayToSerializableStringArrayArray(ref this.currentLanguageTexts);
+
+                        PlayerServicesAndModulesContainer.Instance.TextInformationService.AddTextInformation(
+                            string.Format("{0} {1} {2}.",
+                                this.GetText(ELanguageCategory.TextInformation, "The language"),
+                                this.GetText(ELanguageCategory.Language, EnumerationHelper.EnumerationToString<ELanguage>(this.CurrentLanguage)),
+                                this.GetText(ELanguageCategory.TextInformation, "have been loaded")));
+
+                        if (null != this.NewLanguageHaveBeenLoaded)
+                            NewLanguageHaveBeenLoaded();
                     });
             }
-
-            PlayerServicesAndModulesContainer.Instance.TextInformationService.AddTextInformation(
-                    string.Format("{0} {1} {2}.",
-                        this.GetText(ELanguageCategory.TextInformation, "The language"),
-                        this.GetText(ELanguageCategory.Language, EnumerationHelper.EnumerationToString<ELanguage>(this.CurrentLanguage)),
-                        this.GetText(ELanguageCategory.TextInformation, "have been loaded")));
         }
         #endregion
 

@@ -103,8 +103,19 @@ namespace BloodOfEvil.Helpers
 
             if (!string.IsNullOrEmpty(fileContent))
             {
-                if (EFileExtension.Json == fileExtension)
-                    onLoadSuccess.SafeCall(JsonUtility.FromJson<TTypeToSave>(fileContent));
+                try
+                {
+                    if (EFileExtension.Json == fileExtension)
+                        onLoadSuccess.SafeCall(JsonUtility.FromJson<TTypeToSave>(fileContent));
+                }
+
+                catch (Exception exception)
+                {
+                    Debug.LogFormat("path : {0}", @path);
+                    Debug.LogFormat("is encrypted : {0}", isEncrypted);
+                    Debug.LogFormat("exception.Message : {0}", exception.Message);
+                    Debug.LogFormat("fileContent : {0}", fileContent);
+                }
                 // Il faudrait que je test pour le XML et le binaire mais la méthode en json fonctionne du feu de dieu.
                 //else if (EFileExtension.Xml == fileExtension)
                 //{
