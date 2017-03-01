@@ -126,13 +126,13 @@ namespace BloodOfEvil.Player.Services.Canvases
                 PlayerServicesAndModulesContainer.Instance.MovementModule.StopToMove();
                 SceneServicesContainer.Instance.AudioReferencesArraysService.Play2DSound(EAudioCategory.SFX, "Open Menu");
 
-                PlayerServicesAndModulesContainer.Instance.
-                    TextInformationService.AddTextInformation(
-                    string.Format("{0} : {1}.",
-                        PlayerServicesAndModulesContainer.Instance.LanguageService.GetText(ELanguageCategory.TextInformation, "Menu opening"),
-                        PlayerServicesAndModulesContainer.Instance.LanguageService.GetText(ELanguageCategory.KeysMenu,
-                                EnumerationHelper.EnumerationToString(canvasesConfigurations[base.GetHashId(canvasName)].Input).
-                                ReplaceUppercaseBySpaceAndUppercase())));
+                //PlayerServicesAndModulesContainer.Instance.
+                //    TextInformationService.AddTextInformation(
+                //    string.Format("{0} : {1}.",
+                //        PlayerServicesAndModulesContainer.Instance.LanguageService.GetText(ELanguageCategory.TextInformation, "Menu opening"),
+                //        PlayerServicesAndModulesContainer.Instance.LanguageService.GetText(ELanguageCategory.KeysMenu,
+                //                EnumerationHelper.EnumerationToString(canvasesConfigurations[base.GetHashId(canvasName)].Input).
+                //                ReplaceUppercaseBySpaceAndUppercase())));
 
             }
         }

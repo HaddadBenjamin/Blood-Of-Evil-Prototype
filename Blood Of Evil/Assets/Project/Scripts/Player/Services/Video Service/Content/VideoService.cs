@@ -231,7 +231,7 @@ namespace BloodOfEvil.Player.Services.Video
                     GameObjectInSceneReferencesService.Get("Player Camera");
             ((ISerializable) this).Load();
 
-            this.QualityIndex = Helpers.QualitySettingsHelper.GetQualityNameIndex("Simple");
+            this.QualityIndex = QualitySettingsHelper.GetQualityNameIndex("Simple");
         }
         #endregion
 

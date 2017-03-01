@@ -16,6 +16,15 @@ namespace BloodOfEvil.Player.Services.TextInformation
         private List<RectTransform> textInformationsRectTranform;
         private Transform parentTransform;
 
+        [SerializeField]
+        private Color informationColor = ColorHelper.Blue;
+        [SerializeField]
+        private Color warningColor = ColorHelper.Yellow;
+        [SerializeField]
+        private Color rareEventColor = ColorHelper.Purple;
+        [SerializeField]
+        private Color youCantDoAnActionColor = ColorHelper.Red;
+
         private readonly float UpdateTime = 0.2f;
         #endregion
 
@@ -46,10 +55,10 @@ namespace BloodOfEvil.Player.Services.TextInformation
 
             text.text = content;
             text.color =
-                ETextInformation.Information == type ? ColorHelper.Blue :
-                ETextInformation.RareEvent == type ? ColorHelper.Purple :
-                ETextInformation.Warning == type ? ColorHelper.Yellow :
-                                                        ColorHelper.Red;
+                ETextInformation.Information == type ? this.informationColor :
+                ETextInformation.RareEvent == type ? this.rareEventColor :
+                ETextInformation.Warning == type ? this.warningColor :
+                                                        this.youCantDoAnActionColor;
 
             textInformationGameObject.transform.SetPositionAndParent(Vector3.zero, this.parentTransform);
 

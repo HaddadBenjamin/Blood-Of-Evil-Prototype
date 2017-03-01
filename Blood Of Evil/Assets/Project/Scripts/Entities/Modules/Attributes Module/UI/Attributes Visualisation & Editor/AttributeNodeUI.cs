@@ -110,12 +110,12 @@ namespace BloodOfEvil.Entities.Modules.Attributes.UI
 
                 SceneServicesContainer.Instance.AudioReferencesArraysService.Play2DSound(EAudioCategory.SFX, "Click Button");
 
-                PlayerServicesAndModulesContainer.Instance.
-                TextInformationService.AddTextInformation(
-                    string.Format("{0} of \"{1}\" is {2}.",
-                    PlayerServicesAndModulesContainer.Instance.LanguageService.GetText(ELanguageCategory.TextInformation, "The new attribute value is"),
-                    PlayerServicesAndModulesContainer.Instance.LanguageService.GetText(ELanguageCategory.SubAttributesCategory, this.SubAttributeCategory),
-                    this.GetAttributeModifiedValueInputFieldValue()));
+                //PlayerServicesAndModulesContainer.Instance.
+                //TextInformationService.AddTextInformation(
+                //    string.Format("{0} of \"{1}\" is {2}.",
+                //    PlayerServicesAndModulesContainer.Instance.LanguageService.GetText(ELanguageCategory.TextInformation, "The new attribute value is"),
+                //    PlayerServicesAndModulesContainer.Instance.LanguageService.GetText(ELanguageCategory.SubAttributesCategory, this.SubAttributeCategory),
+                //    this.GetAttributeModifiedValueInputFieldValue()));
             });
         }
 
