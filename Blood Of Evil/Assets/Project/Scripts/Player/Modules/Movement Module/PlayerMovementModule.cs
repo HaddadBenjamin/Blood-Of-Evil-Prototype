@@ -195,9 +195,11 @@ namespace BloodOfEvil.Player.Modules.Movements
 
         private void UpdatePathfindingParticule()
         {
-            this.pathfindingParticuleGameObject.transform.position =
-                base.NavMeshAgent.destination +
-                Vector3.up * PATHFINDING_PARTICLE_MIDDLE_HEIGHT;
+            Vector3 screenPoint = Camera.main.WorldToScreenPoint(base.NavMeshAgent.destination);
+            Ray ray = Camera.main.ScreenPointToRay(screenPoint);
+
+            this.pathfindingParticuleGameObject.transform.position = ray.GetPoint(
+                Vector3.Distance(Camera.main.transform.position, base.NavMeshAgent.destination) - PATHFINDING_PARTICLE_MIDDLE_HEIGHT);
 
             this.pathfindingParticuleGameObject.SetActive(base.AnimationModule.GetLocomotionSpeedParameter() > LOCOMOTION_SPEED_TO_ENABLE_PATHFINDING_PARTICLE);
         }
