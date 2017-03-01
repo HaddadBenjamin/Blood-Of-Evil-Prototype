@@ -82,7 +82,7 @@ namespace BloodOfEvil.Player.Modules.Portails
 
         void OnTriggerEnter(Collider other)
         {
-            if ("Player" == other.tag)
+            if (other.CompareTag("Player"))
                 StartCoroutine(PlayerServicesAndModulesContainer.Instance.PortalModule.Teleport(this));
         }
         #endregion

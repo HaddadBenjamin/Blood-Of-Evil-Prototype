@@ -154,7 +154,7 @@ namespace BloodOfEvil.Player.Modules.Movements
             if (Physics.Raycast(this.ray, out this.raycasthHit, 10000.0f, this.raycastLayerMask))// && //this.raycasthHit.collider.CompareTag("Nav Mesh") &&
                                                                                                  //NavMeshHelper.IsReachable(base.MyTransform.position, this.raycasthHit.point))
             {
-                if (this.followAndAttackEnemy = this.raycasthHit.collider.tag == "Enemy")
+                if (this.followAndAttackEnemy = this.raycasthHit.collider.CompareTag("Enemy"))
                     this.UpdateEnemyServicesAndTransform();
 
                 bool canGoToDestination = Vector3.Distance(base.MyTransform.position, this.raycasthHit.point) > DISTANCE_FROM_DESTINATION_TO_STOP_NAV_MESH &&

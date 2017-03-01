@@ -39,7 +39,7 @@ namespace BloodOfEvil.ObjectInScene.Modules.Portal
 
         void OnTriggerEnter(Collider other)
         {
-            if ("Player" == other.tag)
+            if (other.CompareTag("Player"))
                 StartCoroutine(this.LoadDiffered());
         }
         #endregion
