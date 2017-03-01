@@ -152,9 +152,7 @@ namespace BloodOfEvil.Scene.Modules.State
                     EnemyServicesAndModulesContainer enemyServiceContainer =
                         this.enemies[enemyIndex].GetComponent<EnemyServicesAndModulesContainer>();
 
-                    enemyServiceContainer.SaveIndex =
-                        Int32.Parse(subDirectoryName.Substring(subDirectoryName.LastIndexOf('\\') + 1,
-                            subDirectoryName.Length - subDirectoryName.LastIndexOf('\\') - 1));
+                    enemyServiceContainer.SaveIndex = Int32.Parse(Path.GetDirectoryName(subDirectoryName));
 
                     //Debug.LogFormat("path : {0}, saveIndex : {1}", subDirectoryName, enemyServiceContainer.SaveIndex);
                     ((ISerializable) enemyServiceContainer).Load();
@@ -176,10 +174,7 @@ namespace BloodOfEvil.Scene.Modules.State
             ((ISerializable)PlayerServicesAndModulesContainer.Instance).Save();
 
             for (int enemyIndex = 0; enemyIndex < this.enemies.Count; enemyIndex++)
-            {
-                Debug.Log("save an enemy");
                 ((ISerializable)this.enemies[enemyIndex].GetComponent<EnemyServicesAndModulesContainer>()).Save();
-            }
         }
         #endregion
     }

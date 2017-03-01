@@ -37,8 +37,6 @@ namespace BloodOfEvil.Player.Services.TextInformation
             this.textInformationsRectTranform = new List<RectTransform>();
 
             StartCoroutine(this.UpdatePoolElementsEveryNSeconds());
-
-            AddTextInformation("C'est un test");
         }
         #endregion
 

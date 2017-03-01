@@ -119,8 +119,6 @@ namespace BloodOfEvil.Enemies
 
         void ISerializable.Save()
         {
-            Debug.Log("save ENEMY");
-
             this.AttributesModule.SaveEEnemyCategory(); // Sauvegarde juste la catégorie de l'ennemi.
             ((ISerializable)this.AttributesModule).Save(); // Sauvegarde tous les attributs.
 
