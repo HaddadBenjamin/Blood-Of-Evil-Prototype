@@ -348,7 +348,7 @@ namespace BloodOfEvil.Enemies.Modules.IA
                 },
                 onLoadError: () =>
                 {
-                    Debug.Log("ne t'inquiète pas c'est normal.");
+                    Debug.Log("pas d'inquiétude à avoir, c'est normal que ce fichier n'éxiste pas lorsque l'on a pas sauvegarder cette scène au moins fois.");
                 });
         }
 

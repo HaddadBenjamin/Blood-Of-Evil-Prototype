@@ -80,6 +80,10 @@ namespace BloodOfEvil.Player.Services.Game
                 onLoadSuccess: (GameServiceSerializable data) =>
                 {
                     data.Load(this);
+                },
+                onLoadError: () =>
+                {
+                    Debug.Log("pas d'inquiétude à avoir, c'est normal que ce fichier n'éxiste pas lorsque l'on a pas sauvegarder au moins une fois.");
                 });
         }
 

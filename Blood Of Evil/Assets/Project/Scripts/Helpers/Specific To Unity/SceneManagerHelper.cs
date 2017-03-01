@@ -106,6 +106,10 @@ namespace BloodOfEvil.Helpers
                         PlayerServicesAndModulesContainer.Instance.FirstLoadApplication();
                     else
                         LoadScene(lastPlayerSceneName);
+                },
+                onLoadError: () =>
+                {
+                    Debug.Log("pas d'inquiétude à avoir, c'est normal que ce fichier n'éxiste pas lorsque l'on a pas sauvegarder au moins une fois.");
                 });
         }
 

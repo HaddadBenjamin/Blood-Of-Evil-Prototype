@@ -61,6 +61,10 @@ namespace BloodOfEvil.Player.Services.Audio
 
                     for (int floatArrayIndex = 0; floatArrayIndex < floatArray.Length; floatArrayIndex++)
                         this.audioCategories[floatArrayIndex].Volume = floatArray[floatArrayIndex];
+                },
+                onLoadError: () =>
+                {
+                    Debug.Log("pas d'inquiétude à avoir, c'est normal que ce fichier n'éxiste pas lorsque l'on a pas sauvegarder au moins une fois.");
                 });
         }
 

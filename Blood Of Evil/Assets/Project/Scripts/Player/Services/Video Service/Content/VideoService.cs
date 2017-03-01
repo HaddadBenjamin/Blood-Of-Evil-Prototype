@@ -16,11 +16,11 @@ namespace BloodOfEvil.Player.Services.Video
         private float lightIntensity = 1.0f;
         private bool fullScreen = true;
         private bool antiAliasing = true;
-        private bool sunShafts = true;
-        private bool bloom = true;
+        private bool sunShafts = false;
+        private bool bloom = false;
         private bool colorCorrectionCurves = true;
         private bool vignetteAndChromaticAberation = true;
-        private bool globalFog = true;
+        private bool globalFog = false;
         private bool cameraBlur;
         private int qualityIndex;
         private string resolution;
@@ -206,6 +206,10 @@ namespace BloodOfEvil.Player.Services.Video
                     this.VignetteAndChromaticAberation = serializableVideoService.VignetteAndChromaticAberation;
                     this.ColorCorrectionCurves = serializableVideoService.ColorCorrectionCurves;
                     this.GlobalFog = serializableVideoService.GlobalFog;
+                },
+                onLoadError: () =>
+                {
+                    Debug.Log("pas d'inquiétude à avoir, c'est normal que ce fichier n'éxiste pas lorsque l'on a pas sauvegarder au moins une fois.");
                 });
         }
 
@@ -224,8 +228,10 @@ namespace BloodOfEvil.Player.Services.Video
         {
             this.playerCamera =
                 PlayerServicesAndModulesContainer.Instance.
-                GameObjectInSceneReferencesService.Get("Player Camera");
-            ((ISerializable)this).Load();
+                    GameObjectInSceneReferencesService.Get("Player Camera");
+            ((ISerializable) this).Load();
+
+            this.QualityIndex = Helpers.QualitySettingsHelper.GetQualityNameIndex("Simple");
         }
         #endregion
 
