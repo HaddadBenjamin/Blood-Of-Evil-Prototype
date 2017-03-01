@@ -29,12 +29,6 @@ namespace BloodOfEvil.Player.Modules.Attributes
         public override void CreateCallbacksAttributes()
         {
             base.CreateCallbacksAttributes();
-
-            base.GetAttribute(EEntityCategoriesAttributes.Movement, "Movement Speed Percentage").Current.ValueListener(
-                delegate(float input)
-                {
-                    base.attributeModule.GetComponent<PlayerMovementModule>().AnimationMovementSpeedRatio = input * PERCENTAGE_TO_UNIT;
-                });
         }
         #endregion
     }

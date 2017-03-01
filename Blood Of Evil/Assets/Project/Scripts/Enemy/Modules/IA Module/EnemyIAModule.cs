@@ -66,7 +66,7 @@ namespace BloodOfEvil.Enemies.Modules.IA
             else
             {
                 //base.UpdateLocomotionSpeedSmoothly();
-                base.LocomotionSpeed = base.NavMeshAgent.desiredVelocity.magnitude - 0.2f;
+                base.LocomotionSpeed = base.NavMeshAgent.desiredVelocity.magnitude;
 
                 base.UpdateNavMeshAgent();
                 base.UpdateDistanceFromDestination();
@@ -102,7 +102,7 @@ namespace BloodOfEvil.Enemies.Modules.IA
         #region Intern Behaviour
         private IEnumerator CreateIAGameObjects()
         {
-            yield return new WaitForSeconds(0.3f);
+            yield return new WaitForSeconds(0.1f);
 
             this.initialPosition = new GameObject().transform;
             this.wanderPoint = new GameObject().transform;
