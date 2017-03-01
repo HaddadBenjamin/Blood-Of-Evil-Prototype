@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using BloodOfEvil.Entities.Modules.Movement;
 
 namespace BloodOfEvil.Entities.Modules.Attributes
 {
@@ -27,6 +28,8 @@ namespace BloodOfEvil.Entities.Modules.Attributes
             base.GetAttribute(EEntityCategoriesAttributes.Movement, "Movement Speed Percentage").Current.ValueListener(delegate (float input)
             {
                 this.animator.SetFloat("Locomotion Speed Percentage", input * PERCENTAGE_TO_UNIT);
+
+                base.attributeModule.GetComponent<AEntityMovementModule>().AnimationMovementSpeedRatio = input * PERCENTAGE_TO_UNIT;
             });
         }
         #endregion
