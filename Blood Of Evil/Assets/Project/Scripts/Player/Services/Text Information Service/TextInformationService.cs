@@ -37,6 +37,8 @@ namespace BloodOfEvil.Player.Services.TextInformation
             this.textInformationsRectTranform = new List<RectTransform>();
 
             StartCoroutine(this.UpdatePoolElementsEveryNSeconds());
+
+            AddTextInformation("C'est un test");
         }
         #endregion
 
@@ -90,9 +92,9 @@ namespace BloodOfEvil.Player.Services.TextInformation
 
         private void UpdatePositionPoolElements()
         {
-            for (int rectTransformIndex = 0; rectTransformIndex < this.textInformationsRectTranform.Count; rectTransformIndex++)
-                this.textInformationsRectTranform[rectTransformIndex].SetPosition
-                    (Vector3.Lerp(this.textInformationsRectTranform[rectTransformIndex].position, new Vector3(0.0f, rectTransformIndex * 50.0f, 0.0f), 1f));
+            //for (int rectTransformIndex = 0; rectTransformIndex < this.textInformationsRectTranform.Count; rectTransformIndex++)
+            //    this.textInformationsRectTranform[rectTransformIndex].SetPosition
+            //        (Vector3.Lerp(this.textInformationsRectTranform[rectTransformIndex].position, new Vector3(0.0f, rectTransformIndex * 50.0f, 0.0f), 1f));
         }
 
         private void UpdateDeletePoolElements()
