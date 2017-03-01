@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
+using BloodOfEvil.Player;
 
 /// <summary>
 /// Map base class.
@@ -1200,7 +1201,7 @@ namespace NJG
             if (!isPanning && item.haveArrow) // || item.arrowAlwaysVisible  && !isOutOfBounds
             {
                 
-                Transform tempTarget = target == null ? Camera.main.transform : target;
+                Transform tempTarget = target == null ? PlayerServicesAndModulesContainer.Instance.PlayerCamera.transform : target;
 
 
                 if (!isVisible && item.isRevealed)
@@ -1378,7 +1379,7 @@ namespace NJG
 
 			float nZoom = 1f / zoom;
 
-            Transform tr = target == null ? Camera.main.transform : target;
+            Transform tr = target == null ? PlayerServicesAndModulesContainer.Instance.PlayerCamera.transform : target;
 
             //if (target == null) return;
 

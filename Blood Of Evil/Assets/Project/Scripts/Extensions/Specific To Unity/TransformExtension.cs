@@ -9,6 +9,21 @@ namespace BloodOfEvil.Extensions
     public static class TransformExtension
     {
         /// <summary>
+        /// Place le transform à la position du sol.
+        /// </summary>
+        public static void SetPositionAtGroundPosition(
+            this Transform transform,
+            Vector3 groundPosition,
+            Camera cameraUsed,
+            float distanceFromGround = 1.0f)
+        {
+            Vector3 screenPoint = cameraUsed.WorldToScreenPoint(groundPosition);
+            Ray ray = cameraUsed.ScreenPointToRay(screenPoint);
+
+            transform.position = ray.GetPoint(Vector3.Distance(cameraUsed.transform.position, groundPosition) - distanceFromGround);
+        }
+
+        /// <summary>
         /// Renvoit une position autour d'un transform d'une distance maximal de "DistanceAround".
         /// </summary> 
         public static Vector3 GetRandomLocationAroundPosition(this Transform transform, float distanceAround)

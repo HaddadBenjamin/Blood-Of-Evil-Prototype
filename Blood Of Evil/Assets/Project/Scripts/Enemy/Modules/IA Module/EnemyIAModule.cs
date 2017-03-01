@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using BloodOfEvil.Player;
 
 namespace BloodOfEvil.Enemies.Modules.IA
 {
@@ -138,8 +139,10 @@ namespace BloodOfEvil.Enemies.Modules.IA
             {
                 while (true)
                 {
+                    Camera playerCamera = PlayerServicesAndModulesContainer.Instance.PlayerCamera;
+
                     circle = UnityEngine.Random.insideUnitCircle * this.wanderRange;
-                    ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Camera.main.WorldToScreenPoint(base.MyTransform.position + new Vector3(circle.x, 0.0f, circle.y)));
+                    ray = playerCamera.ScreenPointToRay(playerCamera.WorldToScreenPoint(base.MyTransform.position + new Vector3(circle.x, 0.0f, circle.y)));
 
                     if (Physics.Raycast(ray, out raycastHit) &&
                         NavMeshHelper.IsReachable(base.MyTransform.position, this.raycastHit.point) &&

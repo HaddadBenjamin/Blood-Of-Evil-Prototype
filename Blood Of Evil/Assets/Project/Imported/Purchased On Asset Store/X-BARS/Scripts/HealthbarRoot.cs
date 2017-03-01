@@ -2,6 +2,7 @@
 using BloodOfEvil.Scene;
 using System.Collections;
 using System.Collections.Generic;
+using BloodOfEvil.Player;
 
 public class HealthbarRoot : MonoBehaviour {
     public List<Transform> healthBars = new List<Transform>(); //List of helthbars;
@@ -10,7 +11,7 @@ public class HealthbarRoot : MonoBehaviour {
 	
     void Start ()
     {
-        cam = Camera.main;
+        cam = PlayerServicesAndModulesContainer.Instance.PlayerCamera;
         cameraTransform = cam.transform;
 
         for (int i = 0; i < transform.childCount; i++)

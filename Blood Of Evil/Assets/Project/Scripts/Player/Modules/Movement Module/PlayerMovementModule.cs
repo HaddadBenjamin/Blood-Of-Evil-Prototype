@@ -146,10 +146,12 @@ namespace BloodOfEvil.Player.Modules.Movements
         {
             this.followAndAttackEnemy = false;
 
+            Camera playerCamera = PlayerServicesAndModulesContainer.Instance.PlayerCamera;
+
             this.ray =
                 moveFromKeys == true ?
-                UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Camera.main.WorldToScreenPoint(base.MyTransform.position) + offset) :
-                UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition + offset);
+                playerCamera.ScreenPointToRay(playerCamera.WorldToScreenPoint(base.MyTransform.position) + offset) :
+                playerCamera.ScreenPointToRay(Input.mousePosition + offset);
 
             if (Physics.Raycast(this.ray, out this.raycasthHit, 10000.0f, this.raycastLayerMask))// && //this.raycasthHit.collider.CompareTag("Nav Mesh") &&
                                                                                                  //NavMeshHelper.IsReachable(base.MyTransform.position, this.raycasthHit.point))
@@ -195,11 +197,10 @@ namespace BloodOfEvil.Player.Modules.Movements
 
         private void UpdatePathfindingParticule()
         {
-            Vector3 screenPoint = Camera.main.WorldToScreenPoint(base.NavMeshAgent.destination);
-            Ray ray = Camera.main.ScreenPointToRay(screenPoint);
-
-            this.pathfindingParticuleGameObject.transform.position = ray.GetPoint(
-                Vector3.Distance(Camera.main.transform.position, base.NavMeshAgent.destination) - PATHFINDING_PARTICLE_MIDDLE_HEIGHT);
+            this.pathfindingParticuleGameObject.transform.SetPositionAtGroundPosition(
+                base.NavMeshAgent.destination,
+                PlayerServicesAndModulesContainer.Instance.PlayerCamera,
+                PATHFINDING_PARTICLE_MIDDLE_HEIGHT);
 
             this.pathfindingParticuleGameObject.SetActive(base.AnimationModule.GetLocomotionSpeedParameter() > LOCOMOTION_SPEED_TO_ENABLE_PATHFINDING_PARTICLE);
         }

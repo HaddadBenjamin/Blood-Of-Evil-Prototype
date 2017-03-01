@@ -3,6 +3,7 @@ using System;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
+using BloodOfEvil.Player;
 
 public class shaderGlow : MonoBehaviour {
 
@@ -222,8 +223,11 @@ public class shaderGlow : MonoBehaviour {
 
 	
 	
-	void OnGUI () {
-		if (!showLabel || Camera.main==null)
+	void OnGUI ()
+	{
+	    Camera playerCamera = PlayerServicesAndModulesContainer.Instance.PlayerCamera;
+
+		if (!showLabel || playerCamera == null)
 			return;
 		float x=0, y=0;
         if (labelMode == labelModes.onMouseEnter) {
@@ -232,13 +236,13 @@ public class shaderGlow : MonoBehaviour {
         }
         else {
             if (GetComponent<Renderer>() != null) {
-                Vector3 pos = Camera.main.WorldToScreenPoint(GetComponent<Renderer>().bounds.center);
+                Vector3 pos = playerCamera.WorldToScreenPoint(GetComponent<Renderer>().bounds.center);
                 x = pos.x - 150;
                 y = Screen.height - pos.y;
             }
             else
             {
-                Vector3 pos = Camera.main.WorldToScreenPoint(transform.position);
+                Vector3 pos = playerCamera.WorldToScreenPoint(transform.position);
                 x = pos.x - 150;
                 y = Screen.height - pos.y;
             }

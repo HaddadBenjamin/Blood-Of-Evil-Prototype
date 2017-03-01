@@ -55,7 +55,7 @@ namespace BloodOfEvil.Player.Modules.Cursors
         #region Public Behaviour
         void FixedUpdate()
         {
-            this.ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
+            this.ray = PlayerServicesAndModulesContainer.Instance.PlayerCamera.ScreenPointToRay(Input.mousePosition);
 
             if (Physics.Raycast(this.ray, out this.raycastHit))
             {

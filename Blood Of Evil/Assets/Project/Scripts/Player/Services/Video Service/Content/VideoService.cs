@@ -227,8 +227,7 @@ namespace BloodOfEvil.Player.Services.Video
         void IDataInitializable.Initialize()
         {
             this.playerCamera =
-                PlayerServicesAndModulesContainer.Instance.
-                    GameObjectInSceneReferencesService.Get("Player Camera");
+                PlayerServicesAndModulesContainer.Instance.PlayerCamera.gameObject;
             ((ISerializable) this).Load();
 
             this.QualityIndex = QualitySettingsHelper.GetQualityNameIndex("Simple");
@@ -263,8 +262,7 @@ namespace BloodOfEvil.Player.Services.Video
         // c'est crade il faudrait stoquer la caméra à l'init.
         private void UpdateCameraBlur()
         {
-            PlayerServicesAndModulesContainer.Instance.
-                GameObjectInSceneReferencesService.Get("Player Camera").
+            PlayerServicesAndModulesContainer.Instance.PlayerCamera.
                 GetComponent<UnityStandardAssets.ImageEffects.CameraMotionBlur>().enabled = this.CameraBlur;
         }
 

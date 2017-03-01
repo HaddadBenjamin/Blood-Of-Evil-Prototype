@@ -38,6 +38,8 @@ namespace BloodOfEvil.Player
     {
         #region Fields
         [SerializeField]
+        private Camera playerCamera;
+        [SerializeField]
         private bool debugMode = true;
         [SerializeField]
         private EResolutionType resolutionType = EResolutionType.Development;
@@ -76,6 +78,11 @@ namespace BloodOfEvil.Player
         #endregion
 
         #region Properties
+        public Camera PlayerCamera
+        {
+            get { return playerCamera; }
+        }
+
         public bool DebugMode
         {
             get { return debugMode; }
