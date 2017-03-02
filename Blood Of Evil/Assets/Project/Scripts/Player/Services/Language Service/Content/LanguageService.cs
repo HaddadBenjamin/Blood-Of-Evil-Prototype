@@ -624,6 +624,7 @@ namespace BloodOfEvil.Player.Services.Language
             this.defaultLanguageTexts[EnumerationHelper.GetIndex(ELanguageCategory.MapAreas)] = new string[]
            {
             "Hell Plain",
+            "Don't Destroy Scene"
            };
             #endregion
 

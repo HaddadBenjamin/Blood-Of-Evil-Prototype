@@ -6,6 +6,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using BloodOfEvil.Player;
+using BloodOfEvil.Player.Services.Language;
 
 namespace NJG
 {
@@ -19,12 +21,14 @@ namespace NJG
         {
             label = GetComponent<Text>();
             if (NJGMap.instance != null) NJGMap.onWorldZoneChange += OnNameChanged;
+
+            PlayerServicesAndModulesContainer.Instance.LanguageService.NewLanguageHaveBeenLoaded += () =>OnNameChanged(label.text);
         }
 
         void OnNameChanged(string worldName)
         {
             label.color = NJGMap.instance.zoneColor;
-            label.text = worldName;
+            label.text = PlayerServicesAndModulesContainer.Instance.LanguageService.GetText(ELanguageCategory.MapAreas, worldName);
         }
     }
 }
