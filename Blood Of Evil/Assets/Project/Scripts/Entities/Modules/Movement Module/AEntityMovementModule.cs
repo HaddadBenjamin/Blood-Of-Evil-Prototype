@@ -70,8 +70,7 @@ namespace BloodOfEvil.Entities.Modules.Movement
         {
             // Permet d'adapdter la vitesse de déplacement en fonction de la vitesse de l'animation.
             this.NavMeshAgent.velocity =
-                this.DistanceFromDestination < DISTANCE_FROM_DESTINATION_TO_STOP_NAV_MESH || !this.CanMove ?
-               
+                this.DistanceFromDestination < DISTANCE_FROM_DESTINATION_TO_STOP_NAV_MESH || !this.CanMove || 0.01f > this.AnimationMovementSpeedRatio ?
                 Vector3.zero :
                     this.MyAnimator.deltaPosition / Time.deltaTime * this.AnimationMovementSpeedRatio;
         }
