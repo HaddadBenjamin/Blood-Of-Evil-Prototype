@@ -64,7 +64,7 @@ namespace BloodOfEvil.Entities.Modules.Attributes
             this.ManaPercentageAttributes.InitializeDefaultPercentage("Percentage Of Mana");
 
             this.MaximumManaAttributes.Initialize("Maximum Mana", 100.0f, base.GetAttribute(EEntityCategoriesAttributes.Mana, "Mana Percentage"));
-            this.ManaAttributes.Initialize("Mana", 100.0f, base.GetAttribute(EEntityCategoriesAttributes.Mana, "Mana Percentage"), false);
+            this.ManaAttributes.Initialize("Mana", 80.0f, base.GetAttribute(EEntityCategoriesAttributes.Mana, "Mana Percentage"), false);
         }
 
         public override void CreateCallbacksAttributes()
