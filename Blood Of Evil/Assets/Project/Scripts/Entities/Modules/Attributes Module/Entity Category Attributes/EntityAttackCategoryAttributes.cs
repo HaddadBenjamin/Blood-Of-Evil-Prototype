@@ -70,7 +70,7 @@ namespace BloodOfEvil.Entities.Modules.Attributes
             base.GetAttribute(EEntityCategoriesAttributes.Attack, "Maximal Damage").Initialize("Maximal Damage", 0.0f, base.GetAttribute(EEntityCategoriesAttributes.Attack, "Damage Percentage"));
             base.GetAttribute(EEntityCategoriesAttributes.Attack, "Dexterity").Initialize("Dexterity", 15.0f, base.GetAttribute(EEntityCategoriesAttributes.Attack, "Dexterity Percentage"));
 
-            base.GetAttribute(EEntityCategoriesAttributes.Attack, "Attack Range").Initialize("Attack Range", 1.6f);
+            base.GetAttribute(EEntityCategoriesAttributes.Attack, "Attack Range").Initialize("Attack Range", 0.3f);
             base.GetAttribute(EEntityCategoriesAttributes.Attack, "Attack Speed").Initialize("Attack Speed", 1.0f, null, false);
 
             this.AttackRange.Initialize("Attack Range", 1.85f, null, false);
