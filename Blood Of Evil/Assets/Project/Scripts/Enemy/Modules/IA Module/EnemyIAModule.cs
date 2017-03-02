@@ -289,14 +289,24 @@ namespace BloodOfEvil.Enemies.Modules.IA
             base.UpdateNavMeshAgent();
             //Debug.Log(this.waitTimer.GetTimeToWait());
 
+            //this.targetTransform = SceneServicesContainer.Instance.SceneStateModule.Player;
+            //this.GoTo(this.targetTransform);
+            //if (this.CanAttackTarget())
+            //        this.AttackTarget();
+            //if (this.AnimationModule.GetIsAttackingParameter())
+            //    base.NavMeshAgent.Stop();
             if (!this.lifeCategoryAttrutes.IsDeath)
             {
                 if (this.goToInitialPosition)
                     this.GoToInitialPositionBehaviour();
                 else if (this.followOrAttackPlayer)
                     this.GoTo(this.targetTransform);
-                else if (this.followOrAttackPlayer && this.CanAttackTarget())
+                else if (this.followOrAttackPlayer &&
+                         this.CanAttackTarget())
+                {
                     this.AttackTarget();
+                    base.NavMeshAgent.Stop();
+                }
                 else if (this.CanWait())
                     this.Wait();
                 else if (this.CanGoToInitialPosition())
