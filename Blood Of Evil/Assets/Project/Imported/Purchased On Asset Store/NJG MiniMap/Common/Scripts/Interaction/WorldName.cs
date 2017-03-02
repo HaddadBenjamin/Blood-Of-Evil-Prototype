@@ -22,7 +22,7 @@ namespace NJG
             label = GetComponent<Text>();
             if (NJGMap.instance != null) NJGMap.onWorldZoneChange += OnNameChanged;
 
-            PlayerServicesAndModulesContainer.Instance.LanguageService.NewLanguageHaveBeenLoaded += () =>OnNameChanged(label.text);
+            PlayerServicesAndModulesContainer.Instance.LanguageService.NewLanguageHaveBeenLoaded += () => OnNameChanged(label.text);
         }
 
         void OnNameChanged(string worldName)

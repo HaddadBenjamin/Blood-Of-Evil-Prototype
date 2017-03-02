@@ -16,12 +16,15 @@ namespace BloodOfEvil.Enemies
         private bool categoryIsForced = false;
         [SerializeField]
         private EEnemyCategory enemyCategoryForce;
+        [SerializeField]
+        private GameObject iconNormal, iconBoss, iconGobelin;
         #endregion
 
         #region Unity Behaviour
         void Start()
         {
             this.attributeModule = GetComponent<EnemyServicesAndModulesContainer>().Instance.AttributesModule;
+            this.UpdateMinimapICon();
 
             if (!this.attributeModule.EnemyCategoryHaveBeenLoad)
                 this.Generate();
@@ -35,6 +38,8 @@ namespace BloodOfEvil.Enemies
                                             this.enemyCategoryForce :
                                             EnemyAttributesModule.GetEnemyCategory();
 
+            this.UpdateMinimapICon();
+
             this.attributeModule.ReloadDefaultConfiguration();
 
             this.attributeModule.GetAttribute(EEntityCategoriesAttributes.Attack, "Attack Range").Current.Value *= this.attributeModule.EnemySize;
@@ -45,6 +50,8 @@ namespace BloodOfEvil.Enemies
 
         private void GenerateEnemyAttributes()
         {
+            this.UpdateMinimapICon();
+
             switch (this.attributeModule.Category)
             {
                 case EEnemyCategory.Champion:
@@ -110,6 +117,26 @@ namespace BloodOfEvil.Enemies
                     //Gold Amount Gold
                     break;
             }
+        }
+
+        /// <summary>
+        /// Active la bonne icône à afficher sur la minimap.
+        /// </summary>
+        private void UpdateMinimapICon()
+        {
+            this.iconGobelin.SetActive(false);
+            this.iconBoss.SetActive(false);
+            this.iconNormal.SetActive(false);
+
+            if (EEnemyCategory.Normal == this.attributeModule.Category ||
+                EEnemyCategory.Champion == this.attributeModule.Category ||
+                EEnemyCategory.Gozu == this.attributeModule.Category)
+                this.iconBoss.SetActive(true);
+            else if (EEnemyCategory.Boss == this.attributeModule.Category ||
+                     EEnemyCategory.WorldBoss == this.attributeModule.Category)
+                this.iconBoss.SetActive(true);
+            else if (EEnemyCategory.Gobelin == this.attributeModule.Category)
+                this.iconGobelin.SetActive(true);
         }
         #endregion
     }

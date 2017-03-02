@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Runtime.CompilerServices;
 using BloodOfEvil.Extensions;
@@ -14,6 +15,7 @@ namespace BloodOfEvil.Helpers
     public static class SceneManagerHelper
     {
         private const string configurationSceneName = "Don't Destroy Scene";
+        public static Action OnLoadScene;
 
         /// <summary>
         /// Sauvegarde la scène courante.
@@ -59,6 +61,8 @@ namespace BloodOfEvil.Helpers
                 SceneServicesContainer.Instance.GameObjectInSceneReferencesService.Get("[UI] Enemies Health Bars").transform.DestroyAllChilds();
 
                 SceneManager.LoadScene(sceneName);
+
+                OnLoadScene.SafeCall();
             }
 
             // Permet de vider les références valant null du tas de façon explicite.
