@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using BloodOfEvil.Player;
 using UnityEngine.UI;
 using BloodOfEvil.Scene;
 
@@ -102,7 +103,8 @@ public class HealthBar : MonoBehaviour
         canvasGroup.alpha = alphaSettings.fullAplpha;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
-        cam = Camera.main;
+        
+        cam = PlayerServicesAndModulesContainer.Instance.PlayerCamera;
         #endregion
     }
 
