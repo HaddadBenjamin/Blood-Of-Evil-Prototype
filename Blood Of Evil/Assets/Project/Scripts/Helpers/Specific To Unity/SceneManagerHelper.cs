@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Runtime.CompilerServices;
 using BloodOfEvil.Extensions;
+using NJG;
 using UnityEngine.SceneManagement;
 
 namespace BloodOfEvil.Helpers
@@ -62,7 +63,7 @@ namespace BloodOfEvil.Helpers
 
                 SceneManager.LoadScene(sceneName);
 
-                OnLoadScene.SafeCall();
+                //NJGMap.instance.o
             }
 
             // Permet de vider les références valant null du tas de façon explicite.
