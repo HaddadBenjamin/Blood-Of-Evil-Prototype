@@ -21,6 +21,8 @@ namespace BloodOfEvil.Enemies.Modules.IA
     {
         #region Fields
         [SerializeField]
+        private LayerMask raycastLayerMask;
+        [SerializeField]
         private float maximumDistanceFromInitialPosition = 10.0f;
         [SerializeField]
         private float aggroRange = 5.0f;
@@ -144,7 +146,7 @@ namespace BloodOfEvil.Enemies.Modules.IA
                     circle = UnityEngine.Random.insideUnitCircle * this.wanderRange;
                     ray = playerCamera.ScreenPointToRay(playerCamera.WorldToScreenPoint(base.MyTransform.position + new Vector3(circle.x, 0.0f, circle.y)));
 
-                    if (Physics.Raycast(ray, out raycastHit) &&
+                    if (Physics.Raycast(ray, out raycastHit, this.raycastLayerMask) &&
                         NavMeshHelper.IsReachable(base.MyTransform.position, this.raycastHit.point) &&
                         raycastHit.collider.gameObject != gameObject &&
                         Vector3.Distance(base.MyTransform.position, this.raycastHit.point) > DISTANCE_FROM_DESTINATION_TO_STOP_NAV_MESH)//, layerMask))
