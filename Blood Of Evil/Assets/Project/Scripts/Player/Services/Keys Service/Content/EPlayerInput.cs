@@ -33,6 +33,8 @@ namespace BloodOfEvil.Player.Services.Keys
         MoveLeft2,
         MoveRight2,
         MoveBackward2,
+
+        LevelUpMenu
         //LifeManaExperienceMenu,
     }
 }

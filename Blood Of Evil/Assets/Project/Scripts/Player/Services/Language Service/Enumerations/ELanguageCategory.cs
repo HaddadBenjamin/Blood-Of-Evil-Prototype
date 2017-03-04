@@ -28,5 +28,7 @@
         Tooltips,
         MapAreas,
         MonsterNames,
+
+        LevelUpMenu
     }
 }

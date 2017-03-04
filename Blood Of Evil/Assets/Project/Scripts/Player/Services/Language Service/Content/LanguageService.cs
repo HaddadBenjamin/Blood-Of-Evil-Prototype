@@ -338,7 +338,8 @@ namespace BloodOfEvil.Player.Services.Language
             "Tooltips",
             "Text Information",
             "Map Areas",
-            "Monster Names"
+            "Monster Names",
+            "Level Up Menu"
             };
             #endregion
 
@@ -626,9 +627,14 @@ namespace BloodOfEvil.Player.Services.Language
 
             #region Monsters Name
             this.defaultLanguageTexts[EnumerationHelper.GetIndex(ELanguageCategory.MonsterNames)] = new string[]
-           {
+            {
             "Mutant",
-           };
+            };
+
+            this.defaultLanguageTexts[EnumerationHelper.GetIndex(ELanguageCategory.LevelUpMenu)] = new string[]
+            {
+                "Level Up Menu"
+            };
             #endregion
 
             for (int i = 0; i < EnumerationHelper.Count<ELanguageCategory>(); i++)
