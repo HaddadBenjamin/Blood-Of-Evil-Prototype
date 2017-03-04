@@ -7,7 +7,7 @@ namespace BloodOfEvil.Utilities
     using Helpers;
 
     /// <summary>
-    /// Permet de lier la longueur d'un tableau et le nom de tous ses index à celle d'une énumération.
+    /// Lie la longueur et les noms des index d'un tableau à une énumération.
     /// </summary>
     public static class DisplayArrayIndexWithEnumerationHelper
     {

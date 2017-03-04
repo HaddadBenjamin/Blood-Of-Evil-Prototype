@@ -5,7 +5,7 @@ using BloodOfEvil.Player.Services.TextInformation;
 namespace BloodOfEvil.Utilities
 {
     /// <summary>
-    /// Montre comment afficher un tableau dans l'inspecteur de la taille d'une énumération et dont les index sont le nom de chaque index d'une énumération.
+    /// Afficher un tableau dans l'inspecteur à la taille et au noms des index d'une énumération.
     /// </summary>
     public class TestArraySizeAndNameLinkToAEnumeration : MonoBehaviour
     {
