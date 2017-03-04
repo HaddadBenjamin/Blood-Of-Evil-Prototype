@@ -78,8 +78,6 @@ namespace BloodOfEvil.Enemies.Modules.Attributes
         #region Public Behaviour
         public void LoadEEnemyCategory()
         {
-            string categoryFilename = this.GetCategoryFilename();
-
             SerializerHelper.Load<SerializableEEnemyCategory>(
                 filename: this.GetCategoryFilename(), 
                 isReplicatedNextTheBuild: false,

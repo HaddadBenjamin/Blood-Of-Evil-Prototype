@@ -104,7 +104,7 @@ namespace BloodOfEvil.Helpers
                 MaxHeapify(datas, heapSize, 0);
             }
         }
-        private static void MaxHeapify<TypeToSort>(TypeToSort[] datas, int heapSize, int index)
+        private static void MaxHeapify(TypeToSort[] datas, int heapSize, int index)
         {
             int left = (index + 1) * 2 - 1;
             int right = (index + 1) * 2;
@@ -285,12 +285,12 @@ namespace BloodOfEvil.Helpers
         /// <param name="fastestSort"></param>
         /// <param name="ticks"></param>
         /// <param name="sortHistory"></param>
-        public static void FindTheFastestSortThenDisplayAllTheirTimes<TypeToSort>(
-            TypeToSort[] datas,
+        public static void FindTheFastestSortThenDisplayAllTheirTimes<OtherTypeToSort>(
+            OtherTypeToSort[] datas,
             string fastestSort = "",
             long ticks = 9223372036854775807,
             string sortHistory = "")
-            where TypeToSort : new()
+            where OtherTypeToSort : new()
         {
             var stopwatch = new System.Diagnostics.Stopwatch();
             TypeToSort[] tmpDatas = new TypeToSort[datas.Length];

@@ -97,8 +97,6 @@ namespace BloodOfEvil.Helpers
         /// </summary>
         public static void FirstApplicationLoad()
         {
-            string playerSceneNameFilename = SceneServicesContainer.Instance.FileSystemConfiguration.SceneNameFilename;
-
             SerializerHelper.Load<SerializableString>(
                 filename: SceneServicesContainer.Instance.FileSystemConfiguration.SceneNameFilename,
                 isReplicatedNextTheBuild: false,

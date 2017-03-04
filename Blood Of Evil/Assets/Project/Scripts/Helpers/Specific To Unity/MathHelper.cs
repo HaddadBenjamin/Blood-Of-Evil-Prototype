@@ -141,7 +141,7 @@ namespace BloodOfEvil.Helpers
         /// Equation de la forme : ax² + bx + c = 0.
         public static void EquationSecondOrder(float a, float b, float c)
         {
-            float descriminant = descriminant = (b * b) - (4 * a * c);
+            float descriminant = (b * b) - (4 * a * c);
 
             if (descriminant > 0)
             {
