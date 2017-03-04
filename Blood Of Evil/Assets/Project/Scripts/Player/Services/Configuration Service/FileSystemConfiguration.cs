@@ -25,6 +25,8 @@ namespace BloodOfEvil.Player.Services.Configuration
         [SerializeField, Header("Player Gameplay")]
         private string attributesFilename;
         [SerializeField]
+        private string characteristicsPointsAddedTemporaryPointsAddedFilename;
+        [SerializeField]
         private string sceneNameFilename;
 
         [SerializeField, Header("Scene")]
@@ -35,6 +37,19 @@ namespace BloodOfEvil.Player.Services.Configuration
         #endregion
 
         #region Properties
+        public string CharacteristicsPointsAddedTemporaryPointsAddedFilename
+        {
+            get
+            {
+                return characteristicsPointsAddedTemporaryPointsAddedFilename;
+            }
+
+            private set
+            {
+                characteristicsPointsAddedTemporaryPointsAddedFilename = value;
+            }
+        }
+
         public string VideoSettingsFilename
         {
             get

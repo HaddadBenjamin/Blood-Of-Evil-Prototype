@@ -34,6 +34,8 @@ namespace BloodOfEvil.Player.Modules.Attributes
             base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "All Characteristics Percentage").InitializeDefaultPercentage("Percentage Of All Characteristics");
             base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "All Characteristics").Initialize("All Characteristics", 0.0f, base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "All Characteristics Percentage"));
 
+            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Remain Characteristics").Initialize("Remain Characteristics", 0.0f, base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "All Characteristics Percentage"));
+
             var configuration = PlayerServicesAndModulesContainer.Instance.ConfigurationService.GetClass(PlayerServicesAndModulesContainer.Instance.Classe).CharacteristicAttributes;
 
             base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Strength").Initialize("Strength", configuration.StrengthAtStart);

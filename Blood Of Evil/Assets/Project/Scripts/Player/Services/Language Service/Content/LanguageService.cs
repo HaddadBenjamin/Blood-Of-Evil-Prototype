@@ -369,6 +369,7 @@ namespace BloodOfEvil.Player.Services.Language
             "Wisdom",
             "Spirit",
             "Constitution",
+            "Remain points",
             };
             #endregion
 
@@ -571,6 +572,7 @@ namespace BloodOfEvil.Player.Services.Language
             "Move Left2",
             "Move Right2",
             "Move Backward2",
+            "Level Up Menu",
             };
             #endregion
 

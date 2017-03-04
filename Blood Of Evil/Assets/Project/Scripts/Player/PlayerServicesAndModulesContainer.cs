@@ -256,6 +256,7 @@ namespace BloodOfEvil.Player
 
             ((ISerializable)this.AttributesModule).Save();
 
+            this.AttributesModule.SaveCharacteristicsPointsAddedButNotApplied();
             // Potentiellement les portails (on devra les instancier) je pense.
             // Waypoints, jobs.
             // Les données spécifiques des données d'attributs. : pour le moment juste le timer de mort.

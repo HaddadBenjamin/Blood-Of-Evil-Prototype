@@ -29,9 +29,6 @@ namespace BloodOfEvil.Entities.Modules.Attributes
         /// <summary>
         /// Permet de réduire la quantité de code écrite : au lieu d'écrire base.GetAttribute, un simple base.GetAttribute suffit.
         /// </summary>
-        /// <param name="category"></param>
-        /// <param name="attributeID"></param>
-        /// <returns></returns>
         public EntityAttributes GetAttribute(EEntityCategoriesAttributes category, string attributeID)
         {
             return this.attributeModule.GetAttribute(category, attributeID);

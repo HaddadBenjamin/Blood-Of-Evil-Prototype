@@ -27,6 +27,7 @@ namespace BloodOfEvil.Player.Modules.Attributes
         #region Fields
         private EPlayerClass classe;
         public const float PERCENTAGE_TO_UNIT = 0.01f;
+        private PlayerCharacteristicsPointsAddedButNotApplied characteristicsPointsAddedButNotApplied = new PlayerCharacteristicsPointsAddedButNotApplied();
         #endregion
 
         #region Properties
@@ -107,77 +108,7 @@ namespace BloodOfEvil.Player.Modules.Attributes
         {
             base.InitializeCallbacksAttributes();
         }
-        #endregion
 
-        #region Public Behaviour
-        // Ce code est sal et non maintenable mais il permet d'éviter d'avoir des charactéristiques et des sorts en trop et d'avoir une expérience correctement setté.
-        // C'est sal !
-        public void SpecificLoadForPlayer()
-        {
-            SerializerHelper.Load<EntityAttributesArrayOfArraySerializable>(
-                filename: this.GetFileName(),
-                isReplicatedNextTheBuild: false,
-                isEncrypted: true,
-                onLoadSuccess: (EntityAttributesArrayOfArraySerializable attributesSerializable) =>
-                {
-                    this.ClearOtherAttributesFromAllAttributesCategories();
-
-                    int experienceCategoryIndex =
-                        EnumerationHelper.GetIndex<EEntityCategoriesAttributes>(EEntityCategoriesAttributes.Experience);
-                    int lifeCategoryIndex =
-                        EnumerationHelper.GetIndex<EEntityCategoriesAttributes>(EEntityCategoriesAttributes.Life);
-                    int manaCategoryIndex =
-                        EnumerationHelper.GetIndex<EEntityCategoriesAttributes>(EEntityCategoriesAttributes.Mana);
-
-                    float totalExperienceOfSerialization =
-                        attributesSerializable.EntityAttributesArrayOfArray[experienceCategoryIndex].
-                            EntityAttributeArray[
-                                ObjectContainerHelper.GetHashCodeIndex("Total Experience",
-                                    base.attributeHashIds[experienceCategoryIndex])].Current.Value;
-                    float currentLifeOfSerialization =
-                        attributesSerializable.EntityAttributesArrayOfArray[lifeCategoryIndex].
-                            EntityAttributeArray[
-                                ObjectContainerHelper.GetHashCodeIndex("Life", base.attributeHashIds[lifeCategoryIndex])
-                            ].Current.Value;
-                    float currentManaOfSerialization =
-                        attributesSerializable.EntityAttributesArrayOfArray[manaCategoryIndex].
-                            EntityAttributeArray[
-                                ObjectContainerHelper.GetHashCodeIndex("Mana", base.attributeHashIds[manaCategoryIndex])
-                            ].Current.Value;
-
-                    attributesSerializable.Load(this.attributes);
-
-                    GetAttribute(EEntityCategoriesAttributes.Experience, "Experience").Current.Value =
-                        PlayerExperienceCategoryAttributes.EXPERIENCE_AT_START;
-                    GetAttribute(EEntityCategoriesAttributes.Experience, "Maximum Experience").Current.Value =
-                        PlayerExperienceCategoryAttributes.MAXIMUM_EXPERIENCE_AT_START;
-                    GetAttribute(EEntityCategoriesAttributes.Experience, "Experience").AtStart.Value =
-                        PlayerExperienceCategoryAttributes.EXPERIENCE_AT_START;
-                    GetAttribute(EEntityCategoriesAttributes.Experience, "Maximum Experience").AtStart.Value =
-                        PlayerExperienceCategoryAttributes.MAXIMUM_EXPERIENCE_AT_START;
-
-                    PlayerExperienceCategoryAttributes experienceCategory =
-                        (PlayerExperienceCategoryAttributes) this.entityCategoriesAttributes[2];
-
-                    while ((int) GetAttribute(EEntityCategoriesAttributes.Experience, "Level").Current.Value >
-                           (int) PlayerExperienceCategoryAttributes.LEVEL_AT_START)
-                        experienceCategory.UnLevelUp();
-
-                    GetAttribute(EEntityCategoriesAttributes.Experience, "Add Experience").Current.Value =
-                        totalExperienceOfSerialization;
-                    GetAttribute(EEntityCategoriesAttributes.Experience, "Total Experience").Current.Value =
-                        totalExperienceOfSerialization;
-                    GetAttribute(EEntityCategoriesAttributes.Life, "Life").Current.Value = currentLifeOfSerialization;
-                    GetAttribute(EEntityCategoriesAttributes.Mana, "Mana").Current.Value = currentManaOfSerialization;
-
-                    // Ici il faudrait reload les charactéristiques et les sorts pour éviter de redevoir mettre les points restant suite à une monté de niveau.
-                    // Il faudrait aussi fermer ces fenêtres si on les ouvre dans le script de level up ou sinon le faire dans le unlevel up.
-
-                });
-        }
-        #endregion
-
-        #region Intern Behaviour
         protected override string[] GetAttributesNamesFromACategory(EEntityCategoriesAttributes category)
         {
             string[] emptyStringArray = new string[] { };
@@ -206,7 +137,8 @@ namespace BloodOfEvil.Player.Modules.Attributes
                         "Spirit",
                         "Constitution",
                         "All Characteristics",
-                        "All Characteristics Percentage"
+                        "All Characteristics Percentage",
+                        "Remain Characteristics",
                         });
 
                 case EEntityCategoriesAttributes.Defence:
@@ -285,6 +217,102 @@ namespace BloodOfEvil.Player.Modules.Attributes
                     Debug.LogErrorFormat("The strings of category {} are not initialized", category);
                     return null;
             }
+        }
+        #endregion
+
+        #region Public Behaviour
+        /// <summary>
+        /// Sauvegarde les points de charactéristiques ajoutés mais non appliquer.
+        /// </summary>
+        public void SaveCharacteristicsPointsAddedButNotApplied()
+        {
+            SerializerHelper.Save<PlayerCharacteristicsPointsAddedButNotApplied>(
+                filename: this.GetFileName(),
+                dataToSave: this.characteristicsPointsAddedButNotApplied,
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true);
+        }
+
+        // Ce code est sal et non maintenable mais il permet d'éviter d'avoir des charactéristiques et des sorts en trop et d'avoir une expérience correctement setté.
+        // C'est sal !
+        public void SpecificLoadForPlayer()
+        {
+            SerializerHelper.Load<EntityAttributesArrayOfArraySerializable>(
+                filename: this.GetFileName(),
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true,
+                onLoadSuccess: (EntityAttributesArrayOfArraySerializable attributesSerializable) =>
+                {
+                    SerializerHelper.Load<PlayerCharacteristicsPointsAddedButNotApplied>(
+                        filename: this.GetFileName(),
+                        isReplicatedNextTheBuild: false,
+                        isEncrypted: true,
+                        onLoadSuccess: (PlayerCharacteristicsPointsAddedButNotApplied playerCharactericticAdded) =>
+                        {
+                            this.characteristicsPointsAddedButNotApplied = playerCharactericticAdded;
+                        });
+
+                    this.ClearOtherAttributesFromAllAttributesCategories();
+
+                    int experienceCategoryIndex =
+                        EnumerationHelper.GetIndex<EEntityCategoriesAttributes>(EEntityCategoriesAttributes.Experience);
+                    int lifeCategoryIndex =
+                        EnumerationHelper.GetIndex<EEntityCategoriesAttributes>(EEntityCategoriesAttributes.Life);
+                    int manaCategoryIndex =
+                        EnumerationHelper.GetIndex<EEntityCategoriesAttributes>(EEntityCategoriesAttributes.Mana);
+
+                    float totalExperienceOfSerialization =
+                        attributesSerializable.EntityAttributesArrayOfArray[experienceCategoryIndex].
+                            EntityAttributeArray[
+                                ObjectContainerHelper.GetHashCodeIndex("Total Experience",
+                                    base.attributeHashIds[experienceCategoryIndex])].Current.Value;
+                    float currentLifeOfSerialization =
+                        attributesSerializable.EntityAttributesArrayOfArray[lifeCategoryIndex].
+                            EntityAttributeArray[
+                                ObjectContainerHelper.GetHashCodeIndex("Life", base.attributeHashIds[lifeCategoryIndex])
+                            ].Current.Value;
+                    float currentManaOfSerialization =
+                        attributesSerializable.EntityAttributesArrayOfArray[manaCategoryIndex].
+                            EntityAttributeArray[
+                                ObjectContainerHelper.GetHashCodeIndex("Mana", base.attributeHashIds[manaCategoryIndex])
+                            ].Current.Value;
+
+                    attributesSerializable.Load(this.attributes);
+
+                    GetAttribute(EEntityCategoriesAttributes.Experience, "Experience").Current.Value =
+                        PlayerExperienceCategoryAttributes.EXPERIENCE_AT_START;
+                    GetAttribute(EEntityCategoriesAttributes.Experience, "Maximum Experience").Current.Value =
+                        PlayerExperienceCategoryAttributes.MAXIMUM_EXPERIENCE_AT_START;
+                    GetAttribute(EEntityCategoriesAttributes.Experience, "Experience").AtStart.Value =
+                        PlayerExperienceCategoryAttributes.EXPERIENCE_AT_START;
+                    GetAttribute(EEntityCategoriesAttributes.Experience, "Maximum Experience").AtStart.Value =
+                        PlayerExperienceCategoryAttributes.MAXIMUM_EXPERIENCE_AT_START;
+
+                    PlayerExperienceCategoryAttributes experienceCategory =
+                        (PlayerExperienceCategoryAttributes) this.entityCategoriesAttributes[2];
+
+                    while ((int) GetAttribute(EEntityCategoriesAttributes.Experience, "Level").Current.Value >
+                           (int) PlayerExperienceCategoryAttributes.LEVEL_AT_START)
+                        experienceCategory.UnLevelUp();
+
+                    GetAttribute(EEntityCategoriesAttributes.Experience, "Add Experience").Current.Value =
+                        totalExperienceOfSerialization;
+                    GetAttribute(EEntityCategoriesAttributes.Experience, "Total Experience").Current.Value =
+                        totalExperienceOfSerialization;
+                    GetAttribute(EEntityCategoriesAttributes.Life, "Life").Current.Value = currentLifeOfSerialization;
+                    GetAttribute(EEntityCategoriesAttributes.Mana, "Mana").Current.Value = currentManaOfSerialization;
+
+                    // Ici il faudrait reload les charactéristiques et les sorts pour éviter de redevoir mettre les points restant suite à une monté de niveau.
+                    // Il faudrait aussi fermer ces fenêtres si on les ouvre dans le script de level up ou sinon le faire dans le unlevel up.
+
+                });
+        }
+        #endregion
+
+        #region Intern Behaviour
+        private string GetCharacteristicsPointsAddedTemporaryPointsAddedFilename()
+        {
+            return SceneServicesContainer.Instance.FileSystemConfiguration.CharacteristicsPointsAddedTemporaryPointsAddedFilename;
         }
         #endregion
     }
