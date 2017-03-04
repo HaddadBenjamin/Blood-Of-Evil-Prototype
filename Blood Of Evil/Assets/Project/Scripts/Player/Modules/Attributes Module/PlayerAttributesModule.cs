@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using System.Linq;
+using BloodOfEvil.Utilities.Serialization;
 
 
 // <<<<<<<<<<- A mettre dans à savoir de mon trello ->>>>>>>
@@ -27,7 +28,8 @@ namespace BloodOfEvil.Player.Modules.Attributes
         #region Fields
         private EPlayerClass classe;
         public const float PERCENTAGE_TO_UNIT = 0.01f;
-        private PlayerCharacteristicsPointsAddedButNotApplied characteristicsPointsAddedButNotApplied = new PlayerCharacteristicsPointsAddedButNotApplied();
+        private SerializableFloatArray characteristicsPointsAddedButNotApplied = new SerializableFloatArray(
+            EnumerationHelper.Count<EAttributeCharacteristics>());
         #endregion
 
         #region Properties
@@ -226,8 +228,8 @@ namespace BloodOfEvil.Player.Modules.Attributes
         /// </summary>
         public void SaveCharacteristicsPointsAddedButNotApplied()
         {
-            SerializerHelper.Save<PlayerCharacteristicsPointsAddedButNotApplied>(
-                filename: this.GetFileName(),
+            SerializerHelper.Save<SerializableFloatArray>(
+                filename: this.GetCharacteristicsPointsAddedTemporaryPointsAddedFilename(),
                 dataToSave: this.characteristicsPointsAddedButNotApplied,
                 isReplicatedNextTheBuild: false,
                 isEncrypted: true);
@@ -237,21 +239,22 @@ namespace BloodOfEvil.Player.Modules.Attributes
         // C'est sal !
         public void SpecificLoadForPlayer()
         {
+            SerializerHelper.Load<SerializableFloatArray>(
+                filename: this.GetCharacteristicsPointsAddedTemporaryPointsAddedFilename(),
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true,
+                onLoadSuccess: (SerializableFloatArray playerCharactericticAdded) =>
+                {
+                    this.characteristicsPointsAddedButNotApplied = playerCharactericticAdded;
+                });
+
+
             SerializerHelper.Load<EntityAttributesArrayOfArraySerializable>(
                 filename: this.GetFileName(),
                 isReplicatedNextTheBuild: false,
                 isEncrypted: true,
                 onLoadSuccess: (EntityAttributesArrayOfArraySerializable attributesSerializable) =>
                 {
-                    SerializerHelper.Load<PlayerCharacteristicsPointsAddedButNotApplied>(
-                        filename: this.GetFileName(),
-                        isReplicatedNextTheBuild: false,
-                        isEncrypted: true,
-                        onLoadSuccess: (PlayerCharacteristicsPointsAddedButNotApplied playerCharactericticAdded) =>
-                        {
-                            this.characteristicsPointsAddedButNotApplied = playerCharactericticAdded;
-                        });
-
                     this.ClearOtherAttributesFromAllAttributesCategories();
 
                     int experienceCategoryIndex =
@@ -312,7 +315,7 @@ namespace BloodOfEvil.Player.Modules.Attributes
         #region Intern Behaviour
         private string GetCharacteristicsPointsAddedTemporaryPointsAddedFilename()
         {
-            return SceneServicesContainer.Instance.FileSystemConfiguration.CharacteristicsPointsAddedTemporaryPointsAddedFilename;
+            return SceneServicesContainer.Instance.FileSystemConfiguration.CharacteristicsPointsAddedButNotApplyedFilename;
         }
         #endregion
     }

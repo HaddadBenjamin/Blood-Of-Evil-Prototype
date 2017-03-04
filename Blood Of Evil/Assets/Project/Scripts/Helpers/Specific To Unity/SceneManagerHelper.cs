@@ -36,6 +36,7 @@ namespace BloodOfEvil.Helpers
                 isEncrypted: true);
 
             ((ISerializable)PlayerServicesAndModulesContainer.Instance.AttributesModule).Save();
+            PlayerServicesAndModulesContainer.Instance.AttributesModule.SaveCharacteristicsPointsAddedButNotApplied();
         }
 
         /// <summary>

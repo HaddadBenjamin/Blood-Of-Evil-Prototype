@@ -12,6 +12,11 @@ namespace BloodOfEvil.Utilities.Serialization
 
         #region Constructor
         public SerializableFloatArray() { }
+
+        public SerializableFloatArray(int length)
+        {
+            this.floatArray = new float[length];
+        }
         #endregion
 
         #region Public Behaviour

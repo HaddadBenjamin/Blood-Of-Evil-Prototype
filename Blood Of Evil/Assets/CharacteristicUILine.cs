@@ -81,36 +81,6 @@ namespace BloodOfEvil.Player.Modules.Attributes.UI
     }
 }
 
-namespace BloodOfEvil.Player.Modules.Attributes
-{
-    /// <summary>
-    /// Ce sont tous les points de charactéristiques non appliquées par le joueur lors d'une monté de niveau.
-    /// </summary>
-    [System.Serializable]
-    public class PlayerCharacteristicsPointsAddedButNotApplied
-    { 
-        #region Fields
-        /// <summary>
-        /// Ce sont les points distribués dans les charactéristiques du joueur mais qui n'ont pas été appliqués.
-        /// </summary>
-        public float[] Datas = new float[EnumerationHelper.Count<EAttributeCharacteristics>()];
-        #endregion
-
-        #region Constructor
-        public PlayerCharacteristicsPointsAddedButNotApplied() { }
-        #endregion
-
-        #region Intern Behaviour
-        private string GetFilename()
-        {
-            return
-                SceneServicesContainer.Instance.FileSystemConfiguration.
-                    CharacteristicsPointsAddedTemporaryPointsAddedFilename;
-        }
-        #endregion
-    }
-}
-
 // Mettre la classe PlayerCharacteristicPointAdded dans le module d'attributs du joueur.
 // Sauvegarder ou charger la classe PlayerCharacteristicPointAdded après avoir sauvegarder ou charger le module d'attributs du joueur.
 

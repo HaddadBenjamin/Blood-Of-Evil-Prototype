@@ -14,6 +14,8 @@ namespace BloodOfEvil.Entities.Modules.Attributes.UI
         public override void ButtonActionOnClick()
         {
             ((ISerializable)PlayerServicesAndModulesContainer.Instance.AttributesModule).Save();
+
+            PlayerServicesAndModulesContainer.Instance.AttributesModule.SaveCharacteristicsPointsAddedButNotApplied();
         }
         #endregion
     }
