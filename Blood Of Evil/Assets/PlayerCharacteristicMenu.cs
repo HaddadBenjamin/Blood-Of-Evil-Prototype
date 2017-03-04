@@ -37,7 +37,25 @@ namespace BloodOfEvil.Player.Modules.Attributes.UI
                     this.UpdateRemainTextValue(value);
                 })));
 
+            this.applyButton.onClick.AddListener(() =>
+            {
+                var attributesModule = PlayerServicesAndModulesContainer.Instance.AttributesModule;
 
+                if (attributesModule.GetSumOfCharacteristicsPointsAddedButNotApplied() >= 1)
+                {
+                    for (int i = 0; i < EnumerationHelper.Count<EAttributeCharacteristics>(); i++)
+                    {
+                        attributesModule.GetAttribute(EEntityCategoriesAttributes.Characteristics,
+                            EnumerationHelper.EnumerationIntegerIndexToString<EAttributeCharacteristics>(i)).SetOtherAttributePlusEqual(
+                            "Level Up", 
+                            attributesModule.GetCharacteristicsPointsAddedButNotApplied(
+                                EnumerationHelper.IntegerToEnumeration<EAttributeCharacteristics>(i)));
+                    }
+                }
+
+                attributesModule.ResetCharacteristicsPointsAddedButNotApplied();
+            });
+            // Button reset : remet tous les attributs à 0
         }
         #endregion
 
