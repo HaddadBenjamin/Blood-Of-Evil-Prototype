@@ -38,6 +38,12 @@ namespace BloodOfEvil.Player.Services.Language.UI
             this.defaultText = text;
         }
 
+        public void UpdateDefaultTextThenUpdateText(string text)
+        {
+            this.UpdateDefaultText(text);
+            this.UpdateText();
+        }
+
         public void Reinitialize(string defaultText, ELanguageCategory languageCategory)
         {
             this.defaultText = defaultText;

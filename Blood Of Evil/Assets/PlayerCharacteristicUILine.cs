@@ -35,8 +35,6 @@ namespace BloodOfEvil.Player.Modules.Attributes.UI
 
             this.RemoveButtonAddListener();
         }
-
-       
         #endregion
 
         #region Public Behaviour
@@ -44,8 +42,9 @@ namespace BloodOfEvil.Player.Modules.Attributes.UI
         {
             this.characteristicID = characteristic;
 
-            this.idText.UpdateDefaultText(this.GetCharacteristicName());
+            this.idText.UpdateDefaultTextThenUpdateText(this.GetCharacteristicName());
 
+            Debug.Log(this.GetCharacteristicName());
             // Met à le texte de charactéristique "strength" par exemple en fonction de la langue choisie par l'utilisateur.
             this.UpdateTextValue(
                 PlayerServicesAndModulesContainer.Instance.AttributesModule.GetAttribute(
@@ -129,15 +128,7 @@ namespace BloodOfEvil.Player.Modules.Attributes.UI
 // plusButton.SetActive(RemainPoint >1);
 // minusButton.SetActive(GetElementNotAppliedInThisCategory() > 1)
 
-// GENERATOR
-// Apply || Cancel.ButtonSetActive(PointsAddedNotApplied >= 1);
-//Aply -& cancel : multiligne
-// Apply :
-// for (e < charaNotApplied.length)
-// stat += charNoApplied[e];
-// charNoApplied[e] = 0;
 
-//Cancel
 
 //11 Attributs :
 //Wisdom,           3% energy.                  : V

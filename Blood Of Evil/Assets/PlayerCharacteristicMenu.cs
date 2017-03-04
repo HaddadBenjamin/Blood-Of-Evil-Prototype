@@ -1,21 +1,36 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
-using BloodOfEvil.Extensions;
-using BloodOfEvil.Helpers;
 
 namespace BloodOfEvil.Player.Modules.Attributes.UI
 {
+    using Entities.Modules.Attributes;
+    using Extensions;
+    using Helpers;
+
     public class PlayerCharacteristicMenu : MonoBehaviour
     {
         #region Fields
         private List<PlayerCharacteristicUILine> characteristicsLines = new List<PlayerCharacteristicUILine>();
+        [SerializeField]
+        private RectTransform window;
+        [SerializeField]
+        private Text remainPointTextValue;
         #endregion
 
         #region Unity Behaviour
-        private void Start()
+        private void Awake()
         {
             this.GenerateLines();
+
+            this.UpdateRemainTextValue(PlayerServicesAndModulesContainer.Instance.AttributesModule.GetAttribute(
+                    EEntityCategoriesAttributes.Characteristics, "Remain Characteristics").
+                Current.ValueListenerAndGetValue((value
+                    =>
+                {
+                    this.UpdateRemainTextValue(value);
+                })));
         }
         #endregion
 
@@ -36,7 +51,24 @@ namespace BloodOfEvil.Player.Modules.Attributes.UI
 
                 this.characteristicsLines.Add(characteristicLine);
             }
+
+            window.SetHeight(200.0f + 65 * this.characteristicsLines.Count);
+        }
+
+        private void UpdateRemainTextValue(float value)
+        {
+            this.remainPointTextValue.text = Mathf.RoundToInt(value).ToString();
         }
         #endregion
     }
 }
+
+// GENERATOR
+// Apply || Cancel.ButtonSetActive(PointsAddedNotApplied >= 1);
+//Aply -& cancel : multiligne
+// Apply :
+// for (e < charaNotApplied.length)
+// stat += charNoApplied[e];
+// charNoApplied[e] = 0;
+
+//Cancel
