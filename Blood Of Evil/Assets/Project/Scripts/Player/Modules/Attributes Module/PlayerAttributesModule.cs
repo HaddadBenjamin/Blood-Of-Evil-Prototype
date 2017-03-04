@@ -223,6 +223,24 @@ namespace BloodOfEvil.Player.Modules.Attributes
         #endregion
 
         #region Public Behaviour
+        public void AddCharacteristicsPointsAddedButNotApplied(EAttributeCharacteristics characteristic)
+        {
+            this.characteristicsPointsAddedButNotApplied.floatArray[
+                EnumerationHelper.GetIndex<EAttributeCharacteristics>(characteristic)] += 1;
+        }
+
+        public void RemoveCharacteristicsPointsAddedButNotApplied(EAttributeCharacteristics characteristic)
+        {
+            this.characteristicsPointsAddedButNotApplied.floatArray[
+                EnumerationHelper.GetIndex<EAttributeCharacteristics>(characteristic)] -= 1;
+        }
+
+        public float GetCharacteristicsPointsAddedButNotApplied(EAttributeCharacteristics characteristic)
+        {
+            return this.characteristicsPointsAddedButNotApplied.floatArray[
+                EnumerationHelper.GetIndex<EAttributeCharacteristics>(characteristic)];
+        }
+
         /// <summary>
         /// Sauvegarde les points de charactéristiques ajoutés mais non appliquer.
         /// </summary>
@@ -235,9 +253,7 @@ namespace BloodOfEvil.Player.Modules.Attributes
                 isEncrypted: true);
         }
 
-        // Ce code est sal et non maintenable mais il permet d'éviter d'avoir des charactéristiques et des sorts en trop et d'avoir une expérience correctement setté.
-        // C'est sal !
-        public void SpecificLoadForPlayer()
+        public void LoadCharacteristicsPointsAddedButNotApplied()
         {
             SerializerHelper.Load<SerializableFloatArray>(
                 filename: this.GetCharacteristicsPointsAddedTemporaryPointsAddedFilename(),
@@ -247,7 +263,13 @@ namespace BloodOfEvil.Player.Modules.Attributes
                 {
                     this.characteristicsPointsAddedButNotApplied = playerCharactericticAdded;
                 });
+        }
 
+        // Ce code est sal et non maintenable mais il permet d'éviter d'avoir des charactéristiques et des sorts en trop et d'avoir une expérience correctement setté.
+        // C'est sal !
+        public void SpecificLoadForPlayer()
+        {
+            this.LoadCharacteristicsPointsAddedButNotApplied();
 
             SerializerHelper.Load<EntityAttributesArrayOfArraySerializable>(
                 filename: this.GetFileName(),
