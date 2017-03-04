@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using BloodOfEvil.Entities.Modules.Attributes;
@@ -51,11 +52,10 @@ namespace BloodOfEvil.Player.Modules.Attributes.UI
                     EEntityCategoriesAttributes.Characteristics, this.GetCharacteristicName()).
                     Current.ValueListenerAndGetValue((float value) =>
                     {
-                       this.UpdateTextValue(value); 
-                    }));
-
-            // Apply.
-            // Cancel
+                       this.UpdateTextValue(value + PlayerServicesAndModulesContainer.Instance.AttributesModule.GetCharacteristicsPointsAddedButNotApplied(
+                        this.characteristicID)); 
+                    }) + PlayerServicesAndModulesContainer.Instance.AttributesModule.GetCharacteristicsPointsAddedButNotApplied(
+                        this.characteristicID));
         }
         #endregion
 
@@ -89,6 +89,8 @@ namespace BloodOfEvil.Player.Modules.Attributes.UI
                     remainAttribute.SetOtherAttributeLessEqual("Level Up Menu", 1);
 
                     PlayerServicesAndModulesContainer.Instance.AttributesModule.SaveCharacteristicsPointsAddedButNotApplied();
+
+                    this.textValue.text = (Int32.Parse(this.textValue.text) + 1).ToString();
                 }
             });
         }
@@ -113,6 +115,8 @@ namespace BloodOfEvil.Player.Modules.Attributes.UI
                     remainAttribute.SetOtherAttributePlusEqual("Level Up Menu", 1);
 
                     PlayerServicesAndModulesContainer.Instance.AttributesModule.SaveCharacteristicsPointsAddedButNotApplied();
+
+                    this.textValue.text = (Int32.Parse(this.textValue.text) - 1).ToString();
                 }
             });
         }
@@ -121,6 +125,8 @@ namespace BloodOfEvil.Player.Modules.Attributes.UI
     }
 }
 
+
+// MEttre à jour les textes (le nombre) lors d'un clic sur + ou -
 
 // Tooltip
 // Multilangue.

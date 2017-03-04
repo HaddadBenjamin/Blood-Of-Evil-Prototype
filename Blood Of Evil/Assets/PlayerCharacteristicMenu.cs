@@ -17,6 +17,10 @@ namespace BloodOfEvil.Player.Modules.Attributes.UI
         private RectTransform window;
         [SerializeField]
         private Text remainPointTextValue;
+        [SerializeField]
+        private Button applyButton;
+        [SerializeField]
+        private Button cancelButton;
         #endregion
 
         #region Unity Behaviour
@@ -24,6 +28,7 @@ namespace BloodOfEvil.Player.Modules.Attributes.UI
         {
             this.GenerateLines();
 
+            // Mettra à jour le texte du nombre de point de charactéristique restante.
             this.UpdateRemainTextValue(PlayerServicesAndModulesContainer.Instance.AttributesModule.GetAttribute(
                     EEntityCategoriesAttributes.Characteristics, "Remain Characteristics").
                 Current.ValueListenerAndGetValue((value
@@ -31,6 +36,8 @@ namespace BloodOfEvil.Player.Modules.Attributes.UI
                 {
                     this.UpdateRemainTextValue(value);
                 })));
+
+
         }
         #endregion
 
@@ -70,5 +77,6 @@ namespace BloodOfEvil.Player.Modules.Attributes.UI
 // for (e < charaNotApplied.length)
 // stat += charNoApplied[e];
 // charNoApplied[e] = 0;
+// Button reset : remet tous les attributs à 0
 
 //Cancel

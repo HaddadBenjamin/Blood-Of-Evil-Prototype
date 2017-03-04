@@ -370,6 +370,7 @@ namespace BloodOfEvil.Player.Services.Language
             "Spirit",
             "Constitution",
             "Remain points",
+            "Remain Characteristics",
             };
             #endregion
 
@@ -635,7 +636,9 @@ namespace BloodOfEvil.Player.Services.Language
 
             this.defaultLanguageTexts[EnumerationHelper.GetIndex(ELanguageCategory.LevelUpMenu)] = new string[]
             {
-                "Level Up Menu"
+                "Level Up Menu",
+                "Apply",
+                "Cancel"
             };
             #endregion
 
