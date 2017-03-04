@@ -9,14 +9,14 @@ namespace BloodOfEvil.Entities.Modules.Footsteps
     {
         #region Fields
         [SerializeField, Tooltip("Foot transforms.")]
-        private Transform leftFootTransform,
-                          rightFootTransform;
+        private Transform leftFootTransform = null,
+                          rightFootTransform = null;
         /// <summary>
         /// Those audioclip will be modified when I will integrate WWise package.
         /// </summary>
         [SerializeField, Tooltip("Foot audio sources.")]
-        private AudioSource leftFootAudioSource,
-                            rightFootAudioSource;
+        private AudioSource leftFootAudioSource = null,
+                            rightFootAudioSource = null;
         #endregion
 
         #region Public Behaviour

@@ -17,7 +17,7 @@ namespace BloodOfEvil.Enemies
         [SerializeField]
         private EEnemyCategory enemyCategoryForce;
         [SerializeField]
-        private GameObject iconNormal, iconBoss, iconGobelin;
+        private GameObject iconNormal = null, iconBoss = null, iconGobelin = null;
         #endregion
 
         #region Unity Behaviour

@@ -24,9 +24,9 @@ namespace BloodOfEvil.Utilities
             //var d = DataAndDifficultyController.Instance;
     //
             //var e = LanguageService.Instance;
-            var f = SingletonManager.Instance;
+            //var f = SingletonManager.Instance;
 
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
         #endregion
 
