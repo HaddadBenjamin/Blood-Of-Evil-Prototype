@@ -4,8 +4,28 @@ using UnityEngine.Events;
 
 namespace BloodOfEvil.Extensions
 {
+    /// Permet de voir notre êvênement unity dans l'inspecteur car les types teplates ne sont pas visible.
+    /// Alors que les types prédéfinis le sont.
+    [System.Serializable]
+    public class UnityFloatEvent : UnityEvent<float> { }
+
+    [System.Serializable]
+    public class UnityBoolEvent : UnityEvent<bool> { }
+    
     public static class UnityEventExtension
     {
+        public static void SafeInvoke(this UnityBoolEvent unityEvent, bool parameter)
+        {
+            if (null != unityEvent)
+                unityEvent.Invoke(parameter);
+        }
+
+        public static void SafeInvoke(this UnityFloatEvent unityEvent, float parameter)
+        {
+            if (null != unityEvent)
+                unityEvent.Invoke(parameter);
+        }
+        
         /// <summary>
         /// Appelle la méthode de l'unity event si il y en a une.
         /// </summary>

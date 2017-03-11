@@ -195,6 +195,7 @@ namespace BloodOfEvil.Extensions
             transform.localPosition = position;
         }
 
+        #region Position
         /// <summary>
         /// Modifie la composante X de la position de l'objet.
         /// </summary>
@@ -242,7 +243,9 @@ namespace BloodOfEvil.Extensions
         {
             transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, positionZ);
         }
+        #endregion
 
+        #region Rotation
         /// <summary>
         /// Modifie la composante X de la rotation de l'objet.
         /// </summary>
@@ -290,7 +293,9 @@ namespace BloodOfEvil.Extensions
         {
             transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, rotationZ);
         }
+        #endregion
 
+        #region Scale
         /// <summary>
         /// Modifie la composante X de l'échelle de l'objet.
         /// </summary>
@@ -314,7 +319,9 @@ namespace BloodOfEvil.Extensions
         {
             transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, scaleZ);
         }
+        #endregion
 
+        #region Follow Mouse Position And Rotation
         /// <summary>
         /// Le transform suit la position de la souris et positionne l'objet à "distanceFromMainCamera" de distance par rapport à la caméra.
         /// </summary>
@@ -326,9 +333,9 @@ namespace BloodOfEvil.Extensions
         }
 
         /// <summary>
-        /// Le transform suit la position de la souris.
+        /// Le transform suit la rotation de la souris.
         /// </summary>
-        public static void FolowMousePosition(this Transform transform, float speed = float.MaxValue)
+        public static void FolowMouseRotation(this Transform transform, float speed = float.MaxValue)
         {
             Plane planelane = new Plane(Vector3.up, transform.position);
             Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -342,6 +349,29 @@ namespace BloodOfEvil.Extensions
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, speed * Time.deltaTime);
             }
         }
+        
+         /// <summary>
+        /// Le transform suit la position et la rotation de la souris.
+        /// Super méthode pour refaire le drag & drop de Matthieu en beaucoup plus simple.
+        /// </summary>
+        public static void FolowMousePosition(
+            this Transform transform, 
+            LayerMask mask,
+            Vector3 rotatioEulerAngleOffset,
+            bool followRotation = false)
+        {
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out hit, mask))
+            {
+                transform.position = hit.point;
+
+                if (followRotation)
+                    transform.eulerAngles = hit.collider.transform.eulerAngles + rotatioEulerAngleOffset;
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Récupère tous les enfants d'un transform.
