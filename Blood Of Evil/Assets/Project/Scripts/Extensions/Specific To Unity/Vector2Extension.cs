@@ -11,6 +11,22 @@ namespace BloodOfEvil.Extensions
         {
             return Quaternion.FromToRotation(Vector3.up, to - from).eulerAngles.z;
         }
+		
+		/// <summary>
+		/// Setter la valeur de x du vecteur.
+		/// </summary>
+		public static void SetX(this Vector2 vector, float x)
+		{
+			vector.x = x;
+		}
+
+		/// <summary>
+		/// Setter la valeur de y du vecteur.
+		/// </summary>
+		public static void SetY(this Vector2 vector, float y)
+		{
+			vector.y = y;
+		}
 
         /////////////////////////////////////////////
         /// Tous le code qui suit vient de Manzalab.
