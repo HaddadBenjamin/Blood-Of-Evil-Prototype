@@ -4,6 +4,8 @@ using UnityEngine.Events;
 
 namespace BloodOfEvil.Extensions
 {
+    /// Permet de voir notre êvênement unity dans l'inspecteur car les types teplates ne sont pas visible.
+    /// Alors que les types prédéfinis le sont.
     [System.Serializable]
     public class UnityFloatEvent : UnityEvent<float> { }
 
