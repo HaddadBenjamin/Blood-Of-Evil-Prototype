@@ -7,6 +7,8 @@ using UnityEngine.Events;
 
 namespace BloodOfEvil.Utilities
 {
+    using Extensions;
+
     /// <summary>
     /// C'est un bouton dont l'action est appelé à chaque fois que l'on reste appuyé dessus.
     /// </summary>

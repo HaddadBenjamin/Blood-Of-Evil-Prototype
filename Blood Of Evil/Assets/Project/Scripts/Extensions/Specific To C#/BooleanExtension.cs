@@ -8,9 +8,9 @@ namespace BloodOfEvil.Extensions
       /// <summary>
       /// Inverse la valeur de ce boolean.
       /// </summary>
-      public static void Inverse(this bool boolean)
+      public static bool Inverse(this bool boolean)
       {
-          boolean = !boolean;
+          return boolean = !boolean;
       }
     }
 }

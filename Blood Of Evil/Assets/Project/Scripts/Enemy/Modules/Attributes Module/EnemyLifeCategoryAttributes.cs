@@ -115,7 +115,7 @@ namespace BloodOfEvil.Enemies.Modules.Attributes
             base.attributeModule.GetComponent<BoxCollider>().enabled = false;
 
             base.attributeModule.GetComponent<BoxCollider>().enabled = false;
-            base.attributeModule.GetComponent<NavMeshAgent>().enabled = false;
+            base.attributeModule.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
 
             SceneServicesContainer.Instance.AudioReferencesArraysService.Play3DSound(EAudioCategory.SFX, "Mutant Death", base.attributeModule.transform);
 

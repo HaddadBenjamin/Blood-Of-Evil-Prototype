@@ -138,7 +138,7 @@ public class shaderGlow : MonoBehaviour {
         if (colors.Count > 0)
             newMesh.colors = colors.ToArray();
 
-        newMesh.Optimize();
+        ;
         newMesh.RecalculateBounds();
         newMesh.RecalculateNormals();
 

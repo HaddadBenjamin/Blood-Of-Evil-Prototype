@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using BloodOfEvil.Extensions;
 using UnityEngine;
 
 namespace BloodOfEvil.Utilities
@@ -78,11 +79,11 @@ namespace BloodOfEvil.Utilities
             if (null != this.translateTransform)
             {
                 if (ERotateDirection.Left == this.translateDirection || ERotateDirection.Right == translateDirection)
-                    this.translateTransform.SetXLocalPosition(newPosition);
+                    this.translateTransform.SetLocalPositionX(newPosition);
                 else if (ERotateDirection.Down == this.translateDirection || ERotateDirection.Up == translateDirection)
-                    this.translateTransform.SetYLocalPosition(newPosition);
+                    this.translateTransform.SetLocalPositionY(newPosition);
                 else
-                    this.translateTransform.SetZLocalPosition(newPosition);
+                    this.translateTransform.SetLocalPositionZ(newPosition);
             }
         }
         #endregion

@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using BloodOfEvil.Extensions;
+using BloodOfEvil.Utilities;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace BloodOfEvil.Player.Services.Input
+namespace BloodOfEvil.Player.Services
 {
     /// <summary>
     /// Appelle des actions si l'utiisateur clic (gère le multiplateforme) sur ce collider, reste clicé ou relève son doigh.

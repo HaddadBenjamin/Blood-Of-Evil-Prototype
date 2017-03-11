@@ -47,7 +47,7 @@ namespace BloodOfEvil.Utilities.Animations
         #region Public Behaviour
         private void Shake()
         {
-            this.duringShakeListener.SafeCall();
+            this.duringShakeListener.SafeInvoke();
 
             this.shakePosition = this.myTransform.GetRandomLocationAroundPosition(this.shakeSpeed);
         }
@@ -56,7 +56,7 @@ namespace BloodOfEvil.Utilities.Animations
         #region Intern Behaviour
         public void EnableShake()
         {
-            this.beforeShakeListener.SafeCall();
+            this.beforeShakeListener.SafeInvoke();
 
             this.shakeTimer.Reset();
         }

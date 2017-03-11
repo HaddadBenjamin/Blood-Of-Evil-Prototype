@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using BloodOfEvil.Helpers;
 using UnityEngine;
 
-namespace BloodOfEvil.Player.Services.Input
+namespace BloodOfEvil.Player.Services
 {
     /// <summary>
     /// Contiend des informations d'évênements à une frame spécifique.
@@ -122,7 +123,7 @@ namespace BloodOfEvil.Player.Services.Input
         /// </summary>
         private void UpdateCurrentFrameInputs(InputFrame previousInputFrame)
         {
-            foreach (KeyCode keyCode in EnumerationHelper.GetAllEnumerationValues<KeyCode>())
+            foreach (KeyCode keyCode in EnumerationHelper.EnumerationToEnumerationValuesArray<KeyCode>())
             {
                 if (Input.GetKeyDown(keyCode))
                     KeysPressed.Add(keyCode);

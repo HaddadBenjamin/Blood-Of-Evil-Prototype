@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using BloodOfEvil.Extensions;
 using UnityEngine;
 
 namespace BloodOfEvil.Utilities
@@ -74,11 +75,11 @@ namespace BloodOfEvil.Utilities
             if (null != this.scaleTransform)
             {
                 if (EScaleComponent.Height == this.componentToScale)
-                    this.scaleTransform.SetYLocalScale(newScale);
+                    this.scaleTransform.SetLocalPositionY(newScale);
                 else if (EScaleComponent.Length == this.componentToScale)
-                    this.scaleTransform.SetZLocalScale(newScale);
+                    this.scaleTransform.SetLocalPositionZ(newScale);
                 else
-                    this.scaleTransform.SetXLocalScale(newScale);
+                    this.scaleTransform.SetLocalPositionX(newScale);
             }
         }
         #endregion
