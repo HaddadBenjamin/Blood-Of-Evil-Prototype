@@ -21,7 +21,7 @@ namespace BloodOfEvil.Player.Modules.Movements
         [SerializeField]
         private LayerMask raycastLayerMask;
         private RaycastHit raycasthHit;
-        private NavMeshHit navMeshHit;
+        private UnityEngine.AI.NavMeshHit navMeshHit;
         private Ray ray;
 
         private const float PATHFINDING_PARTICLE_MIDDLE_HEIGHT = 1.0f;
@@ -79,7 +79,7 @@ namespace BloodOfEvil.Player.Modules.Movements
 
             // Permet de regarder la où pointe la souris lors d'un clique gauche.
             if (this.CanLookAtMousePosition())
-                base.MyTransform.FolowMousePosition();
+                base.MyTransform.FolowMouseRotation();
         }
 
         #endregion

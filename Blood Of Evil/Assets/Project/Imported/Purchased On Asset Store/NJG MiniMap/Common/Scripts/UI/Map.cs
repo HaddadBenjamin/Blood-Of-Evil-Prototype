@@ -1,6 +1,6 @@
 //----------------------------------------------
 //            NJG MiniMap (NGUI)
-// Copyright © 2013 - 2015 Ninjutsu Games LTD.
+// Copyright ï¿½ 2013 - 2015 Ninjutsu Games LTD.
 //----------------------------------------------
 
 using UnityEngine;
@@ -861,13 +861,13 @@ namespace NJG
                 //bool sizeChanged = false;	
 
 
-                Profiler.BeginSample("UpdateIcons");
+                UnityEngine.Profiling.Profiler.BeginSample("UpdateIcons");
                 UpdateIcons();
-                Profiler.EndSample();
+                UnityEngine.Profiling.Profiler.EndSample();
 
-                Profiler.BeginSample("CleanIcons");
+                UnityEngine.Profiling.Profiler.BeginSample("CleanIcons");
                 CleanIcons();
-                Profiler.EndSample();
+                UnityEngine.Profiling.Profiler.EndSample();
 
                 //Profiler.BeginSample("UpdateFrustm");
                 //UpdateFrustum();
@@ -875,18 +875,18 @@ namespace NJG
 
                 if (drawDirectionalLines)
                 {
-                    Profiler.BeginSample("DrawLines");
+                    UnityEngine.Profiling.Profiler.BeginSample("DrawLines");
                     DrawLines();
-                    Profiler.EndSample();
+                    UnityEngine.Profiling.Profiler.EndSample();
                 }
 
-                Profiler.BeginSample("UpdateScrollPosition");
+                UnityEngine.Profiling.Profiler.BeginSample("UpdateScrollPosition");
                 UpdateScrollPosition();
-                Profiler.EndSample();
+                UnityEngine.Profiling.Profiler.EndSample();
 
-                Profiler.BeginSample("UpdateMatrix");
+                UnityEngine.Profiling.Profiler.BeginSample("UpdateMatrix");
                 UpdateMatrix();
-                Profiler.EndSample();
+                UnityEngine.Profiling.Profiler.EndSample();
 
                 /*if (mLastPos != NJGMap.instance.mapRenderer.transform.position || mLastSize != NJGMap.instance.mapRenderer.cachedCamera.orthographicSize)
                 {
@@ -898,9 +898,9 @@ namespace NJG
                 {
                     if (NJGMap.instance.renderMode != NJGMap.RenderMode.Once) // && (this is UIMiniMapBase)
                     {
-                        Profiler.BeginSample("GenerateMap");
+                        UnityEngine.Profiling.Profiler.BeginSample("GenerateMap");
                         NJGMap.GenerateMap();
-                        Profiler.EndSample();
+                        UnityEngine.Profiling.Profiler.EndSample();
                     }
                 }
             }

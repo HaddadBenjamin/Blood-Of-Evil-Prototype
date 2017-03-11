@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using BloodOfEvil.Utilities;
 using UnityEngine;
 
-namespace BloodOfEvil.Player.Services.Input
+namespace BloodOfEvil.Player.Services
 {
     // Il faut tester ce code sur mobile.
 

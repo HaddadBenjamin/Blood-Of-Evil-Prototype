@@ -1,6 +1,6 @@
 //----------------------------------------------
 //            NJG MiniMap (NGUI)
-// Copyright © 2013 - 2015 Ninjutsu Games LTD.
+// Copyright ï¿½ 2013 - 2015 Ninjutsu Games LTD.
 //----------------------------------------------
 
 using UnityEngine;
@@ -79,7 +79,7 @@ public class NJGTools {
 
 		mesh.RecalculateNormals();
 		mesh.RecalculateBounds();
-		mesh.Optimize();
+		;
 
 #if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6 || UNITY_5
         mesh.MarkDynamic();

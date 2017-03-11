@@ -5,7 +5,7 @@ using System.Collections;
 namespace NJG
 {
 
-    [RequireComponent(typeof(NavMeshAgent))]
+    [RequireComponent(typeof(UnityEngine.AI.NavMeshAgent))]
     public class NPC : MonoBehaviour
     {
         public float wanderRadius = 25.0f;
@@ -19,13 +19,13 @@ namespace NJG
 
         float mLastSpeed;
         Transform mTrans;
-        NavMeshAgent mNav;
+        UnityEngine.AI.NavMeshAgent mNav;
         Vector3 wanderDestination;
         float mIdleTime;
 
         void Awake() 
         { 
-            mNav = GetComponent<NavMeshAgent>();
+            mNav = GetComponent<UnityEngine.AI.NavMeshAgent>();
             
         }
 
@@ -49,8 +49,8 @@ namespace NJG
             {
                 Vector3 randomDirection = Random.insideUnitSphere * wanderRadius;
                 randomDirection += cachedTransform.position;
-                NavMeshHit hit;
-                NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, 1);
+                UnityEngine.AI.NavMeshHit hit;
+                UnityEngine.AI.NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, 1);
                 wanderDestination = hit.position;
                 mNav.SetDestination(wanderDestination);
             }

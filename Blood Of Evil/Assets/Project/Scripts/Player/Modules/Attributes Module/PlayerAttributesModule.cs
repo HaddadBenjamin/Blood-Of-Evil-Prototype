@@ -28,8 +28,66 @@ namespace BloodOfEvil.Player.Modules.Attributes
         #region Fields
         private EPlayerClass classe;
         public const float PERCENTAGE_TO_UNIT = 0.01f;
+
+
+        /// <summary>
+        /// Bouger tous ça ailleurs.
+        /// </summary>
         private SerializableFloatArray characteristicsPointsAddedButNotApplied = new SerializableFloatArray(
             EnumerationHelper.Count<EAttributeCharacteristics>());
+
+        public void ResetCharacteristicsPointsAddedButNotApplied()
+        {
+            for (int characteristicIndex = 0; characteristicIndex < this.characteristicsPointsAddedButNotApplied.floatArray.Length; characteristicIndex++)
+                this.characteristicsPointsAddedButNotApplied.floatArray[characteristicIndex] = 0.0f;
+        }
+
+        public void AddCharacteristicsPointsAddedButNotApplied(EAttributeCharacteristics characteristic, int toAdd = 1)
+        {
+            this.characteristicsPointsAddedButNotApplied.floatArray[
+                EnumerationHelper.GetIndex<EAttributeCharacteristics>(characteristic)] += toAdd;
+        }
+
+        public void RemoveCharacteristicsPointsAddedButNotApplied(EAttributeCharacteristics characteristic, int toRemove = 1)
+        {
+            this.characteristicsPointsAddedButNotApplied.floatArray[
+                EnumerationHelper.GetIndex<EAttributeCharacteristics>(characteristic)] -= toRemove;
+        }
+
+        public int GetSumOfCharacteristicsPointsAddedButNotApplied()
+        {
+            return Mathf.RoundToInt(this.characteristicsPointsAddedButNotApplied.floatArray.Sum());
+        }
+
+        public float GetCharacteristicsPointsAddedButNotApplied(EAttributeCharacteristics characteristic)
+        {
+            return this.characteristicsPointsAddedButNotApplied.floatArray[
+                EnumerationHelper.GetIndex<EAttributeCharacteristics>(characteristic)];
+        }
+
+        /// <summary>
+        /// Sauvegarde les points de charactéristiques ajoutés mais non appliquer.
+        /// </summary>
+        public void SaveCharacteristicsPointsAddedButNotApplied()
+        {
+            SerializerHelper.Save<SerializableFloatArray>(
+                filename: this.GetCharacteristicsPointsAddedTemporaryPointsAddedFilename(),
+                dataToSave: this.characteristicsPointsAddedButNotApplied,
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true);
+        }
+
+        public void LoadCharacteristicsPointsAddedButNotApplied()
+        {
+            SerializerHelper.Load<SerializableFloatArray>(
+                filename: this.GetCharacteristicsPointsAddedTemporaryPointsAddedFilename(),
+                isReplicatedNextTheBuild: false,
+                isEncrypted: true,
+                onLoadSuccess: (SerializableFloatArray playerCharactericticAdded) =>
+                {
+                    this.characteristicsPointsAddedButNotApplied = playerCharactericticAdded;
+                });
+        }
         #endregion
 
         #region Properties
@@ -223,48 +281,6 @@ namespace BloodOfEvil.Player.Modules.Attributes
         #endregion
 
         #region Public Behaviour
-        public void AddCharacteristicsPointsAddedButNotApplied(EAttributeCharacteristics characteristic)
-        {
-            this.characteristicsPointsAddedButNotApplied.floatArray[
-                EnumerationHelper.GetIndex<EAttributeCharacteristics>(characteristic)] += 1;
-        }
-
-        public void RemoveCharacteristicsPointsAddedButNotApplied(EAttributeCharacteristics characteristic)
-        {
-            this.characteristicsPointsAddedButNotApplied.floatArray[
-                EnumerationHelper.GetIndex<EAttributeCharacteristics>(characteristic)] -= 1;
-        }
-
-        public float GetCharacteristicsPointsAddedButNotApplied(EAttributeCharacteristics characteristic)
-        {
-            return this.characteristicsPointsAddedButNotApplied.floatArray[
-                EnumerationHelper.GetIndex<EAttributeCharacteristics>(characteristic)];
-        }
-
-        /// <summary>
-        /// Sauvegarde les points de charactéristiques ajoutés mais non appliquer.
-        /// </summary>
-        public void SaveCharacteristicsPointsAddedButNotApplied()
-        {
-            SerializerHelper.Save<SerializableFloatArray>(
-                filename: this.GetCharacteristicsPointsAddedTemporaryPointsAddedFilename(),
-                dataToSave: this.characteristicsPointsAddedButNotApplied,
-                isReplicatedNextTheBuild: false,
-                isEncrypted: true);
-        }
-
-        public void LoadCharacteristicsPointsAddedButNotApplied()
-        {
-            SerializerHelper.Load<SerializableFloatArray>(
-                filename: this.GetCharacteristicsPointsAddedTemporaryPointsAddedFilename(),
-                isReplicatedNextTheBuild: false,
-                isEncrypted: true,
-                onLoadSuccess: (SerializableFloatArray playerCharactericticAdded) =>
-                {
-                    this.characteristicsPointsAddedButNotApplied = playerCharactericticAdded;
-                });
-        }
-
         // Ce code est sal et non maintenable mais il permet d'éviter d'avoir des charactéristiques et des sorts en trop et d'avoir une expérience correctement setté.
         // C'est sal !
         public void SpecificLoadForPlayer()
