@@ -1,4 +1,4 @@
-# Blood-Of-Evil-Remake-Prototype
+# Blood Of Evil Prototype
 
 J'ai toujours rêvé de faire un jeu que j'ai nommé "Blood Of Evil".
 Dans le but de le réaliser j'ai suivi une formation en programmation orienté jeu vidéo.
