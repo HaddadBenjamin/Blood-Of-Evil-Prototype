@@ -1,10 +1,10 @@
 # Blood-Of-Evil-Remake-Prototype
 
-Ce projet me permet avant tout de développer ma liste d'outils et de classes utilitaires que j'utilise de projet en projet.
-
 J'ai toujours rêvé de faire un jeu que j'ai nommé "Blood Of Evil".
 Dans le but de le réaliser j'ai suivi une formation en programmation orienté jeu vidéo.
 Maintenant j'ai envie de mettre au défi les compétences que j'ai acquises durant le cours de ma formation dans le but de tenter de réaliser ce projet.
+
+Ce projet me permet principalement de faire évoluer ma concenption et de développer ma liste d'outils et de classes utilitaires réutilisable que j'utilise de projet en projet.
 
 Je reprends donc encore une fois ce projet de zéro et il en est encore en état d'un prototype.
 
