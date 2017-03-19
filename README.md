@@ -6,6 +6,7 @@ Ce projet me permet de travailler ma conception logiciel et d'agrandir considér
 
 Mais il me permet aussi au défi les compétences que j'ai acquises durant le cours de ma formation.
 
+
 ♦ Dernier devlog : http://haddadbpro.wixsite.com/bloodofevil/patch-alpha-v0-06
 
 ♦ Dernière vidéo faite de ce projet : [https://www.youtube.com/watch?v=np-J3qUuPTw](https://www.youtube.com/watch?v=np-J3qUuPTw)
