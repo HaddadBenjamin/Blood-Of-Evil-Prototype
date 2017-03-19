@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using BloodOfEvil.Utilities;
 using UnityEngine;
 
 namespace BloodOfEvil.Scene.Services

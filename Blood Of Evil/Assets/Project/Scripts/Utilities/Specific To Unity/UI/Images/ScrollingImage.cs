@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 namespace BloodOfEvil.Utilities.UI
 {
+    using Extensions;
+
     /// <summary>
     /// Permet de faire scroller une image à la fois à la vertical qu'à l'horizontal.
     /// Pour faire fonctionner ce script, il faut que :
@@ -42,8 +44,8 @@ namespace BloodOfEvil.Utilities.UI
         #region Unity Behaviour
         private void Awake()
         {
-            this.rectTransformWidth = this.middleImageRectTransform.Width();
-            this.rectTransformHeight = this.middleImageRectTransform.Height();
+            this.rectTransformWidth = this.middleImageRectTransform.GetWidth();
+            this.rectTransformHeight = this.middleImageRectTransform.GetHeight();
 
             this.SetRectTransformPositionToItsInitialPosition();
         }

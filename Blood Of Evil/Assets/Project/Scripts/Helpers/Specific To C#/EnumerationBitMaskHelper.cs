@@ -10,7 +10,6 @@ namespace BloodOfEvil.Helpers
         /// </summary>
         public static bool DoesBitMaskBitIsSetted<TBitMaskType>(TBitMaskType bitMask, TBitMaskType bitMaskBit) where TBitMaskType : struct
         {
-        }
             return ((int)(object)bitMask & (int)(object)bitMaskBit) != 0;
         }
 

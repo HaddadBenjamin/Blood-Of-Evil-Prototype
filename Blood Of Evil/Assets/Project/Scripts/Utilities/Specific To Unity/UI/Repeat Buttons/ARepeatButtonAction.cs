@@ -14,7 +14,7 @@ namespace BloodOfEvil.Utilities.UI
         #region Unity Behaviour
         private void Awake()
         {
-            GetComponent<RepeatButton>().onClick.AddListener(() =>
+            GetComponent<RepeatButton>().repeatEvent.AddListener(() =>
             {
                 this.RepeatButtonAction();
             });

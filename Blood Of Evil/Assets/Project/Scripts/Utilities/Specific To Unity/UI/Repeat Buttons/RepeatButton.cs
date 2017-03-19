@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using BloodOfEvil.Extensions;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
@@ -18,7 +19,7 @@ namespace BloodOfEvil.Utilities.UI
         /// </summary>
         private bool canCallRepeatEvent = false;
         [SerializeField, Tooltip("C'est l'action du bouton à appeler.")]
-        private UnityEvent repeatEvent;
+        public UnityEvent repeatEvent;
         #endregion
 
         #region Interface Behaviour
