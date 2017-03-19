@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
@@ -8,6 +8,106 @@ namespace BloodOfEvil.Extensions
 {
     public static class TransformExtension
     {
+        #region Local Position
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe x.
+        /// </summary>
+        public static void SetXLocalPosition(this Transform transform, float x)
+        {
+            transform.localPosition = new Vector3(x, transform.localPosition.y, transform.localPosition.z);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe y.
+        /// </summary>
+        public static void SetYLocalPosition(this Transform transform, float y)
+        {
+            transform.localPosition = new Vector3(transform.localPosition.x, y, transform.localPosition.z);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe z.
+        /// </summary>
+        public static void SetZLocalPosition(this Transform transform, float z)
+        {
+            transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, z);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe x.
+        /// </summary>
+        public static void SetXLocalPositionPlusEqual(this Transform transform, float x)
+        {
+            transform.localPosition += new Vector3(x, 0.0f, 0.0f);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe y.
+        /// </summary>
+        public static void SetYLocalPositionPlusEqual(this Transform transform, float y)
+        {
+            transform.localPosition += new Vector3(0.0f, y, 0.0f);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe z.
+        /// </summary>
+        public static void SetZLocalPositionPlusEqual(this Transform transform, float z)
+        {
+            transform.localPosition += new Vector3(0.0f, 0.0f, z);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe x.
+        /// </summary>
+        public static void SetXLocalPositionLessEqual(this Transform transform, float x)
+        {
+            transform.localPosition -= new Vector3(x, 0.0f, 0.0f);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe y.
+        /// </summary>
+        public static void SetYLocalPositionLessEqual(this Transform transform, float y)
+        {
+            transform.localPosition -= new Vector3(0.0f, y, 0.0f);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe z.
+        /// </summary>
+        public static void SetZLocalPositionLessEqual(this Transform transform, float z)
+        {
+            transform.localPosition -= new Vector3(0.0f, 0.0f, z);
+        }
+        #endregion
+
+        #region Local Scale
+        /// <summary>
+        /// Modifie l'échelle de l'objet sur l'axe x.
+        /// </summary>
+        public static void SetXLocalScale(this Transform transform, float x)
+        {
+            transform.localScale = new Vector3(x, transform.localScale.y, transform.localScale.z);
+        }
+
+        /// <summary>
+        /// Modifie l'échelle de l'objet sur l'axe y.
+        /// </summary>
+        public static void SetYLocalScale(this Transform transform, float y)
+        {
+            transform.localScale = new Vector3(transform.localScale.x, y, transform.localScale.z);
+        }
+
+        /// <summary>
+        /// Modifie l'échelle de l'objet sur l'axe z.
+        /// </summary>
+        public static void SetZLocalScale(this Transform transform, float z)
+        {
+            transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, z);
+        }
+        #endregion
+        
         /// <summary>
         /// Place le transform à la position du sol.
         /// </summary>
