@@ -24,10 +24,27 @@ namespace BloodOfEvil.Utilities
         /// <summary>
         /// Permet de spécifier si l'intéraction de déplacement est active ou non.
         /// </summary>
-        protected bool DoesInteractionIsActive;
+        private bool doesInteractionIsActive;
+
+        public Action<bool> OnModifiedDoesInteractionIsActive;
         #endregion
 
         #region Properties
+        public bool DoesInteractionIsActive
+        {
+            get
+            {
+                return doesInteractionIsActive;
+            }
+
+            protected set
+            {
+                doesInteractionIsActive = value;
+
+                OnModifiedDoesInteractionIsActive.SafeCall(doesInteractionIsActive);
+            }
+        }
+
         public EMoveDirection Direction
         {
             get
@@ -40,6 +57,7 @@ namespace BloodOfEvil.Utilities
         #region Unity Behaviour
         private void LateUpdate()
         {
+            //Debug.DrawRay(transform.position, -transform.right * 1, Color.red, 0);
             if (this.DoesInteractionIsActive)
                 this.MoveEvent.SafeCall(this.GetMoveOffset() * this.moveFactor * Time.deltaTime);
         }
