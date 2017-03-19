@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using BloodOfEvil.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,8 +11,8 @@ namespace BloodOfEvil.Utilities.UI
     /// Permet de changer la transparence de l'image en fonction de l'état de notre case à coché.
     /// </summary>
     [RequireComponent(typeof(Image))]
-    public class ModifyImageTransparencyToggleButton : AToggleButtonActio
-    }
+    public class ModifyImageTransparencToggleButton : AToggleButtonAction
+    {
         #region Fields
         [SerializeField, Tooltip("C'est la transparence de l'image affichée lorsque l'état de notre case à coché est allumé.")]
         private float onAlpha;
