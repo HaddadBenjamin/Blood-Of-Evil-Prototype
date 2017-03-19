@@ -6,7 +6,7 @@ using UnityEngine;
 namespace BloodOfEvil.Scene.Services
 {
     /// <summary>
-    /// Permet de stoquer un certain type de données y permet d'y accèder rapidement.
+    /// Permet de stocker un certain type de resources et y donne accès facilement et rapidement.
     /// </summary>
     [System.Serializable]
     public abstract class AObjectReferencesService<TObjectType, TSingletonType> : ASingletonMonoBehaviour<TSingletonType>
@@ -24,6 +24,9 @@ namespace BloodOfEvil.Scene.Services
         #endregion
 
         #region Public Behaviour
+        /// <summary>
+        /// Permet de récupérer une resource par son nom.
+        /// </summary>
         public TObjectType Get(string name)
         {
             int nameID = name.GetHashCode();
