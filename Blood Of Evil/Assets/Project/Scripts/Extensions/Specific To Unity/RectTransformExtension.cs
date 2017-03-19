@@ -85,6 +85,106 @@ namespace BloodOfEvil.Extensions
         {
             return -(rectTransform.pivot.y * rectTransform.GetHeight());
         }
+        
+        #region Local Position
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe x.
+        /// </summary>
+        public static void SetXLocalPosition(this RectTransform RectTransform, float x)
+        {
+            RectTransform.localPosition = new Vector3(x, RectTransform.localPosition.y, RectTransform.localPosition.z);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe y.
+        /// </summary>
+        public static void SetYLocalPosition(this RectTransform RectTransform, float y)
+        {
+            RectTransform.localPosition = new Vector3(RectTransform.localPosition.x, y, RectTransform.localPosition.z);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe z.
+        /// </summary>
+        public static void SetZLocalPosition(this RectTransform RectTransform, float z)
+        {
+            RectTransform.localPosition = new Vector3(RectTransform.localPosition.x, RectTransform.localPosition.y, z);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe x.
+        /// </summary>
+        public static void SetXLocalPositionPlusEqual(this RectTransform RectTransform, float x)
+        {
+            RectTransform.localPosition += new Vector3(x, 0.0f, 0.0f);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe y.
+        /// </summary>
+        public static void SetYLocalPositionPlusEqual(this RectTransform RectTransform, float y)
+        {
+            RectTransform.localPosition += new Vector3(0.0f, y, 0.0f);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe z.
+        /// </summary>
+        public static void SetZLocalPositionPlusEqual(this RectTransform RectTransform, float z)
+        {
+            RectTransform.localPosition += new Vector3(0.0f, 0.0f, z);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe x.
+        /// </summary>
+        public static void SetXLocalPositionLessEqual(this RectTransform RectTransform, float x)
+        {
+            RectTransform.localPosition -= new Vector3(x, 0.0f, 0.0f);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe y.
+        /// </summary>
+        public static void SetYLocalPositionLessEqual(this RectTransform RectTransform, float y)
+        {
+            RectTransform.localPosition -= new Vector3(0.0f, y, 0.0f);
+        }
+
+        /// <summary>
+        /// Modifie la position de l'objet sur l'axe z.
+        /// </summary>
+        public static void SetZLocalPositionLessEqual(this RectTransform RectTransform, float z)
+        {
+            RectTransform.localPosition -= new Vector3(0.0f, 0.0f, z);
+        }
+        #endregion
+
+        #region Local Scale
+        /// <summary>
+        /// Modifie l'échelle de l'objet sur l'axe x.
+        /// </summary>
+        public static void SetXLocalScale(this RectTransform RectTransform, float x)
+        {
+            RectTransform.localScale = new Vector3(x, RectTransform.localScale.y, RectTransform.localScale.z);
+        }
+
+        /// <summary>
+        /// Modifie l'échelle de l'objet sur l'axe y.
+        /// </summary>
+        public static void SetYLocalScale(this RectTransform RectTransform, float y)
+        {
+            RectTransform.localScale = new Vector3(RectTransform.localScale.x, y, RectTransform.localScale.z);
+        }
+
+        /// <summary>
+        /// Modifie l'échelle de l'objet sur l'axe z.
+        /// </summary>
+        public static void SetZLocalScale(this RectTransform RectTransform, float z)
+        {
+            RectTransform.localScale = new Vector3(RectTransform.localScale.x, RectTransform.localScale.y, z);
+        }
+        #endregion
 
 
         /// <summary>
