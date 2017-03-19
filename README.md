@@ -2,7 +2,7 @@
 
 Lorsque j'étais lycéen, j'ai commencé à détailler le projet de jeu "Blood Of Evil" puis suite à cela j'ai suivi une formation en programmation orienté dans le jeu vidéo dans le but de le réaliser.
 
-Ce projet me permet de travailler ma conception logiciel et d'agrandir considérablement ma boîte à outils réutilisables sur du développement C# et du Unity en développant un grand nombre de services et de classes utilitaires.
+Ce projet me permet de travailler ma conception logiciel et de développer ma boîte à outils et de classes utilitaires réutilisables que j'utilise de projet en projet.
 
 Mais il me permet aussi au défi les compétences que j'ai acquises durant le cours de ma formation.
 
