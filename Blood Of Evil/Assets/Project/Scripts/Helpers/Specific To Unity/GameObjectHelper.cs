@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BloodOfEvil.Utilities
+namespace BloodOfEvil.Helpers
 {
     /// <summary>
     /// Facilite l'instantiation des objets dans la scène (avec ou sans parent, avec une position local ou non, etc...).
