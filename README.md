@@ -1,12 +1,11 @@
 # Blood Of Evil Prototype
 
-J'ai toujours rêvé de faire un jeu que j'ai nommé "Blood Of Evil".
-Dans le but de le réaliser j'ai suivi une formation en programmation orienté jeu vidéo.
-Maintenant j'ai envie de mettre au défi les compétences que j'ai acquises durant le cours de ma formation dans le but de tenter de réaliser ce projet.
+Lorsque j'étais lycéen, j'ai commencé à détailler le projet de jeu "Blood Of Evil" puis suite à cela j'ai suivi une formation en programmation orienté dans le jeu vidéo dans le but de le réaliser.
 
-Ce projet me permet principalement de faire évoluer ma concenption et de développer ma liste d'outils et de classes utilitaires réutilisable que j'utilise de projet en projet.
+Ce projet me permet de travailler ma conception logiciel et d'agrandir considérablement ma boîte à outils réutilisables sur du développement C# et du Unity en développant un grand nombre des services et des classes utilitaires.
 
-Je reprends donc encore une fois ce projet de zéro et il en est encore en état d'un prototype.
+Mais aussi de mettre au défi les compétences que j'ai acquises durant le cours de ma formation.
+
 
 ♦ Dernier devlog : http://haddadbpro.wixsite.com/bloodofevil/patch-alpha-v0-06
 
