@@ -2,9 +2,7 @@
 
 Lorsque j'étais lycéen, j'ai commencé à détailler le projet de jeu "Blood Of Evil" puis suite à cela j'ai suivi une formation en programmation orienté dans le jeu vidéo dans le but de le réaliser.
 
-Ce projet me permet de travailler ma conception logiciel et de développer ma boîte à outils que je réutilise de projet en projet.
-
-Mais il me permet aussi au défi les compétences que j'ai acquises durant le cours de ma formation.
+Ce projet me permet de travailler ma conception logiciel et de développer ma boîte à outils que je réutilise de projet en projet mais il me permet aussi de mettre au défi les compétences que j'ai acquises durant ma formation.
 
 
 ♦ Dernier devlog : http://haddadbpro.wixsite.com/bloodofevil/patch-alpha-v0-06
