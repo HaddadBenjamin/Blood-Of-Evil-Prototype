@@ -1,0 +1,42 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace BloodOfEvil.Scene.Services
+{
+    /// <summary>
+    /// Permet de stoquer un certain type de données y permet d'y accèder rapidement.
+    /// </summary>
+    [System.Serializable]
+    public abstract class AObjectReferencesService<TObjectType, TSingletonType> : ASingletonMonoBehaviour<TSingletonType>
+                    where TObjectType : UnityEngine.Object
+                    where TSingletonType : ASingletonMonoBehaviour<TSingletonType>
+    {
+        #region Fields
+        [SerializeField, Tooltip("Ce sont les références vers vos objets.")]
+        protected TObjectType[] references;
+        /// <summary>
+        /// Il s'agit des identifiants de hashs des références, passer par ces références est une optimisation.
+        /// Car au lieu de comparer des chaînes de caractères, je compare des entiers.
+        /// </summary>
+        private int[] referencesIds;
+        #endregion
+
+        #region Public Behaviour
+        public TObjectType Get(string name)
+        {
+            int nameID = name.GetHashCode();
+
+            return this.references[Array.FindIndex(this.referencesIds, referenceID  => referenceID == nameID)];
+        }
+        #endregion
+
+        #region Override Behaviour
+        public override void Initialize()
+        {
+            this.referencesIds = Array.ConvertAll<TObjectType, int>(this.references, reference => reference.name.GetHashCode());
+        }
+        #endregion
+    }
+}
