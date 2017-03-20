@@ -18,7 +18,7 @@ namespace BloodOfEvil.Extensions
 
 			eventTriggerEntry.callback.AddListener((data) =>
 			{
-				listener((PointerEventData)data);
+				listener((BaseEventData)data);
 			});
 
 			eventTrigger.triggers.Add(eventTriggerEntry);
@@ -38,7 +38,7 @@ namespace BloodOfEvil.Extensions
 
 			eventTiggerEntr.callback.AddListener((data) =>
 			{
-				listener((PointerEventData)data);
+				listener((BaseEventData)data);
 			});
 
 			eventTrigger.triggers.Remove(eventTiggerEntr);
