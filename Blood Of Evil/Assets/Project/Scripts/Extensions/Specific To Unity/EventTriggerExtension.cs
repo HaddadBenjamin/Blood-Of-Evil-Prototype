@@ -1,23 +1,47 @@
-﻿using UnityEngine.EventSystems;
+using UnityEngine.EventSystems;
 
 namespace BloodOfEvil.Extensions
 {
-    /// <summary>
-    /// Cette classe vient de Manzalab.
-    /// </summary>
 	public static class EventTriggerExtension
 	{
-		public static void AddEvent(
-            this EventTrigger eventTrigger,
-            EventTriggerType eventType,
-            UnityEngine.Events.UnityAction<BaseEventData> callback)
+		/// <summary>
+		/// Permet de rajouter une action lorsqu'un évênement de widget est récupéré.
+		/// </summary>
+		public static void AddUIListener(
+			this EventTrigger eventTrigger,
+			EventTriggerType eventType,
+			UnityAction<BaseEventData> listener)
 		{
-			EventTrigger.Entry entry = new EventTrigger.Entry();
+			EventTrigger.Entry eventTriggerEntry = new EventTrigger.Entry();
 
-			entry.eventID = eventType;
-			entry.callback.AddListener(callback);
-			eventTrigger.triggers.Add(entry);
+			eventTriggerEntry.eventID = eventType;
+
+			eventTriggerEntry.callback.AddListener((data) =>
+			{
+				listener((PointerEventData)data);
+			});
+
+			eventTrigger.triggers.Add(eventTriggerEntry);
+		}
+
+		/// <summary>
+		/// Permet de supprimer une action lorsqu'un évênement de widget est récupéré.
+		/// </summary>
+		public static void RemoveUIListener(
+			this EventTrigger eventTrigger,
+			EventTriggerType eventType,
+			UnityAction<BaseEventData> listener)
+		{
+			EventTrigger.Entry eventTiggerEntr = new EventTrigger.Entry();
+
+			eventTiggerEntr.eventID = eventType;
+
+			eventTiggerEntr.callback.AddListener((data) =>
+			{
+				listener((PointerEventData)data);
+			});
+
+			eventTrigger.triggers.Remove(eventTiggerEntr);
 		}
 	}
 }
-
