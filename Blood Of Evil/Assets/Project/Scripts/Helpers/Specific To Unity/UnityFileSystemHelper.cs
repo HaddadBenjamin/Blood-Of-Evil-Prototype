@@ -23,7 +23,7 @@ namespace BloodOfEvil.Helpers
             string directory = "";
 
             if (isReplicatedNextTheBuild)
-    #if UNITY_ANDROID
+    #if UNITY_ANDROID && !UNITY_EDITOR
             directory = "jar:file://" + Application.dataPath + "!/assets";
     #else
                 directory = Application.streamingAssetsPath;
