@@ -63,6 +63,8 @@ namespace BloodOfEvil.Utilities
                     typeof(TSingletonType).Name);
 
             haveBeenInitialized = true;
+            
+            SingletonManager.OnReinitializeAllSingletons += () => Reinitialize();
         }
 
         /// <summary>
