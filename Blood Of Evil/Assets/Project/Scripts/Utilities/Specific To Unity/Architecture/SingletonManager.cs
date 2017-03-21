@@ -12,6 +12,17 @@ namespace BloodOfEvil.Utilities
     public class SingletonManager : ASingletonMonoBehaviour<SingletonManager>
     {
         #region Fields
+        public static Action OnReinitializeAllSingletons;
+        #endregion
+
+        #region Public Behaviour
+        public static void ReinitializeAllSingletons()
+        {
+            OnReinitializeAllSingletons.SafeCall();
+        }
+        #endregion
+    
+        #region Fields
         private const string defaultSceneName = "Persistent";
         #endregion
 
