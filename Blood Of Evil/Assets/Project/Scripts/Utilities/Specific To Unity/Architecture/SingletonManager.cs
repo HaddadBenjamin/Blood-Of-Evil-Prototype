@@ -13,6 +13,14 @@ namespace BloodOfEvil.Utilities
     {
         #region Fields
         public static Action OnReinitializeAllSingletons;
+        private const string defaultSceneName = "Persistent";
+        #endregion
+
+        #region Unity Behaviour
+        private void Awake()
+        {
+            DontDestroyOnLoad(gameObject);
+        }
         #endregion
 
         #region Public Behaviour
@@ -20,47 +28,13 @@ namespace BloodOfEvil.Utilities
         {
             OnReinitializeAllSingletons.SafeCall();
         }
-        #endregion
-    
-        #region Fields
-        private const string defaultSceneName = "Persistent";
-        #endregion
-
-        #region Unity Behaviour
-        /// <summary>
-        /// Initialize tous les singletons de la scène de base.
-        /// </summary>
-        private void Awake()
-        {
-            //var d = DataAndDifficultyController.Instance;
-    //
-            //var e = LanguageService.Instance;
-            //var f = SingletonManager.Instance;
-
-            //DontDestroyOnLoad(gameObject);
-        }
-        #endregion
-
-        #region Public Behaviour
+        
         /// <summary>
         /// Cette méthode est appelé lorsque l'on doit relancer notre jeu.
         /// </summary>
         public void RestartApplication()
         {
-            //// Réinitialise tous les singletons héritant de MonoBehaviour en leur disant qu'ils peuvent être de nouveau initializer et en désabonnant tous leurs évênements.
-            //GameController.Instance.Reinitialize();
-            //ScoreModule.Instance.Reinitialize();
-            //ScoreInterfaceModule.Instance.Reinitialize();
-            //DataAndDifficultyController.Instance.Reinitialize();
-            //
-            //// Réinitialise tous les singletons héritant de données héritant d'aucune classe en leur disant qu'ils peuvent être de nouveau initializer et en désabonnant tous leurs évênements.
-            //LanguageService.Instance.Reinitialize();
-    //
-            //// Détruit tous les singletons héritant de MonoBehaviour.
-            //Destroy(GameController.Instance.gameObject);
-            //Destroy(ScoreModule.Instance.gameObject);
-            //Destroy(ScoreInterfaceModule.Instance.gameObject);
-            //Destroy(DataAndDifficultyController.Instance.gameObject);
+            this.ReinitializeAllSingletons();
 
             // Charge la scène par défault.
             SceneManager.LoadScene(defaultSceneName);
