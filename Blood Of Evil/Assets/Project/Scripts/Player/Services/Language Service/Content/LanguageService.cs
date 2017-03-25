@@ -71,6 +71,8 @@ namespace BloodOfEvil.Player.Services.Language
 
             this.GenerateDefaultLanguage();
             this.InitializeHashIds();
+
+            this.LoadOSLanguage();
         }
         #endregion
 
@@ -179,6 +181,24 @@ namespace BloodOfEvil.Player.Services.Language
         #endregion
 
         #region Intern Behaviour
+        /// <summary>
+        /// Charge la langue de l'OS.
+        /// </summary>
+        private void LoadOSLanguage()
+        {
+            /// Chargement de la langue de l'OS par défault.
+            switch (Application.systemLanguage)
+            {
+                case SystemLanguage.French:
+                    this.CurrentLanguage = ELanguage.French;
+                    break;
+
+                default:
+                    this.CurrentLanguage = ELanguage.English;
+                    break;
+            }
+        }
+
         private string GetFileName()
         {
             return FileSystemHelper.CombinePath(
