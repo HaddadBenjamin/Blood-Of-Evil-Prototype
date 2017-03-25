@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 using System.Collections;
+using BloodOfEvil.Extensions;
 
 [RequireComponent(typeof(Canvas))]
 public class CanvasGroupFade : MonoBehaviour

@@ -1,6 +1,8 @@
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using BloodOfEvil.Extensions;
 using UnityEngine.SceneManagement;
 
 namespace BloodOfEvil.Utilities
@@ -34,7 +36,7 @@ namespace BloodOfEvil.Utilities
         /// </summary>
         public void RestartApplication()
         {
-            this.ReinitializeAllSingletons();
+            ReinitializeAllSingletons();
 
             // Charge la scène par défault.
             SceneManager.LoadScene(defaultSceneName);

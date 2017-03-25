@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -13,12 +13,16 @@ namespace BloodOfEvil.Utilities
         #region Fields
         [Header("Les images splashs screens : "), SerializeField, Tooltip("Les sprites qui défileront.")]
         private Sprite[] sprites;
+
         [SerializeField, Tooltip("Le script permettant de gérer la transparence des sprites qui défileront.")]
         private CanvasGroupFade splashScreenCanvasGroupFade;
+
         [SerializeField, Tooltip("C'est l'image qui contiendra les sprites qui défileront.")]
         private Image splashScreenImage;
+
         [SerializeField, Tooltip("C'est le temps en seconde que passera chaque image à défiler en fade in fade out.")]
         private float timePerPlashScreenImage = 4.0f;
+
         /// <summary>
         /// C'est l'index du sprite que l'on affiche actuellement à l'écran.
         /// </summary>
