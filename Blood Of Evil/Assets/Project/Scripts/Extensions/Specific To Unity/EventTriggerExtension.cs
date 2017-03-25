@@ -7,7 +7,7 @@ namespace BloodOfEvil.Extensions
 		/// <summary>
 		/// Permet de rajouter une action lorsqu'un évênement de widget est récupéré.
 		/// </summary>
-		public static void AddUIListener(
+		public static EventTrigger.Entry AddUIListener(
 			this EventTrigger eventTrigger,
 			EventTriggerType eventType,
 			UnityAction<BaseEventData> listener)
@@ -22,6 +22,8 @@ namespace BloodOfEvil.Extensions
 			});
 
 			eventTrigger.triggers.Add(eventTriggerEntry);
+			
+			return eventTriggerEntry;
 		}
 
 		/// <summary>
