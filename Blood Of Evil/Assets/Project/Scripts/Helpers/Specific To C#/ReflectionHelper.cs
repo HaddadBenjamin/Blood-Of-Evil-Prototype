@@ -46,7 +46,7 @@ namespace BloodOfEvil.Helpers
         {
             Module[] allModules = AppDomain.CurrentDomain.Load(libraryName).GetModules();
             List<TypeAndInstanceType> typeAndInstanceTypes = new List<TypeAndInstanceType>();
-            
+
             foreach (var module in allModules)
             {
                 var allTypes = module.GetTypes();
@@ -57,4 +57,5 @@ namespace BloodOfEvil.Helpers
 
             return typeAndInstanceTypes.ToArray();
         }
+    }
 }
