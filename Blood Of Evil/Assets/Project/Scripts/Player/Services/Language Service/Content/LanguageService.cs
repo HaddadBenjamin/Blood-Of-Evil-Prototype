@@ -63,7 +63,7 @@ namespace BloodOfEvil.Player.Services.Language
                 isEncrypted: false);
         }
 
-        void IDataInitializable.Initialize()
+        public void Initialize()
         {
             this.currentLanguageTexts = new string[EnumerationHelper.Count<ELanguageCategory>()][];
             this.defaultLanguageTexts = new string[EnumerationHelper.Count<ELanguageCategory>()][];
@@ -72,7 +72,7 @@ namespace BloodOfEvil.Player.Services.Language
             this.GenerateDefaultLanguage();
             this.InitializeHashIds();
 
-            this.LoadOSLanguage();
+            //this.LoadOSLanguage();
         }
         #endregion
 

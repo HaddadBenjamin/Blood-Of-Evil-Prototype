@@ -69,7 +69,7 @@ namespace BloodOfEvil.Scene
 
 
         #region Initialisation
-        public override void Initialize()
+        public override void InitializeSingletons()
         {
             this.FootstepService = GetComponent<FootstepsService>();
 

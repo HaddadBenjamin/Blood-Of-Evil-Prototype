@@ -45,6 +45,8 @@ namespace BloodOfEvil.Scene.Services.References
             Array.ForEach(this.allAudioSources, audioSources => audioSources.Initialize());
 
             this.poolManager = PlayerServicesAndModulesContainer.Instance.ObjectsPoolService;
+
+            Debug.Log(PlayerServicesAndModulesContainer.Instance);
             this.pool2DSound = this.poolManager.GetPool("Audio Node 2D");
             this.pool3DSound = this.poolManager.GetPool("Audio Node 3D");
         }

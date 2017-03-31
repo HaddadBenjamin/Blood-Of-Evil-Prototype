@@ -135,9 +135,9 @@ namespace BloodOfEvil.Player
         /// <summary>
         /// Le service de langage semble être initialiser plusieurs fois, vérifier si il y a des crashs si je ne le met qu'une seule fois.
         /// </summary>
-        public override void Initialize()
+        public override void InitializeSingletons()
         {
-            base.Initialize();
+            base.InitializeSingletons();
 
             // C'est un vrai bordel de gérer les dépendances entre-elles.
 
@@ -152,7 +152,7 @@ namespace BloodOfEvil.Player
             //this.TextInformationService = GetComponent<TextInformationService>();
             //this.DontDestroyOnLoadService = GetComponent<DontDestroyOnLoadService>();
             this.PrefabReferencesService = GetComponent<PrefabReferencesService>();
-            this.ObjectsPoolService = gameObject.GetComponent<ObjectsPoolService>();
+            this.ObjectsPoolService = GetComponent<ObjectsPoolService>();
             this.AnimationModule = GetComponent<PlayerAnimationModule>();
             this.AttributesModule = GetComponent<PlayerAttributesModule>();
 

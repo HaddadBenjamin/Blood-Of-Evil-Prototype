@@ -46,7 +46,7 @@ namespace BloodOfEvil.Scene.Services
         #endregion
 
         #region Override Behaviour
-        public override void Initialize()
+        public override void InitializeSingletons()
         {
             this.PreviousInputFrame = new InputFrame();
             this.CurrentInputFrame = new InputFrame();
@@ -57,7 +57,7 @@ namespace BloodOfEvil.Scene.Services
         #region Unity Behaviour
         public void Awake()
         {
-            this.Initialize();
+            this.InitializeSingletons();
         }
 
         /// <summary>
