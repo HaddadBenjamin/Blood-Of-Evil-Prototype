@@ -1,4 +1,6 @@
-﻿Shader "3y3net/GlowVisible"{
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "3y3net/GlowVisible"{
 	Properties {
 		_GlowColor ("Glow Color", Color) = (1,0,0,1)
 		_Outline ("Outline width", Range (0.02, 0.25)) = .005
@@ -50,7 +52,7 @@
 		resizeMatrix[0][1] = 0.0; resizeMatrix[0][2] = 0.0; resizeMatrix[0][3] = 0.0; resizeMatrix[1][0] = 0.0;
 		resizeMatrix[1][2] = 0.0; resizeMatrix[1][3] = 0.0; resizeMatrix[2][0] = 0.0; resizeMatrix[2][1] = 0.0;
 		resizeMatrix[2][3] = 0.0; resizeMatrix[3][0] = 0.0; resizeMatrix[3][1] = 0.0; resizeMatrix[3][2] = 0.0; resizeMatrix[3][3] = 1.0;
-		o.pos = mul(UNITY_MATRIX_MVP, mul (resizeMatrix, v.vertex));
+		o.pos = UnityObjectToClipPos(mul (resizeMatrix, v.vertex));
 		o.color = fixed4(_GlowColor.r,_GlowColor.g,_GlowColor.b,_Opacity/10.0);
 		return o;
 	}
@@ -142,7 +144,7 @@
 
 			v2f vert(appdata_base v) {
 				v2f o;
-				o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+				o.pos = UnityObjectToClipPos(v.vertex);
 				o.grabPos = ComputeGrabScreenPos(o.pos);
 				return o;
 			}

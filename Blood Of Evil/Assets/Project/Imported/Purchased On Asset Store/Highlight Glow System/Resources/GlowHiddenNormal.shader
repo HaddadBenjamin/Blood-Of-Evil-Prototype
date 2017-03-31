@@ -1,4 +1,6 @@
-﻿Shader "3y3net/GlowHiddenNormal"{
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "3y3net/GlowHiddenNormal"{
 	Properties {
 		_Color ("Color Tint", Color) = (1.0,1.0,1.0,1.0)
 		_MainTex ("Diffuse Texture", 2D) = "white" {}
@@ -50,7 +52,7 @@
 	
 	voutGlow vertPassGlobal(vinGlow v, fixed Occlusion) {
 		voutGlow o;
-		o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+		o.pos = UnityObjectToClipPos(v.vertex);
 		fixed3 norm   = mul ((fixed3x3)UNITY_MATRIX_IT_MV, v.normal);
 		fixed2 offset = TransformViewToProjection(norm.xy);
 		o.pos.xy += offset * o.pos.z * _Outline*Occlusion/10.0;
@@ -145,7 +147,7 @@
 
 			v2f vert(appdata_base v) {
 				v2f o;
-				o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+				o.pos = UnityObjectToClipPos(v.vertex);
 				o.grabPos = ComputeGrabScreenPos(o.pos);
 				return o;
 			}

@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Ninjutsu Games/Map"
 {
 	Properties
@@ -52,7 +54,7 @@ Shader "Ninjutsu Games/Map"
                                
                 void Vert(appdata_full i, out v2f o)
                 {
-					o.pos = mul(UNITY_MATRIX_MVP, i.vertex);
+					o.pos = UnityObjectToClipPos(i.vertex);
                     o.uv = mul(_Matrix, i.texcoord).xy;
 					o.uv2 = mul(_Matrix2, i.texcoord).xy;    
 					o.color = _Color;

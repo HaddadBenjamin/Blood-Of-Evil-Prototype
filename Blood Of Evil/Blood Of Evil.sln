@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2015
+# Visual Studio 2017
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blood Of Evil.Plugins", "Blood Of Evil.Plugins.csproj", "{ECC04074-43E6-6AD6-1370-C48061D3015D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blood Of Evil", "Blood Of Evil.csproj", "{CD983C0B-5788-3AB6-6AA4-631A54893969}"
