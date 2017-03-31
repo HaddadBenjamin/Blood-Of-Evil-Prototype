@@ -6,6 +6,15 @@ namespace BloodOfEvil.Helpers
     public static class EnumerationHelper
     {
         /// <summary>
+        /// Converti l'index de l'énumération en entier.
+        /// </summary>
+        public static int EnumerationIndexToInteger<EnumerationType>(EnumerationType enumerationIndex) 
+            where EnumerationType : struct, IConvertible
+        {
+            return (int)(object)enumerationIndex;
+        }
+
+        /// <summary>
         /// Permet d'obtenir l'index d'une énumération.
         /// </summary>
         public static int GetIndex<EnumerationType>(EnumerationType enumeration) where EnumerationType : struct, IConvertible
