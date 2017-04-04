@@ -38,17 +38,11 @@ namespace BloodOfEvil.Helpers
             {
                 TListType leftValue = (containerType as IList<TListType>)[shuffleIndexes[arrayIndex]];
                 TListType rightValue = (containerType as IList<TListType>)[arrayIndex];
+                TListType tmpValue = leftValue;
 
-                //Debug.LogFormat("leftValue : {0}, rightValue : {1}", leftValue, rightValue);
-                Utilities.Swap(ref leftValue, ref rightValue);
-                //Debug.LogFormat("leftValue : {0}, rightValue : {1}", leftValue, rightValue);
+                (containerType as IList<TListType>)[shuffleIndexes[arrayIndex]] = rightValue;
+                (containerType as IList<TListType>)[arrayIndex] = tmpValue;
             }
-
-            //for (int arrayIndex = 0; arrayIndex < (containerType as ICollection).Count; arrayIndex++)
-            //{
-            //    TListType value = (containerType as IList<TListType>)[arrayIndex];
-            //    Debug.LogFormat("value : {0}", value);
-            //}
         }
     }
 }
