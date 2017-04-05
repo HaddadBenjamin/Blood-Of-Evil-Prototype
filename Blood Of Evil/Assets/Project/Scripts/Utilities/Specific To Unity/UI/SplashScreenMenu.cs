@@ -33,7 +33,7 @@ namespace BloodOfEvil.Utilities
         private void Start()
         {
             /// Configure la vitesse de défilement de chaque image.
-            this.splashScreenCanvasGroupFade.SetAlpha(2.0f / this.timePerPlashScreenImage);
+            this.splashScreenCanvasGroupFade.SetSpeed(2.0f / this.timePerPlashScreenImage);
 
             /// Charge la première image et lui donne un effet de fade in.
             this.GoToNextImage();
