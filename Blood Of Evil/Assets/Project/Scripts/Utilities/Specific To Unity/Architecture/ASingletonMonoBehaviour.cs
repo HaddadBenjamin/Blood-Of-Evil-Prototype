@@ -43,7 +43,7 @@ namespace BloodOfEvil.Utilities
                         return null;
                     }
                     else
-                        instance.InitializeSingletons();
+                        instance.InitializeSingleton();
                 }
 
                 return instance;
@@ -55,7 +55,7 @@ namespace BloodOfEvil.Utilities
         /// <summary>
         /// La méthode d'initialisation de notre singleton.
         /// </summary>
-        public virtual void InitializeSingletons()
+        public virtual void InitializeSingleton()
         {
             if (haveBeenInitialized)
                 Debug.LogErrorFormat("[ASingletonMonoBehaviour] : le singleton de type {0} a une instance déjà initialisée.",

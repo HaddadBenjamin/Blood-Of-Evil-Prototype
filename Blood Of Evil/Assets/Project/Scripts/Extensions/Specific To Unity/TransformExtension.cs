@@ -488,5 +488,5 @@ namespace BloodOfEvil.Extensions
         {
             return transform.GetComponentsInChildren<Transform>();
         }
-    }
+    }   
 }

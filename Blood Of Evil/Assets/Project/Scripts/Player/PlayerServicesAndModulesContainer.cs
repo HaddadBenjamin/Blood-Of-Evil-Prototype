@@ -135,9 +135,9 @@ namespace BloodOfEvil.Player
         /// <summary>
         /// Le service de langage semble être initialiser plusieurs fois, vérifier si il y a des crashs si je ne le met qu'une seule fois.
         /// </summary>
-        public override void InitializeSingletons()
+        public override void InitializeSingleton()
         {
-            base.InitializeSingletons();
+            base.InitializeSingleton();
 
             // C'est un vrai bordel de gérer les dépendances entre-elles.
 

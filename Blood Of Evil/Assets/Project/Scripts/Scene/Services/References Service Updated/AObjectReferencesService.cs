@@ -37,8 +37,10 @@ namespace BloodOfEvil.Scene.Services
         #endregion
 
         #region Override Behaviour
-        public override void InitializeSingletons()
+        public override void InitializeSingleton()
         {
+            base.InitializeSingleton();
+
             this.referencesIds = Array.ConvertAll<TObjectType, int>(this.references, reference => reference.name.GetHashCode());
         }
         #endregion
