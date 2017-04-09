@@ -33,7 +33,14 @@ namespace BloodOfEvil.Helpers
             List<int> shuffleIndexes = ListHelper.GetAShuffleIntList(array.Length);
 
             for (int arrayIndex = 0; arrayIndex < array.Length; arrayIndex++)
-                Utilities.Swap(ref array[shuffleIndexes[arrayIndex]], ref array[arrayIndex]);
+            {
+                TArrayElement leftValue = array[shuffleIndexes[arrayIndex]];
+                TArrayElement rightValue = array[arrayIndex];
+                TArrayElement tmpValue = leftValue;
+
+                array[shuffleIndexes[arrayIndex]] = rightValue;
+                array[arrayIndex] = tmpValue;
+            }
         }
     }
 }
