@@ -19,16 +19,6 @@ namespace BloodOfEvil.Extensions
                 foreachMethod(child);
         }
 
-    /// <summary>
-    /// Appelle une méthode avec en paramètre pour tous les enfants d'un transform.
-    /// </summary>
-    public static void ForeachOnChildren(this Transform transform, Action<Transform> foreachMethod)
-    {
-        Transform[] childrens = transform.GetChildrens();
-
-        foreach (Transform child in childrens)
-            foreachMethod(child);
-    }
         #region Local Position
         /// <summary>
         /// Modifie la position de l'objet sur l'axe x.
