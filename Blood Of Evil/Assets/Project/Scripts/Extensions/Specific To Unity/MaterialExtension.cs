@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-namspace BloodOfEvil
+namspace BloodOfEvil.Extensions
 {
     public static class MaterialExtension
     {
