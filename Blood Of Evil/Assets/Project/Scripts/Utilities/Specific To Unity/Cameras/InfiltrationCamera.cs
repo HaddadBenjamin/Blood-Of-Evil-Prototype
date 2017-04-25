@@ -13,7 +13,7 @@ namespace BloodOfEvil.Utilities.Cameras
     {
         #region Fields
         #region Camera Destination
-        [SerializeField, Tooltip("C'est la caméra du joueur")]
+        [SerializeField, Tooltip("C'est la caméra du joueur"), Header("Move")]
         private Camera playerCamera;
         [SerializeField, Tooltip("C'est la cible de la caméra, le joueur.")]
         private Transform cameraTarget;
@@ -25,8 +25,9 @@ namespace BloodOfEvil.Utilities.Cameras
         /// </summary>
         private Vector3 cameraDestination;
         #endregion
+
         #region Shake Configuration
-        [SerializeField, Tooltip("C'est la durée d'un tremblement de la caméra.")]
+        [SerializeField, Tooltip("C'est la durée d'un tremblement de la caméra."), Header("Shake")]
         private float shakeDuration = 0.5f;
         [SerializeField, Tooltip("C'est la puissance du tremblement de la caméra.")]
         private float shakeIntensity = 0.15f;
