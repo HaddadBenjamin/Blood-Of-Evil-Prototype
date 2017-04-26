@@ -5,6 +5,8 @@ using System;
 
 namespace BloodOfEvil.Utilities
 {
+    using Extensions;
+    
     /// <summary>
     /// Permet de créer une machine à états.
     /// </summary>
