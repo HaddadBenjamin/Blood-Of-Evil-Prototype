@@ -5,7 +5,7 @@ using System;
 
 namespace BloodOfEvil.Utilities
 {
-    using Extensions;
+    using Helpers;
     
     /// <summary>
     /// Permet de créer une machine à états.
@@ -44,18 +44,19 @@ namespace BloodOfEvil.Utilities
         /// </summary>
         protected void Update()
         {
-            TStateEnumeration oldState = this.currentState.StateID;
             int oldStateIndex = EnumerationHelper.GetIndex(this.currentState.StateID);
+            TStateEnumeration newStateIndex =  this.GetUpdatedStateID();
 
-            this.UpdateState();
-
-            if (oldStateIndex != EnumerationHelper.GetIndex(this.currentState.StateID))
+            if (oldStateIndex != EnumerationHelper.GetIndex(newStateIndex))
             {
-                this.GetState(oldState).QuitState();
+                this.states[oldStateIndex].QuitState();
+
+                this.currentState = this.GetState(newStateIndex);
+
                 this.currentState.EnterInState();
             }
-
-            this.currentState.StayInState();
+            else
+                this.currentState.StayInState();
         }
         #endregion
 
@@ -71,9 +72,9 @@ namespace BloodOfEvil.Utilities
         protected abstract TStateEnumeration GetDefaultStateID();
 
         /// <summary>
-        /// C'est la méthode qui met à jour l'état courant.
+        /// C'est la méthode qui met à jour l'état courant et permet de le récupérer.
         /// </summary>
-        protected abstract void UpdateState();
+        protected abstract TStateEnumeration GetUpdatedStateID();
         #endregion
 
         #region Intern Behaviours
@@ -85,6 +86,16 @@ namespace BloodOfEvil.Utilities
             return Array.Find(this.states, state => state.StateID.Equals(stateID));
         }
         #endregion
-        //Appeler les différents états de ma machine à états.
+
+        #region Public Behaviour
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public TStateEnumeration GetCurrentStateID()
+        {
+            return this.currentState.StateID;
+        }
+        #endregion
     }
 }

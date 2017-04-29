@@ -51,8 +51,9 @@ namespace BloodOfEvil.Utilities
             };
         }
 
-        protected override void UpdateState()
+        protected override EExampleState GetUpdatedStateID()
         {
+            return base.GetCurrentStateID().Equals(EExampleState.Idle) ? EExampleState.Wander : EExampleState.Idle;
         }
     }
 }
