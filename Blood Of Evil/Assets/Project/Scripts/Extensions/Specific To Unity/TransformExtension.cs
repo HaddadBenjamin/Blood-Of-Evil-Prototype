@@ -9,7 +9,7 @@ namespace BloodOfEvil.Extensions
     public static class TransformExtension
     {
         /// <summary>
-        /// Permet de déplacet et de tourner un objet à la position et rotation d'un objet point de collision.
+        /// Permet de déplacer et de tourner un objet à la position et rotation d'un point de collision.
         /// </summary>
         public static void GetTranslationAndRotationOfTheCollisionPoint(
             this Transform transform, 
