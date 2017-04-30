@@ -9,12 +9,12 @@ namespace BloodOfEvil.Extensions
     public static class TransformExtension
     {
         /// <summary>
-        /// Déplacer et tourner un objet à la position et rotation d'un objet collisioné.
+        /// Permet de déplacet et de tourner un objet à la position et rotation d'un objet point de collision.
         /// </summary>
         public static void GetTranslationAndRotationOfTheCollisionPoint(
             this Transform transform, 
             RaycastHit raycastHit,
-            float distanceToCollisionPoint = 0.02f)
+            float distanceToCollisionPoint = 0.005f)
         {
             // Je déplace mon objet sur le point de collision.
             transform.position = raycastHit.point + distanceToCollisionPoint * raycastHit.normal;
