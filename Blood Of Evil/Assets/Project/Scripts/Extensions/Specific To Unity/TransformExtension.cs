@@ -21,9 +21,10 @@ namespace BloodOfEvil.Extensions
 
             // Je tourne mon l'objet en fonction de la direction de la normale de collision.
             Vector3 lookAt = Vector3.Cross(-raycastHit.normal, Vector3.up);
-            Quaternion newRotation = Quaternion.LookRotation(lookAt, raycastHit.normal);
 
-            transform.rotation = Quaternion.LookRotation(lookAt, raycastHit.normal);
+            transform.rotation = raycastHit.normal.Equals(Vector3.up) ? 
+                Quaternion.identity : 
+                Quaternion.LookRotation(lookAt, raycastHit.normal);
         }
         
         /// <summary>
