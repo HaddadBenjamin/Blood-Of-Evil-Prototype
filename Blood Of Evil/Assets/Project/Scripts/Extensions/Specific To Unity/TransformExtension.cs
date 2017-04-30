@@ -11,10 +11,13 @@ namespace BloodOfEvil.Extensions
         /// <summary>
         /// Déplacer et tourner un objet à la position et rotation d'un objet collisioné.
         /// </summary>
-        public static void GetTranslationAndRotationOfTheCollisionPoint(this Transform transform, RaycastHit raycastHit)
+        public static void GetTranslationAndRotationOfTheCollisionPoint(
+            this Transform transform, 
+            RaycastHit raycastHit,
+            float distanceToCollisionPoint = 0.02f)
         {
             // Je déplace mon objet sur le point de collision.
-            transform.position = raycastHit.point;
+            transform.position = raycastHit.point + distanceToCollisionPoint * raycastHit.normal;
 
             // Je tourne mon l'objet en fonction de la direction de la normale de collision.
             Vector3 lookAt = Vector3.Cross(-raycastHit.normal, transform.up);
