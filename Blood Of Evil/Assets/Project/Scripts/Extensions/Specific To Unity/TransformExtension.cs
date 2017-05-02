@@ -9,22 +9,19 @@ namespace BloodOfEvil.Extensions
     public static class TransformExtension
     {
         /// <summary>
-        /// Permet de déplacer et de tourner un objet à la position et rotation d'un point de collision.
+        /// Déplace et de tourne un objet à la position et rotation point de collision.
         /// </summary>
         public static void GetTranslationAndRotationOfTheCollisionPoint(
             this Transform transform, 
             RaycastHit raycastHit,
-            float distanceToCollisionPoint = 0.005f)
+            float distanceToCollisionPoint = 0.005f) 
+            // Permet d'éviter un éffet de surposition entre l'objet et l'objet sur lequel il colisionne. 
         {
-            // Je déplace mon objet sur le point de collision.
+            // Je déplace mon objet à une certaine distance devant le point de collision.
             transform.position = raycastHit.point + distanceToCollisionPoint * raycastHit.normal;
 
-            // Je tourne mon l'objet en fonction de la direction de la normale de collision.
-            Vector3 lookAt = Vector3.Cross(-raycastHit.normal, Vector3.up);
-
-            transform.rotation = raycastHit.normal.Equals(Vector3.up) ? 
-                Quaternion.identity : 
-                Quaternion.LookRotation(lookAt, raycastHit.normal);
+            // Je tourne mon l'objet dans la direction de la normale de collision.
+            transform.rotation = Quaternion.FromToRotation(Vector3.up, raycastHit.normal);
         }
         
         /// <summary>
