@@ -13,6 +13,74 @@ namespace BloodOfEvil.Extensions
             rectTransform.localPosition = Vector3.zero;
             rectTransform.localScale = Vector3.one;
         }
+        
+        /// <summary>
+        /// Modifie la largeur d'un widget.
+        /// </summary>
+        public static void SetWidth(
+            this RectTransform rectTransform,
+            float width,
+            bool plusEqual = false)
+        {
+            rectTransform.sizeDelta = new Vector2(
+                (plusEqual ? rectTransform.sizeDelta.x : 0.0f) + width, 
+                rectTransform.sizeDelta.y);
+        }
+
+        /// <summary>
+        /// Modifie la hauteur d'un widget.
+        /// </summary>
+        public static void SetHeight(
+            this RectTransform rectTransform,
+            float height,
+            bool plusEqual)
+        {
+            rectTransform.sizeDelta = new Vector2(
+                rectTransform.sizeDelta.x, 
+                (plusEqual ? rectTransform.sizeDelta.y : 0.0f) + height);
+        }
+
+        /// <summary>
+        /// Récupère la largeur d'un widget.
+        /// </summary>
+        public static float GetWidth(this RectTransform rectTransform)
+        {
+            return rectTransform.sizeDelta.x;
+        }
+
+        /// <summary>
+        /// Récupère la hauteur d'un widget.
+        /// </summary>
+        public static float GetHeight(this RectTransform rectTransform)
+        {
+            return rectTransform.sizeDelta.y;
+        }
+
+        /// <summary>
+        /// Modifie la position en Y du widget.
+        /// </summary>
+        public static void SetYPosition(
+            this RectTransform rectTransform, 
+            float yPosition, 
+            bool plusEqual = false)
+        {
+            rectTransform.anchoredPosition = new Vector2(
+                    rectTransform.anchoredPosition.x,
+                    (plusEqual ? rectTransform.anchoredPosition.y : 0.0f) + yPosition);
+        }
+
+        /// <summary>
+        /// Modifie la position en X du widget.
+        /// </summary>
+        public static void SetXPosition(
+            this RectTransform rectTransform,
+            float xPosition,
+            bool plusEqual = false)
+        {
+            rectTransform.anchoredPosition = new Vector2(
+                (plusEqual ? rectTransform.anchoredPosition.x : 0.0f) + xPosition,
+                rectTransform.anchoredPosition.y);
+        }
 
         /// <summary>
         /// Modifie la position locale d'un rectTransform.
@@ -36,38 +104,6 @@ namespace BloodOfEvil.Extensions
         public static void SetScale(this RectTransform rectTransform, Vector3 scale)
         {
             rectTransform.localScale = scale;
-        }
-
-        /// <summary>
-        /// Modifie la largeur d'un rectTransform.
-        /// </summary>
-        public static void SetWidth(this RectTransform rectTransform, float width)
-        {
-            rectTransform.sizeDelta = new Vector2(width, rectTransform.sizeDelta.y);
-        }
-
-        /// <summary>
-        /// Modifie la hauteur d'un rectTransform.
-        /// </summary>
-        public static void SetHeight(this RectTransform rectTransform, float height)
-        {
-            rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, height);
-        }
-
-        /// <summary>
-        /// Renvoie la largeur d'un rectTransform.
-        /// </summary>
-        public static float GetWidth(this RectTransform rectTransform)
-        {
-            return rectTransform.sizeDelta.x;
-        }
-
-        /// <summary>
-        /// Renvoie la hauteur d'un rectTransform.
-        /// </summary>
-        public static float GetHeight(this RectTransform rectTransform)
-        {
-            return rectTransform.sizeDelta.y;
         }
 
         /// <summary>
