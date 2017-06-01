@@ -25,6 +25,27 @@ namespace BloodOfEvil.Extensions
         }
         
         /// <summary>
+        /// Retrieve all parents hierarchy of a gameobject until the scene root.
+        /// </summary>
+        public static Transform[] GetAllParentsHierarchy(this Transform transform)
+        {
+            if (null == transform)
+                return null;
+
+            List<Transform> parentHierarchy = new List<Transform>();
+            Transform parent = transform.parent;
+
+            while (parent != null)
+            {
+                parentHierarchy.Add(parent);
+
+                parent = parent.parent;
+            }
+
+            return parentHierarchy.ToArray();
+        }
+        
+        /// <summary>
         /// Appelle une méthode avec en paramètre pour tous les enfants d'un transform.
         /// </summary>
         public static void ForeachOnChildren(this Transform transform, Action<Transform> foreachMethod)
