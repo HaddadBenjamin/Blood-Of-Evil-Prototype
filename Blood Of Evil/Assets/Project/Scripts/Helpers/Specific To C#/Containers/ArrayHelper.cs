@@ -10,6 +10,27 @@ namespace BloodOfEvil.Helpers
     public static class ArrayHelper
     {
         /// <summary>
+        /// Récupère l'index d'un élément de façon rapide.
+        /// </summary>
+        public static int FastIndexOf<TArrayElement>(TArrayElement[] array, TArrayElement element, bool doesArrayIsSorted = false) where
+            TArrayElement : class
+        {
+            if (null == array || 
+                null == element ||
+                0 == array.Length)
+                return -1;
+                
+            if (doesArrayIsSorted)
+            {
+                int index = Array.BinarySearch(array, element);
+                
+                return index < 0 ? Array.IndexOf(array, element) : index;
+            }
+               
+            return Array.IndexOf(array, element);
+        }
+        
+        /// <summary>
         /// Retourne un index de la liste choisi de façon aléatoire.
         /// Devrait être dans ListExtension plutôt. !!!!!!!!!!!!!!!!!!!!!!!
         /// </summary>
