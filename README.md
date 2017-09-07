@@ -11,6 +11,12 @@ Ce projet me permet de travailler ma conception logiciel et de développer ma bo
 
 ♦ Tester le projet, veuillez suivre les instructions suivantes : http://haddadbpro.wixsite.com/bloodofevil/download
 
+Les répertoires contenant de codes réutilisables sont les suivants :
+♦ Scripts/Extensions/.
+♦ Scripts/Helpers/.
+♦ Scripts/Player/Services/.
+♦ Scripts/Scene/Services/.
+
 ![Alt text](http://i.imgur.com/1xOHdz8.jpg "Image en jeu.")
 ![Alt text](http://i.imgur.com/wmx5t6i.png "Animator du joueur.")
 ![Alt text](http://i.imgur.com/yGbcyqY.png "Le menu principal et ses sous menus.")
