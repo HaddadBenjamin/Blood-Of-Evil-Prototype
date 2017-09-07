@@ -61,42 +61,5 @@ namespace BloodOfEvil.Extensions
         {
             return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(text);
         }
-
-        /// <summary>
-        /// Cette méthode vient de Manzalab.
-        /// </summary>
-        public static string RemoveAccents(this string str)
-        {
-            if (string.IsNullOrEmpty(str))
-                return str;
-
-            str = str.Normalize(NormalizationForm.FormD);
-            var chars = str.Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray();
-
-            return new string(chars).Normalize(NormalizationForm.FormC);
-        }
-
-        /// <summary>
-        /// Cette méthode vient de Manzalab.
-        /// </summary>
-        public static string RemovePunctuation(this string str)
-        {
-            if (string.IsNullOrEmpty(str))
-                return str;
-
-            str = str.Replace('!', ' ');
-            str = str.Replace('?', ' ');
-
-            string toReplace = str.Replace("  ", " ");
-            while (str != toReplace)
-            {
-                str = toReplace;
-                toReplace = str.Replace("  ", " ");
-            }
-
-            str = str.Trim();
-
-            return str;
-        }
     }
 }
