@@ -12,6 +12,7 @@ Ce projet me permet de travailler ma conception logiciel et de développer ma bo
 ♦ Tester le projet, veuillez suivre les instructions suivantes : http://haddadbpro.wixsite.com/bloodofevil/download
 
 Les répertoires contenant de codes réutilisables sont les suivants :
+
 ♦ Blood Of Evil/Assets/Project/Scripts/Extensions/.
 
 ♦ Blood Of Evil/Assets/Project/Scripts/Helpers/.
