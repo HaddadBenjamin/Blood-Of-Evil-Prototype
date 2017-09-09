@@ -17,6 +17,7 @@ Les répertoires contenant des codes réutilisables sont les suivants :
 * Blood Of Evil/Assets/Project/Scripts/Helpers/.
 * Blood Of Evil/Assets/Project/Scripts/Player/Services/.
 * Blood Of Evil/Assets/Project/Scripts/Scene/Services/.
+* Blood Of Evil/Assets/Project/Scripts/Utilities/.
 
 
 ![Alt text](http://i.imgur.com/1xOHdz8.jpg "Image en jeu.")
