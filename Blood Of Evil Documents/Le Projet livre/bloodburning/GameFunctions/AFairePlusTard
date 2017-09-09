@@ -1,0 +1,11 @@
+1-6 vie
+1-6 man
+1-6 magic-find
+Si un personnage fait un bon de 5 mètres il perd 10% de vie si il fait un bon de 10 mètre 20%... etc
+Si le perssonnage meurt cela pop un menu avec 3 options soit dépenser
+random :;on envoit 2 valeurs et ce dernier doit nous renvoyer la valeur comprise entre ces deux la
+variable vie percent
+Rechercher les variables de temps pour simuler une ataque selon la vitesse d'attaque, si arme de portee vitesse de projectile)
+
+
+

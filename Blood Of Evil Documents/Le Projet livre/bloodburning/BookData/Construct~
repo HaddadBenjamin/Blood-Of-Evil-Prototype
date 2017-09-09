@@ -1,0 +1,26 @@
+Qu'est-ce que Construct?
+C'est un IE, un éditeur de jeux vidéo
+
+Commnent installer Construct?
+Installer Construct et faire la MAJ de DirectX
+
+Comment créer un projet?
+New -> Direct-X game
+
+Comment lancer son projet?
+Export exe -> next
+
+Qu'est qu'un sprite?
+Image .pnj constituant les jeux vidéos pouvant bouger (balle, personnage, etc)
+
+Qu'est-ce qu'un hotspot et ou se situe t'il?
+Le hotpost permet de situer notre psrite et il  est par défault situé au millieu de ce dernier (sprite)
+
+Qu'est-ce qu'un comportement?
+C'est une action permettant de bouger à un sprite tel que tourner à gauche, avancer tout droit etc..
+
+Qu'est-ce qu'un évenement?
+C'est une entree standart (clavier, souris, curseur, manette) qui permet de faire un menu en les récupérant. (Exemple i: acceder a l'inventaire, m: map, eschap, menu pour quitter, F2: refaire une partie etc..)
+
+
+

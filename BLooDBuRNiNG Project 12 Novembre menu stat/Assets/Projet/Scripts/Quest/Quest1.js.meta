@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 40e430f123671334e88b1ab79c2033d0
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - myGuiText: {instanceID: 0}
+  - skeltonsBonesObject: {fileID: 100000, guid: 22e6583d5c404714cb7629214ab85b7f,
+      type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine.EventSystems;
 using System;
 
-namespace BloodOfEvil.Extension
+namespace BloodOfEvil.Extensions
 {
     using Helpers;
     

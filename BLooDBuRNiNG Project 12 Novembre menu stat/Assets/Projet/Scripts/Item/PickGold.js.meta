@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: cc41b0dd21d25ac489056845233e7264
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - playerGoldCircleGameObject: {instanceID: 0}
+  - textGoldGameObject: {instanceID: 0}
+  - goldSound: {fileID: 8300000, guid: 9a329efbb3bf75b4b928df2f1d7cb1e0, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

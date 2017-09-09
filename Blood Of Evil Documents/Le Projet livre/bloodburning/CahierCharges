@@ -1,0 +1,44 @@
+Exemple de cahier de charge http://olivierberthonneau.com/public/Projets/ProgElem/Korewar/vermis.png
+
+Créer plusieurs fichiers :
+-Ce qui a été Fait
+-Ce qui reste a faire
+-Compétence requises
+-Temps Resquis
+-Personne qui y travaille
+-Sauvegarde de tout le projet tout les 2 jours dans des disques dur externe
+
+
+Liste des objets à modéliser : M
+Liste des choses à programmer : P
+
+
+Personnage :
+M  2 / 8 classe : homme cro-magnon, chasseuse
+P Mouvement du personnage
+P 2 / 2 caméra : situer au dessus du personnage 10 mètre avec possibilité de zoomer dézoomer et de faire une rotation elle suit le personnage, au niveau des yeux du personnage rotation 
+M 40 / 160 sorts
+
+Objet :
+M 12 / 500 000 objets : casque, armure, lance, épee, hache, arc, arbalete, bouclier, carquois, ceinture, pantalon, anneau, gant
+P 12 / 150 charactéristique : vie, mana, dommage, recupération de vie, récupération de mana, % de chance d'objet, % d'objet,resistance physique, defence, vitesse de déplacement, attaque, % de dommage
+M 5 / 30 scrolls : TP, monstre, minimap, identificateur, reboot quality
+M  8 / 150 gemmes : stats niv 1 str, dex, vita, int, pow, sag,
+
+Monstres :
+M 9 / 30 000 monstres différents : orc, squelette, archer, sanglier, mage, allien, dragon, crabe, lapin, loup
+M 1 / 10 boss : htdralisque
+M 1 / 3 world boss : Guérrier démoniaque : chef des légions
+P 2 / 5 modes : aggressive, passive
+P 1 / 5 respawm : respawn de 5 mètre autour de la zone de mort de moins après 30 seconde
+
+Village :
+M 1 / 20 villages : le village maya 1
+M 5 / 20 PNJ : armurier, potion, arme, forgeron, tavernier
+M 2 / 6 amélioration : Bouster de stuff de 5%, lapis
+
+Décor :
+M 4 / 100 rochers : pierre de volcan, pierre ronde, pierre avec de la mouse, petit caillou
+M 4 / 100 arbres : seuil pleureur, hetre, palmier, érable
+M 5 / 100  sol: verdure, dalle, terre marron, terre noire, terre ensanglanté,
+M 3 / 10 ciel : nuit, jour, rosé

@@ -1,0 +1,16 @@
+To do :
+
+corriger les liens de mon site, ils déconent tous
+Rajouter ma classe Attribute qui est un floatant avec callbacks
+
+
+PlayerAttributes -> devrait être juste une classe de data donc sérializable
+
+// DONNER DES STAT LORS DU LEVEL UP
+LevelUp Effect ? -> diablo ou caméra effect
+
+package récupéré : transformextension permet de récupérer tous les transform en fonction d'un tag distance, etc..
+rajouter dans les choses dévélopés sur ce projet : animation recorder 
+
+Module Attribute Editor : 
++ permet d'éditer toute les valeurs des attributs de notre jeu.

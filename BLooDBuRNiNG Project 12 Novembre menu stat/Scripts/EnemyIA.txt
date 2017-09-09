@@ -1,0 +1,30 @@
+using UnityEngine;
+using System.Collections;
+
+public class EnemyIA : MonoBehaviour {
+	public Transform target;
+	public int moveSpeed;
+	public int rotationSpeed;
+	
+	private Transform myTransform;
+	
+	void awake()
+	{
+		myTransform = transform;	
+	}
+	// Use this for initialization
+	void Start () {
+		GameObject go = GameObject.FindGameObjectWithTag("Serpent");
+		
+		target = go.transform;
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		Debug.DrawLine(target.position, myTransform.position, Color.red);
+  	//Look at target		
+		myTransform.rotation = Quaternion.Slerp (myTransform.rotation, Quaternion.LookRotation (target.position = myTransform.position), rotationSpeed * Time.deltaTime);
+	//Move towards target
+	myTransform.position += myTransform.forward * moveSpeed * Time.deltaTime;
+	}
+}

@@ -13,7 +13,7 @@ namespace BloodOfEvil.Entities.Modules.Movement
         #region Fields
         private Transform myTransform;
         private Animator myAnimator;
-        private UnityEngine.AI.NavMeshAgent navMeshAgent;
+        private NavMeshAgent navMeshAgent;
 
         private AEntityAnimationModule animationModule;
 
@@ -52,7 +52,7 @@ namespace BloodOfEvil.Entities.Modules.Movement
         {
             this.MyTransform = transform;
             this.MyAnimator = GetComponent<Animator>();
-            this.NavMeshAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+            this.NavMeshAgent = GetComponent<NavMeshAgent>();
 
             if (EEntity.Player == this.entityType)
                 this.AnimationModule = PlayerServicesAndModulesContainer.Instance.AnimationModule;
@@ -112,7 +112,7 @@ namespace BloodOfEvil.Entities.Modules.Movement
             }
         }
 
-        public UnityEngine.AI.NavMeshAgent NavMeshAgent
+        public NavMeshAgent NavMeshAgent
         {
             get
             {

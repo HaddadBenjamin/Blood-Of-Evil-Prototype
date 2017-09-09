@@ -1,0 +1,74 @@
+/*
+** Does_my_item_fall.c for  in /home/haddad_b//LangageC/BLooDBuRNiNG/GameFunctions/BLooDTeaM/BLooDBuRNiNG
+** 
+** Made by benjamin haddad
+** Login   <haddad_b@epitech.net>
+** 
+** Started on  Sat Mar 23 16:28:18 2013 benjamin haddad
+** Last update Sat Mar 23 18:32:40 2013 benjamin haddad
+*/
+
+#include "fonctions.h"
+
+int		does_my_item_fall(int magicFind)
+{
+  int		numberOfItems;
+
+  numberOfItems = magicFind % 100;
+  magicFind /= 100;
+  srand(time(NULL) * getpid() + 65);
+  if (numberOfItems > rand() % 101)
+    numberOfItems = magicFind + 1;
+  else
+    numberOfItems = magicFind;
+  if (numberOfItems == 0)
+    my_putstr("l'objet n'est pas tombé\n");
+  else
+    {
+      my_putstr("l'objet est tombé ");
+      my_putnbr(numberOfItems);
+      my_putstr(" fois\n");
+    }
+  /*   magicFindPercent = (rand() % magicFind + 1); */
+  /* is = 1; */
+/*   while (magicFindPercent >= 0) */
+/*     { */
+/*       magicFindPercent = (rand() % magicFind + 1); */
+/*       nombreAleatoire = (rand() % 101); */
+/*       my_putnbr(nombreAleatoire); */
+/*       my_putchar('\n'); */
+/*       my_putnbr(magicFindPercent); */
+/*       if (magicFindPercent >= nombreAleatoire) */
+/* 	{ */
+/* 	  my_putstr("lobjet est tombé"); */
+/* 	  my_putnbr(nombreDeFois); */
+/* 	  my_putstr(" fois\n"); */
+/* 	  nombreDeFois++; */
+/* 	} */
+/*       else if (nombreDeFois == 0 && nombreAleatoire > magicFindPercent) */
+/* 	  my_putstr("Aucun objet n est tombé\n"); */
+/*       if (nombreAleatoire > magicFindPercent) */
+/* 	return (nombreDeFois); */
+/*    } */
+
+}
+
+
+/* /\* magicFind = magicFind / 100; *\/ */
+/* my_putnbr(magicFind); */
+/* if (magicFind < 1 && magicFind > 0) */
+/*   { */
+/*     nombreAleatoire = (rand() % 101); */
+/*     if (magicFindPercent >= nombreAleatoire) */
+/*       { */
+/* 	my_putstr("lobjet est tombé"); */
+/* 	my_putnbr(nombreDeFois); */
+/* 	my_putstr(" fois\n"); */
+/* 	nombreDeFois++; */
+/*       } */
+/*     else if (nombreDeFois == 0 && nombreAleatoire > magicFindPercent) */
+/*       my_putstr("Aucun objet n est tombé\n"); */
+
+/*   } */
+/* return (nombreDeFois); */
+/* /\* while (magicFind >= 0) *\/ */

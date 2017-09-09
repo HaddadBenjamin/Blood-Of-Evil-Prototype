@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: a10c1bb31284938489c7822fe34104dc
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - glob: {fileID: 2800000, guid: ad65a149733d0914e9b81d30ca5a9af0, type: 3}
+  - healthGlob: {fileID: 2800000, guid: 59999172a70c4664db308029c60d09ee, type: 3}
+  - manaGlob: {fileID: 2800000, guid: fa2c160f8186b2f4bac85387bfea323b, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

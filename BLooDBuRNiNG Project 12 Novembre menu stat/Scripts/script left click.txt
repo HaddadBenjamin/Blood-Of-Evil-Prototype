@@ -1,0 +1,52 @@
+var smooth:int; // Determines how quickly object moves towards position
+ 
+        private var targetPosition:Vector3;
+        var speed = 60;
+        function Update () {
+            if(Input.GetKeyDown(KeyCode.Mouse0))
+            {    
+            smooth=1;       
+                var playerPlane = new Plane(Vector3.up, transform.position);
+                var ray = Camera.main.ScreenPointToRay (Input.mousePosition);
+                var hitdist = 0.0;
+                if (playerPlane.Raycast (ray, hitdist)) {
+                    var targetPoint = ray.GetPoint(hitdist);
+                    targetPosition = ray.GetPoint(hitdist);
+                    var targetRotation = Quaternion.LookRotation(targetPoint - transform.position);
+                    transform.rotation = targetRotation;              
+                }
+             }
+    var dir:Vector3 = targetPosition - transform.position;
+    var dist:float = dir.magnitude;
+    var move:float = speed * Time.deltaTime;
+    if(dist > move){
+        transform.position += dir.normalized * move;
+    } 
+    else {
+        transform.position = targetPosition;
+    }
+    transform.position += (targetPosition - transform.position).normalized * speed * Time.deltaTime;
+         }
+
+Bonjour Paulo, What's up man?
+
+Serais tu d'accord de essayer de nous faire un clique gauche optimisé sous Unity?
+Voilà ce que j'attend de ce script :
+1) Il faut qu'il s'adapte au ThirdPersonController ce qui permettra d'avoir aussi bien les touches clavier qszd les touches directionneles et le clique gauche pour se déplacer
+2) Il faut que ce script s'adapte au terrain, c'est à dire que par exemple si tu clique sur une monter tu t'adapte a la monter. Il faut que tu monte et pas que tu aille tout droit. D'autrepars si tu clique en l'air sa va pas te faire voler
+3) Lorsque le joueur fait un clique gauche sa rotation doit changer. Mais pas la rotation de la caméra juste celle du joueur
+4) Gérer les collissions de dessous pour qu'il s'adapte bien au terrain (2)
+5) Lorsque l'on clique sur un tag Enemy, PNJ, on s'arrete devant. 
+6) Lorsqu'on bouge une touche directionnele ou qszd le clique gauche s'arrete (le rraycasting). Car imagine tu fais un clique gauche puis une touche directionnele droit ton joueur sera toujours atiré par le raycasting du clique gauche, fait des test tu  vera
+7) Le premier clique gauche ne doit pas être retenu car lorsque tu lance le jeu tu fait un clique gauche
+8) Si on reste appuyer sur clique gauche la position doit se mettre à jour régulièrement
+
+Si tu arrive a déjà faire 2-3 point de cela sa sera vraiment un super avancement pour le jeu
+J'espère que tu voudras bien essayer. Fait moi pars de tes progrès et de tes avancement. Merci encore pour ton investissement
+
+//Ce qui reste a faire : lorsque le joueur fait un clique gauche, sa rotation ainsi que celle de la caméra change
+//gérer les collision de dessous
+//possibilité de cliquer sur un terrain et d'avancer dessus
+//lorsque le joueur tape une touche  qzsd ou touche dirrecctionnel la cible n'exite plus.
+//le premier clique gauche n'est pas retenu car il fait dla merde
+//si l'on reste appueyr sur clique gauche alors la position se met a jour

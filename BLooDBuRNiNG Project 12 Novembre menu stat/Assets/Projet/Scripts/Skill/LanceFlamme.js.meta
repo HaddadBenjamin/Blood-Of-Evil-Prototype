@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: efff6139d8349a148ba2c5e7fd496aca
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - throwSound: {fileID: 8300000, guid: afa74d998384eac479df0fff08f3ce40, type: 3}
+  - coconutObject: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

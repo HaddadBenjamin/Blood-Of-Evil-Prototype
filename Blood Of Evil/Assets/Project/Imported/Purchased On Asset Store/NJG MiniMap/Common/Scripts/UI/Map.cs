@@ -861,13 +861,13 @@ namespace NJG
                 //bool sizeChanged = false;	
 
 
-                UnityEngine.Profiling.Profiler.BeginSample("UpdateIcons");
+                UnityEngine.Profiler.BeginSample("UpdateIcons");
                 UpdateIcons();
-                UnityEngine.Profiling.Profiler.EndSample();
+                UnityEngine.Profiler.EndSample();
 
-                UnityEngine.Profiling.Profiler.BeginSample("CleanIcons");
+                UnityEngine.Profiler.BeginSample("CleanIcons");
                 CleanIcons();
-                UnityEngine.Profiling.Profiler.EndSample();
+                UnityEngine.Profiler.EndSample();
 
                 //Profiler.BeginSample("UpdateFrustm");
                 //UpdateFrustum();
@@ -875,18 +875,18 @@ namespace NJG
 
                 if (drawDirectionalLines)
                 {
-                    UnityEngine.Profiling.Profiler.BeginSample("DrawLines");
+                    UnityEngine.Profiler.BeginSample("DrawLines");
                     DrawLines();
-                    UnityEngine.Profiling.Profiler.EndSample();
+                    UnityEngine.Profiler.EndSample();
                 }
 
-                UnityEngine.Profiling.Profiler.BeginSample("UpdateScrollPosition");
+                UnityEngine.Profiler.BeginSample("UpdateScrollPosition");
                 UpdateScrollPosition();
-                UnityEngine.Profiling.Profiler.EndSample();
+                UnityEngine.Profiler.EndSample();
 
-                UnityEngine.Profiling.Profiler.BeginSample("UpdateMatrix");
+                UnityEngine.Profiler.BeginSample("UpdateMatrix");
                 UpdateMatrix();
-                UnityEngine.Profiling.Profiler.EndSample();
+                UnityEngine.Profiler.EndSample();
 
                 /*if (mLastPos != NJGMap.instance.mapRenderer.transform.position || mLastSize != NJGMap.instance.mapRenderer.cachedCamera.orthographicSize)
                 {
@@ -898,9 +898,9 @@ namespace NJG
                 {
                     if (NJGMap.instance.renderMode != NJGMap.RenderMode.Once) // && (this is UIMiniMapBase)
                     {
-                        UnityEngine.Profiling.Profiler.BeginSample("GenerateMap");
+                        UnityEngine.Profiler.BeginSample("GenerateMap");
                         NJGMap.GenerateMap();
-                        UnityEngine.Profiling.Profiler.EndSample();
+                        UnityEngine.Profiler.EndSample();
                     }
                 }
             }

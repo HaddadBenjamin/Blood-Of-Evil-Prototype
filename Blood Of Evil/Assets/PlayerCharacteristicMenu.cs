@@ -77,7 +77,7 @@ namespace BloodOfEvil.Player.Modules.Attributes.UI
                 this.characteristicsLines.Add(characteristicLine);
             }
 
-            window.SetHeight(200.0f + 65 * this.characteristicsLines.Count);
+            window.SetHeight(200.0f + 65 * this.characteristicsLines.Count, false);
         }
 
         private void UpdateRemainTextValue(float value)

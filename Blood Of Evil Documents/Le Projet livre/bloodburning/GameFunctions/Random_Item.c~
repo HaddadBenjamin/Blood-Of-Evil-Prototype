@@ -1,0 +1,36 @@
+/*
+** Random_Item.c for  in /home/haddad_b//LangageC/BLooDBuRNiNG/GameFunctions
+** 
+** Made by benjamin haddad
+** Login   <haddad_b@epitech.net>
+** 
+** Started on  Tue Jan 15 18:00:50 2013 benjamin haddad
+** Last update Tue Jan 22 15:29:54 2013 benjamin haddad
+*/
+
+#include "Fonctions.h"
+
+double		rand_percent(double number_percent)
+{
+  double number_random;
+
+  number_random = (rand() % 10000 + 2);
+  if (number_random < number_percent * 100)
+    return (1);					/* l'objet tombe */
+  else if (number_random > number_percent * 100)
+    return (0);				/* l'objet ne tombe pas */
+}
+
+int		main()
+{
+  double	a;
+  srand(time(NULL) *getpid()); 
+  a = (rand() % 101);			/* nombre compris entre 0 et 100 */
+  my_putnbr(a);
+  my_putchar(' ');
+  if (rand_percent(a) == 1)
+    my_putstr("l'objet est tombé\n");
+  if (rand_percent(a) == 0)
+    my_putstr("l'objet n'est pas tombé\n");
+  
+}

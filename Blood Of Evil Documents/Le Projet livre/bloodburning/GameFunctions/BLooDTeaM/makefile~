@@ -1,0 +1,80 @@
+##
+## Makefile for test in /home/haddad_b//afs/rendu/piscine/Jour_11
+## 
+## Made by benjamin haddad
+## Login   <haddad_b@epitech.net>
+## 
+## Started on  Mon Oct 22 11:07:10 2012 benjamin haddad
+## Last update Thu Mar 28 15:40:40 2013 benjamin haddad
+##
+
+SRC=	basicfunctions.c  \
+	basicfunctions2.c \
+	basicfunctions3.c \
+	basicfunctions4.c \
+	basicfunctions5.c \
+	clear.c		  \
+	error.c		  \
+	error2.c	  \
+	pause.c		  \
+	print.c	          \
+	main.c		  \
+	xfunctions.c	  \
+	./BLooDBuRNiNG/does_my_item_fall.c		\
+	./damienAvice/how_many_life_does_i_have.c	\
+	./damienAvice/how_many_percent_life.c		\
+
+OBJ=	$(SRC:.c=.o)
+
+NAME=	main
+CC = 	gcc
+RM = 	rm -f
+
+CFLAGS += -W -lm -Wextra -Wall # -Werror
+CFLAGS += -ansi -pedantic
+CFLAGS += -I.
+
+ROUGE=	"\\033[1;31m"
+VERT=	"\\033[1;32m"
+BLUE=	"\\033[1;34m"
+PINK=	"\\033[1;35m"
+BLANC=	"\\033[0;02m"
+
+all:	$(NAME)
+
+$(NAME):$(OBJ)
+	@$(CC) $(OBJ) -lm -o $(NAME) $(LDFALGS)
+	@echo -e "$\\n\t"""$(ROUGE)[Program Compiled]$(BLANC)"""$\\n"
+
+clean: 
+	@$(RM) $(OBJ)
+	@echo -e "$\\n\t"""$(VERT)[Program Cleaned]$(BLANC)"""$\\n"
+
+fclean:	clean
+	@$(RM) $(NAME)
+
+propre:
+	@$(RM) *~
+	@$(RM) *#	
+	@$(RM) *.o
+	@$(RM) $(NAME)	
+	@echo -e "$\\n\t"""$(VERT)[Program Cleaned]$(BLANC)"""$\\n"
+
+re:	fclean all
+	@echo -e "$\\t"""$(PINK)[Program Remaked]$(BLANC)"""$\\n"
+
+norme:	re $(OBJ)
+	@$(CC) -o $(NAME) -lm -lncurses -W -Wall -Wextra -Wchar -Werror -lncurses -ggdb3 $(OBJ)
+	@./norme *.c
+	# @./BLooDBuRNiNG ./norme *.c
+	@$(RM) *~
+	@$(RM) *#	
+	@$(RM) *.o	
+	@echo -e "$\\n\t"""$(BLUE)[Program Normed]$(BLANC)"""$\\n"
+
+send:
+	@cp $(SRC) ./~/$(NAME)-2017-haddad_
+	@cp Fonctions.h ./~/$(NAME)-2017-haddad_
+	@cp makefile ./~/$(NAME)-2017-haddad_
+# -lm -lncurses -W -Wall -Wextra -Wchar -Werror -lncurses -ggdb3 $(OBJ)
+# -L/usr/lib64 -lmlx_$(HOSTTYPE) -lXext -lX11 	

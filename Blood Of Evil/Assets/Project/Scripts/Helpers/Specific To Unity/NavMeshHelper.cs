@@ -13,9 +13,9 @@ namespace BloodOfEvil.Helpers
         /// <returns></returns>
         public static bool IsReachable(Vector3 startPoint, Vector3 endPoint)
         {
-            UnityEngine.AI.NavMeshPath path = new UnityEngine.AI.NavMeshPath();
+            NavMeshPath path = new NavMeshPath();
 
-            return (UnityEngine.AI.NavMesh.CalculatePath(startPoint, endPoint, UnityEngine.AI.NavMesh.AllAreas, path));
+            return (NavMesh.CalculatePath(startPoint, endPoint, NavMesh.AllAreas, path));
         }
     }
 }

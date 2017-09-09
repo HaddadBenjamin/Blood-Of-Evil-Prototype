@@ -36,18 +36,18 @@ namespace BloodOfEvil.Player.Modules.Attributes
 
             base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Remain Characteristics").Initialize("Remain Characteristics", 0.0f);
 
-            var configuration = PlayerServicesAndModulesContainer.Instance.ConfigurationService.GetClass(PlayerServicesAndModulesContainer.Instance.Classe).CharacteristicAttributes;
+            //var configuration = PlayerServicesAndModulesContainer.Instance.ConfigurationService.GetClass(PlayerServicesAndModulesContainer.Instance.Classe).CharacteristicAttributes;
 
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Strength").Initialize("Strength", configuration.StrengthAtStart);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Power").Initialize("Power", configuration.PowerAtStart);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Dexterity").Initialize("Dexterity", configuration.DexterityAtStart);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Endurance").Initialize("Endurance", configuration.EnduranceAtStart);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Chance").Initialize("Chance", configuration.ChanceAtStart);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Faith").Initialize("Faith", configuration.FaithAtStart);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Resistance").Initialize("Resistance", configuration.ResistanceAtStart);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Wisdom").Initialize("Wisdom", configuration.WisdomAtStart);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Spirit").Initialize("Spirit", configuration.SpiritAtStart);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Constitution").Initialize("Constitution", configuration.ConstitutionAtStart);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Strength").Initialize("Strength", configuration.StrengthAtStart);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Power").Initialize("Power", configuration.PowerAtStart);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Dexterity").Initialize("Dexterity", configuration.DexterityAtStart);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Endurance").Initialize("Endurance", configuration.EnduranceAtStart);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Chance").Initialize("Chance", configuration.ChanceAtStart);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Faith").Initialize("Faith", configuration.FaithAtStart);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Resistance").Initialize("Resistance", configuration.ResistanceAtStart);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Wisdom").Initialize("Wisdom", configuration.WisdomAtStart);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Spirit").Initialize("Spirit", configuration.SpiritAtStart);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Constitution").Initialize("Constitution", configuration.ConstitutionAtStart);
         }
 
         public override void CreateCallbacksAttributes()

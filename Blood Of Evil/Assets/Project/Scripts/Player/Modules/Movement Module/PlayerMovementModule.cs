@@ -21,7 +21,7 @@ namespace BloodOfEvil.Player.Modules.Movements
         [SerializeField]
         private LayerMask raycastLayerMask;
         private RaycastHit raycasthHit;
-        private UnityEngine.AI.NavMeshHit navMeshHit;
+        private NavMeshHit navMeshHit;
         private Ray ray;
 
         private const float PATHFINDING_PARTICLE_MIDDLE_HEIGHT = 1.0f;

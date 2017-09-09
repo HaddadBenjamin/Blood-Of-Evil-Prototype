@@ -1,3 +1,0 @@
-ToggleTagsFilter=By log tags
-ToggleTags=Toggle Tags
-AcceptedTags=Accepted Tags

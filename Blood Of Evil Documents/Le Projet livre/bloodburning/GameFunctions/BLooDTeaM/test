@@ -1,0 +1,12 @@
+tester :
+1) echo |
+2) ls |
+3) vanrind
+4) mauvais nombre d'arguments
+5) /dev/urandom
+6) chaine vide
+7) nombre = 0
+8) la norme
+
+gérer :
+enlever les commentaires de mon .h

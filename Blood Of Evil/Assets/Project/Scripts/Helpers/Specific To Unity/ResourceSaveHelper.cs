@@ -7,13 +7,13 @@ namespace BloodOfEvil.Helpers
 
     public static class ResourceSaveHelper
     {
-        /// <summary>
-        /// Sauvegarde un audioClip dans le fichier "path".
-        /// </summary>
-        public static void SaveAudio(AudioClip audioClip, string path)
-        {
-            SaveBytes(audioClip.ToBytes(), path);
-        }
+        ///// <summary>
+        ///// Sauvegarde un audioClip dans le fichier "path".
+        ///// </summary>
+        //public static void SaveAudio(AudioClip audioClip, string path)
+        //{
+        //    SaveBytes(audioClip.ToBytes(), path);
+        //}
 
         /// <summary>
         /// Sauvegarde une texture 2D PNG dans le fichier "path".

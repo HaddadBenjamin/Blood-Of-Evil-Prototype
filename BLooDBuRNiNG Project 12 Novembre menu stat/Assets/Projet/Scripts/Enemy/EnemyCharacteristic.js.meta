@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: a6a02521da2d948428220b0d3d9181c7
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - enemyIcon: {instanceID: 0}
+  - enemyIconGUISkin: {fileID: 11400000, guid: 7d6fe2e35ec5ffc4783586239b5f5cda, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

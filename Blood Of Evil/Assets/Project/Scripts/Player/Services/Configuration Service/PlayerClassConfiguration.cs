@@ -8,17 +8,17 @@ namespace BloodOfEvil.Player.Services.Configuration
     [System.Serializable]
     public class PlayerClassConfiguration
     {
-        #region Fields
-        [SerializeField]
-        private PlayerClassCharacteristicCategoryAttributeConfiguration characteristicsAttributes;
-        #endregion
+        //#region Fields
+        //[SerializeField]
+        //private PlayerClassCharacteristicCategoryAttributeConfiguration characteristicsAttributes;
+        //#endregion
 
-        #region Properties
-        public PlayerClassCharacteristicCategoryAttributeConfiguration CharacteristicAttributes
-        {
-            get { return characteristicsAttributes; }
-            private set { characteristicsAttributes = value; }
-        }
-        #endregion
+        //#region Properties
+        //public PlayerClassCharacteristicCategoryAttributeConfiguration CharacteristicAttributes
+        //{
+        //    get { return characteristicsAttributes; }
+        //    private set { characteristicsAttributes = value; }
+        //}
+        //#endregion
     }
 }

@@ -1,2 +1,0 @@
-DataSeparator=Data Separator
-LogSeparator=Log Separator

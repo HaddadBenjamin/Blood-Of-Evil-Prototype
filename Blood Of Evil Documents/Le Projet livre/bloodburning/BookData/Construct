@@ -1,0 +1,89 @@
+﻿Qu'est-ce que Construct?
+C'est un IE, un éditeur de jeux vidéo
+
+Commnent installer Construct?
+Installer Construct et faire la MAJ de DirectX
+
+Comment créer un projet?
+New -> Direct-X game
+
+Comment lancer son projet?
+Export exe -> next
+
+Qu'est qu'un sprite?
+Image .pnj constituant les jeux vidéos pouvant bouger (balle, personnage, etc)
+
+Qu'est-ce qu'un hotspot et ou se situe t'il?
+Le hotpost permet de situer notre psrite et il  est par défault situé au millieu de ce dernier (sprite)
+
+Qu'est-ce qu'un comportement?
+C'est une action permettant de bouger à un sprite tel que tourner à gauche, avancer tout droit etc..
+
+Qu'est-ce qu'un évenement?
+C'est une entree standart (clavier, souris, curseur, manette) qui permet de faire un menu en les récupérant. (Exemple i: acceder a l'inventaire, m: map, eschap, menu pour quitter, F2: refaire une partie etc..)
+
+Comment modifier la zone ou sortira notre sprite nommée projectile?
++option point d'image.
+
+Qu'est-ce qu'un calque? 
+C'est un répertoire que l'on cré qui peut contenir nos données trier par types par exemple on peut décider de créer un calque objet qui est lui même contient plusieurs calque différents tels que: équipement, gemmes, parchemin, quètes etc..
+Exemple de calque que l'on pourrait utiliser : objet, décor, personnage, projectile
+
+Comment ajouter un objet?
+Clique droit sur la catégorie objet → add
+
+layout = zone de travail, either = soit l'un soit l'autre, whether = si (ou) que
+
+A quoi sert les layouts?
+Il permettent de crééer des niveaux, des menus et par conséquent ils sont super important
+
+Comment créer un menu tel que l'écran principal?
+1) Créer une image où il sera écrit  le nom de notre jeu en grand, jouer, option et quitter
+2) Créer des layouts tels que niveau 1-2-3, fermer la fenetre, 
+3) New layout → rename (menu_principal) → sélectionner notre image → objet → mouse & keyboard  → évenement → lorsque que l'on sélectionne le texte que l'on souhaite → aller sur le layout que l'on a besoin tels que niveau 1 si on clique sur jouer
+
+Comment faire pour notre menu pop avec que le niveau 1?
+Il faut juste mettre le menu au dessus de toute la liste des layouts, le premier sera le layout de base lorsqu'on lance notre programme
+
+
+
+
+
+
+
+Maintenant que vous savez tous comment ferais et organiserais vous pour créer votre casse brique étape par étape?
+1) Layout:	-menu principale (jouer, quitter,options, achévement) c'est le layout principale, il doit se situer tout en haut
+	-Niveau (compose de 10 layout de niveau 1 à 10)
+	-Achévement (terminer le jeu, faire un score de 10000, survivre pendant 5 minutes, atteindre la vitesse 666)
+	-Options (son, vitesse etc..)
+	-Quitter (ferme la femetre	
+	-Vous avez perdu
+	-Bravo vous avez réussi a finir le jeu	
+
+2) Calque:	-brique (brique blanche 1 coup avant d'exploser, bleu 2 coup, grise incassable etc...)
+ 	-bonus (vie supplémentaire, multiball, -100 vitesse de la balle, plus de dommage pendant 30 secondes)
+	-mur
+	-balle		
+
+3) Evénement: Brique: 	-Toutes les brique perde une de vie si elle sont touche
+		-Si elle atteignent 0 de vie elle explose
+		-Si toutes les briques sont cassé aller au layout niv suivant
+		-Si niveau 10 fini aller au layout GAGNER !) 
+		-Les briques sont tous des collisions et par conséquent al balle rebondis si elle les touche
+		-Si une brique sur 5 explose alors faire descendre un bonus aléatoire qui déscend a 90 degrés
+
+	   Mur:	-Les murs sont des collision incassable (entouré la carte de mur)
+
+	   Palette:	-Peut bouger de gauche a droite(evenement clavier touche directionnelle gauche driote, vitesse 100)	
+
+	   Balle:	-Vitesse de base 5
+		-Si elle touche une collision elle prend 10 de vitesse et rebondit (rebound), 
+		-Si balle touche une zone rouge vie = vie – 1 puis la balle et la palette se resitue au millieu
+
+	   Vie:	-Variable vie égal à 3 
+		-Si balle touche une zone rouge de vous perdez  – 1 de vie
+		-Si la vie est égal à 0 affichez l'écran Game over pendant 10 seconde puis afficher menu principal
+
+Réaliser par votre célèbre serviteur: BlooDBuRNiNG (Benjamin Haddad)
+Deuxieme étape pour réaliser le rêve de toute une vie: CLOOSE ! YEAAH =D
+PS: Si vous avez des questions n'hésitez pas à me demander, je ferais mon possible pour vous répondre le plus précisément possible ;)

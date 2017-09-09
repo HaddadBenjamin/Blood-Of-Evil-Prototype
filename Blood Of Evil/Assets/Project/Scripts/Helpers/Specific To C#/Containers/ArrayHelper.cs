@@ -6,6 +6,7 @@ namespace BloodOfEvil.Helpers
 {
     using Utilities;
     using Helpers;
+    using System;
 
     public static class ArrayHelper
     {
@@ -39,7 +40,7 @@ namespace BloodOfEvil.Helpers
         {
             return (null == array || 0 == array.Length) ?
                     null :
-                    array[Random.Range(0, array.Length)];
+                    array[RandomHelper.GetARandomValueBetweenTwoInts(0, array.Length - 1)];
         }
         
         /// <summary>

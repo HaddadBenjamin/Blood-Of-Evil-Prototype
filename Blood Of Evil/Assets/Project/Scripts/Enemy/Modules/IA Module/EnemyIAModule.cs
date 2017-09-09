@@ -51,7 +51,7 @@ namespace BloodOfEvil.Enemies.Modules.IA
         private Attribute attackRangeAttribute;
         private EntityLifeCategoryAttributes lifeCategoryAttrutes;
 
-        private UnityEngine.AI.NavMeshHit navMeshHit;
+        private NavMeshHit navMeshHit;
         [SerializeField]
         private Renderer myMesh;
 

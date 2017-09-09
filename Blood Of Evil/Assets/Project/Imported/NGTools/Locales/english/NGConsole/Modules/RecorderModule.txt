@@ -1,2 +1,0 @@
-RecorderModule_NoSampleCreated=No sample created.
-RecorderModule_ExportSamples=Export samples

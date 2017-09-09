@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: f2dca3dd3d446a5409b34d1e93906986
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - lowGold: {fileID: 100008, guid: 0fad35c6612eb554aa2ee62260910d02, type: 2}
+  - mediumGold: {fileID: 100140, guid: 8b2a4cb1285158348b32ee19681380a2, type: 2}
+  - highGold: {fileID: 100118, guid: 985b40c15be579a4b844dab384c51d91, type: 2}
+  - goldText: {instanceID: 0}
+  - goldFont: {fileID: 12800000, guid: 03d7b4529c31b6c43854cb9355908340, type: 3}
+  - goldMaterialFont: {fileID: 2100000, guid: 03d7b4529c31b6c43854cb9355908340, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

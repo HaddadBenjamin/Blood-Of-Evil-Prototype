@@ -36,7 +36,7 @@ namespace BloodOfEvil.Utilities
 
         private void Scroll()
         {
-            this.rectTransform.SetLocalPositionY(Time.deltaTime * this.scrolingSpeed, true);
+            this.rectTransform.SetLocalPositionY(Time.deltaTime * this.scrolingSpeed);
 
             if (this.rectTransform.localPosition.y > Mathf.Abs(this.rectTransform.GetHeight()))
                 this.Reset();

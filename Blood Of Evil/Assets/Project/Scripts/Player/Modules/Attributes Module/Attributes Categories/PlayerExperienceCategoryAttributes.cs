@@ -85,19 +85,19 @@ namespace BloodOfEvil.Player.Modules.Attributes
             base.GetAttribute(EEntityCategoriesAttributes.Experience, "Maximum Experience").Current.Value = base.GetAttribute(EEntityCategoriesAttributes.Experience, "Maximum Experience").Current.Value * FACTOR_OF_XP_ADDITIONAL_PER_LEVEL + XP_ADDITIONAL_PER_LEVEL;
 
             ++base.GetAttribute(EEntityCategoriesAttributes.Experience, "Level").Current.Value;
-            var configuration = PlayerServicesAndModulesContainer.Instance.ConfigurationService.GetClass(PlayerServicesAndModulesContainer.Instance.Classe).CharacteristicAttributes;
+            //var configuration = PlayerServicesAndModulesContainer.Instance.ConfigurationService.GetClass(PlayerServicesAndModulesContainer.Instance.Classe).CharacteristicAttributes;
 
-            // GIVE DEFINE ATTRIBUTE
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Strength").SetOtherAttributePlusEqual("Level Up", configuration.StrengthAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Power").SetOtherAttributePlusEqual("Level Up", configuration.PowerAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Dexterity").SetOtherAttributePlusEqual("Level Up", configuration.DexterityAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Endurance").SetOtherAttributePlusEqual("Level Up", configuration.EnduranceAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Chance").SetOtherAttributePlusEqual("Level Up", configuration.ChanceAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Faith").SetOtherAttributePlusEqual("Level Up", configuration.FaithAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Resistance").SetOtherAttributePlusEqual("Level Up", configuration.ResistanceAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Wisdom").SetOtherAttributePlusEqual("Level Up", configuration.WisdomAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Spirit").SetOtherAttributePlusEqual("Level Up", configuration.SpiritAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Constitution").SetOtherAttributePlusEqual("Level Up", configuration.ConstitutionAtLevelUp);
+            //// GIVE DEFINE ATTRIBUTE
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Strength").SetOtherAttributePlusEqual("Level Up", configuration.StrengthAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Power").SetOtherAttributePlusEqual("Level Up", configuration.PowerAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Dexterity").SetOtherAttributePlusEqual("Level Up", configuration.DexterityAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Endurance").SetOtherAttributePlusEqual("Level Up", configuration.EnduranceAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Chance").SetOtherAttributePlusEqual("Level Up", configuration.ChanceAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Faith").SetOtherAttributePlusEqual("Level Up", configuration.FaithAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Resistance").SetOtherAttributePlusEqual("Level Up", configuration.ResistanceAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Wisdom").SetOtherAttributePlusEqual("Level Up", configuration.WisdomAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Spirit").SetOtherAttributePlusEqual("Level Up", configuration.SpiritAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Constitution").SetOtherAttributePlusEqual("Level Up", configuration.ConstitutionAtLevelUp);
 
             // GIVE ATTRIBUTES REMAIN.
             // GIVE 1 SKILL REMAIN.
@@ -113,21 +113,21 @@ namespace BloodOfEvil.Player.Modules.Attributes
         /// </summary>
         public void UnLevelUp()
         {
-            var configuration = PlayerServicesAndModulesContainer.Instance.ConfigurationService.GetClass(PlayerServicesAndModulesContainer.Instance.Classe).CharacteristicAttributes;
+            //var configuration = PlayerServicesAndModulesContainer.Instance.ConfigurationService.GetClass(PlayerServicesAndModulesContainer.Instance.Classe).CharacteristicAttributes;
 
-            --base.GetAttribute(EEntityCategoriesAttributes.Experience, "Level").Current.Value;
+            //--base.GetAttribute(EEntityCategoriesAttributes.Experience, "Level").Current.Value;
 
-            // GIVE DEFINE ATTRIBUTE
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Strength").SetOtherAttributeLessEqual("Level Up", configuration.StrengthAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Power").SetOtherAttributeLessEqual("Level Up", configuration.PowerAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Dexterity").SetOtherAttributeLessEqual("Level Up", configuration.DexterityAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Endurance").SetOtherAttributeLessEqual("Level Up", configuration.EnduranceAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Chance").SetOtherAttributeLessEqual("Level Up", configuration.ChanceAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Faith").SetOtherAttributeLessEqual("Level Up", configuration.FaithAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Resistance").SetOtherAttributeLessEqual("Level Up", configuration.ResistanceAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Wisdom").SetOtherAttributeLessEqual("Level Up", configuration.WisdomAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Spirit").SetOtherAttributeLessEqual("Level Up", configuration.SpiritAtLevelUp);
-            base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Constitution").SetOtherAttributeLessEqual("Level Up", configuration.ConstitutionAtLevelUp);
+            //// GIVE DEFINE ATTRIBUTE
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Strength").SetOtherAttributeLessEqual("Level Up", configuration.StrengthAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Power").SetOtherAttributeLessEqual("Level Up", configuration.PowerAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Dexterity").SetOtherAttributeLessEqual("Level Up", configuration.DexterityAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Endurance").SetOtherAttributeLessEqual("Level Up", configuration.EnduranceAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Chance").SetOtherAttributeLessEqual("Level Up", configuration.ChanceAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Faith").SetOtherAttributeLessEqual("Level Up", configuration.FaithAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Resistance").SetOtherAttributeLessEqual("Level Up", configuration.ResistanceAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Wisdom").SetOtherAttributeLessEqual("Level Up", configuration.WisdomAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Spirit").SetOtherAttributeLessEqual("Level Up", configuration.SpiritAtLevelUp);
+            //base.GetAttribute(EEntityCategoriesAttributes.Characteristics, "Constitution").SetOtherAttributeLessEqual("Level Up", configuration.ConstitutionAtLevelUp);
         }
         #endregion
     }
