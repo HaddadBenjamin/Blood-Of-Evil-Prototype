@@ -19,7 +19,7 @@ namespace BloodOfEvil.Helpers
         /// </summary>
         public static int GetIndex<EnumerationType>(EnumerationType enumeration) where EnumerationType : struct, IConvertible
         {
-            return Convert.ToInt32(enumeration);
+            return (int)(object)enumerationIndex;
         }
 
         /// <summary>
