@@ -2,14 +2,12 @@
 
 Lorsque j'étais lycéen, j'ai commencé à détailler le projet de jeu "Blood Of Evil" puis suite à cela j'ai suivi une formation en programmation orienté dans le jeu vidéo dans le but de le réaliser.
 
-Ce projet me permet de travailler ma conception logiciel et de développer ma boîte à outils que je réutilise de projet en projet mais il me permet aussi de mettre au défi les compétences que j'ai acquises durant ma formation.
+Ce projet me permet de travailler ma conception logiciel et de développer ma boîte à outils que je réutilise de projet en projet.
 
 
 ♦ Dernier devlog : http://haddadbpro.wixsite.com/bloodofevil/patch-alpha-v0-06
 
 ♦ Dernière vidéo faite de ce projet : [https://www.youtube.com/watch?v=np-J3qUuPTw](https://www.youtube.com/watch?v=np-J3qUuPTw)
-
-♦ Tester le projet, veuillez suivre les instructions suivantes : http://haddadbpro.wixsite.com/bloodofevil/download
 
 
 Les répertoires contenant des codes réutilisables sont les suivants :
