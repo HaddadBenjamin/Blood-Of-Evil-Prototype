@@ -10,7 +10,7 @@ Ce projet me permet de travailler ma conception logiciel et de développer ma bo
 ♦ Dernière vidéo faite de ce projet : [https://www.youtube.com/watch?v=np-J3qUuPTw](https://www.youtube.com/watch?v=np-J3qUuPTw)
 
 
-Les répertoires contenant des codes réutilisables sont les suivants :
+Les répertoires contenant des codes en partie réutilisables sont les suivants :
 * Blood Of Evil/Assets/Project/Scripts/Extensions/.
 * Blood Of Evil/Assets/Project/Scripts/Helpers/.
 * Blood Of Evil/Assets/Project/Scripts/Player/Services/.
