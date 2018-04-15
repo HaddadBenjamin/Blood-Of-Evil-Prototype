@@ -3,6 +3,7 @@
 Lorsque j'étais lycéen, j'ai commencé à détailler le projet de jeu "Blood Of Evil" puis suite à cela j'ai suivi une formation en programmation orienté dans le jeu vidéo dans le but de le réaliser.
 
 Ce projet me permet de travailler ma conception logiciel et de développer ma boîte à outils que je réutilise de projet en projet.
+♦ Version courante de ma boîte à outils en C# : https://github.com/HaddadBenjamin/BenTools
 
 
 ♦ Dernier devlog : http://haddadbpro.wixsite.com/bloodofevil/patch-alpha-v0-06
