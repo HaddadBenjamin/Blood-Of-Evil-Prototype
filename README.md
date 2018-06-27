@@ -1,5 +1,8 @@
 # Blood Of Evil Prototype
 
+Année d'étude : 3ème année.</br>
+Année du développement de ce projet : 2016.
+
 Lorsque j'étais lycéen, j'ai commencé à détailler le projet de jeu "Blood Of Evil" puis suite à cela j'ai suivi une formation en programmation orienté dans le jeu vidéo dans le but de le réaliser.
 
 Ce projet me permet de travailler ma conception logiciel et de développer ma boîte à outils que je réutilise de projet en projet.
