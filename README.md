@@ -9,10 +9,8 @@ Ce projet me permet de travailler ma conception logiciel et de développer ma bo
 
 ♦ Version courante de ma boîte à outils en C# : https://github.com/HaddadBenjamin/BenTools
 
-
 ♦ Dernier devlog : http://haddadbpro.wixsite.com/bloodofevil/patch-alpha-v0-06
 
-♦ Dernière vidéo faite de ce projet : [https://www.youtube.com/watch?v=np-J3qUuPTw](https://www.youtube.com/watch?v=np-J3qUuPTw)
 
 
 Les répertoires contenant des codes en partie réutilisables sont les suivants :
