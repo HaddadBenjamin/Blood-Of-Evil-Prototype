@@ -1,6 +1,6 @@
 # Blood Of Evil Prototype
 **Langage de programmation :** C#.</br>
-**Année du développement de ce projet :** 2016.</br>
+**Année de développement :** 2016.</br>
 **Année d'étude :** 3ème année.
 
 Lorsque j'étais lycéen, j'ai commencé à détailler le projet de jeu "Blood Of Evil" puis suite à cela j'ai suivi une formation en programmation orienté dans le jeu vidéo dans le but de le réaliser.
